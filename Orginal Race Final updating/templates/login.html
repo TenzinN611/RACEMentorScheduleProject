@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{ url_for('static', filename='css/LandingPage_Login.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="shortcut icon" type="x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+  <title>Race Login Page</title>
+</head>
+
+<body>
+  <div class="login-container">
+    <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Race Portal Logo" class="logo">
+    <img src="{{ url_for('static', filename='images/Race_Logo.png') }}" alt="Race Portal Logo" class="logo_bottom">
+    <div class="login-box" id="login-box">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <h1>Sign In</h1>
+      <form id="login-form" action="{{ url_for('login') }}" method="post">
+        <label for="username"><i class="fas fa-user"></i> Username </label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" value="{{ username }}" required>
+
+        <label for="password"><i class="fas fa-lock"></i> Password </label>
+        <div class="password-container">
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+          <span class="toggle-password" onclick="togglePassword('password')"><i class="fas fa-eye"></i></span>
+        </div>
+        <button type="submit">Sign In</button>
+      </form>
+      <p id="signup-toggle">Don't have an account? <a href="#" onclick="toggleSignUp()">Sign Up</a></p>
+      <p>Forgot Password? <a href="#" onclick="toggleReset()">Reset Password</a></p>
+    </div>
+  </div>
+
+  <div class="reset-box" id="reset-box" style="display: none;">
+    <h1>Reset Password</h1>
+    <form id="reset-form" action="{{ url_for('reset_password') }}" method="post">
+
+      <label for="reset-email"><i class="fas fa-envelope"></i> Email Address </label>
+      <input type="email" id="reset-email" name="reset-email" placeholder="Enter your email" required>
+
+      <button type="submit">Reset Password</button>
+    </form>
+    <p>Remember your password? <a href="#" onclick="toggleSignIn()">Sign In</a></p>
+  </div>
+
+
+  <div class="signup-box" id="signup-box" style="display: none;">
+    <h1>Sign Up</h1>
+
+    <form id="signup-form" action="{{ url_for('signup') }}" method="post" onsubmit="return validateSignupForm()">
+      <label for="FirstName"><i class="fas fa-user"></i> First Name </label>
+      <input type="text" id="FirstName" name="FirstName" placeholder="Enter your First Name" required>
+
+      <label for="LastName"><i class="fas fa-user"></i> Last Name </label>
+      <input type="text" id="LastName" name="LastName" placeholder="Enter your Last Name" required>
+
+      <label for="username1"><i class="fas fa-user"></i> Username </label>
+      <input type="text" id="username1" name="username" placeholder="Create your Username" required>
+
+      <label for="EmailAddress"><i class="fas fa-envelope"></i> Email Address </label>
+      <input type="email" id="EmailAddress" name="EmailAddress" placeholder="Enter your Email Address" required>
+
+      <label for="signup-password"><i class="fas fa-lock"></i> Password </label>
+      <div class="password-container">
+        <input type="password" id="signup-password" name="password" placeholder="Create Your Password" required>
+        <span class="toggle-password" onclick="togglePassword('signup-password')"><i class="fas fa-eye"></i></span>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+    
+    <p id="login-toggle">Already have an account? <a href="#" onclick="toggleSignIn()">Sign In</a></p>
+  </div>
+  </div>
+
+  <div class="mentor-schedule-title">
+    <h2>Mentor Course Scheduling Portal</h2>
+  </div>
+  
+  <script src="static/script.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</body>
+
+</html>

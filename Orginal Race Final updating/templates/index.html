@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+  <title>User Dashboard</title>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div id="preloader-overlay">
+    <div id="preloader">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Preloader">
+    </div>
+  </div>
+  <div id="content">
+    <div id="navbar">
+      <div id="menu-btn">
+        <div class="logo-container">
+          <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Logo" class="logo-img">
+          <img src="{{ url_for('static', filename='images/Race_logo2.png') }}" alt="Logo" class="logo-img">
+        </div>
+      </div>
+      <div>
+        <div class="dropdown">
+          <span id="username"><i class="fas fa-user"></i> {{username}}</span>
+          <div class="dropdown-content">
+            <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
+            <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
+          </div>
+        </div>
+        <a href="{{ url_for('logout') }}">
+          <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </a>
+      </div>
+    </div>
+
+    <div id="menu">
+      <a href="#" onclick="openCourseBox()"><i class="fas fa-book"></i> Module</a>
+      <a href="#" onclick="openMentorBox()"><i class="fas fa-user"></i> Mentor</a>
+      <a href="#" onclick="openBatchBox()"><i class="fas fa-layer-group"></i> Batch</a>
+      <a href="#" onclick="openProgramBox()"><i class="fas fa-cogs"></i> Program</a>
+      <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i> Schedule</a>
+    </div>
+
+
+    <img src="{{ url_for('static', filename='images/race_logo1.png') }}" alt="Race Portal Logo" class="logo_bottom">
+    <!-- Logo in the center of the page -->
+    <div id="logo-container">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" id="logo">
+    </div>
+    <!--Course-->
+    <div id="courseBox" class="course-box">
+      <span class="close-box" onclick="closeCourseBox()">&times;</span>
+      <form id="courseForm" action="/submit_form" method="POST">
+        <!-- Navigation bar with course, add, edit, delete, and show buttons -->
+        <div style="display:flex;justify-content: space-between; align-items: center; margin-bottom: 10px;gap: 10px;">
+          <h2>Module</h2>
+          <div style="display: flex;gap: 10px;">
+            <button type="button" onclick="AddCourseDetails()"><i class="fas fa-plus small-icon"></i> Add</button>
+            <button type="button" onclick="EditCourseDetails()"><i class="fas fa-edit small-icon"></i> Edit</button>
+            <button type="button" onclick="DeleteCourseDetails()"><i
+                class="fas fa-trash-alt small-icon"></i>Delete</button>
+          </div>
+        </div>
+
+        <!-- Course form elements -->
+        <label for="CourseID"><i class="fas fa-id-card"></i> Module ID:</label>
+        <input type="text" id="CourseID" name="CourseID" placeholder="Enter Module ID" required>
+        <br>
+        <label for="courseName"><i class="fas fa-book"></i> Module Name:</label>
+        <input type="text" id="courseName" name="courseName" placeholder="Enter Module Name" required>
+        <br>
+        <label for="description"><i class="fas fa-file-alt"></i> Description:</label>
+        <input type="text" id="description" name="description" placeholder="Enter Description" required>
+        <br>
+        <button type="button" onclick="showCourseDetails()"><i class="fas fa-eye"></i> Show</button>
+        <button type="button" onclick="closeCourseBox()"><i class="fas fa-times"></i> Close</button>
+      </form>
+    </div>
+    <!--Mentor-->
+    <div id="mentorBox" class="mentorBox">
+      <span class="close-box" onclick="closeMentorBox()">&times;</span>
+      <form id="mentorForm" action="/submit_mentor_form" method="POST">
+        <!-- Navigation bar with mentor, add, edit, and delete buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;gap:10px;">
+          <h2>Mentor</h2>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="AddMentorDetails()"><i class="fas fa-plus small-icon"></i> Add</button>
+            <button type="button" onclick="EditMentorDetails()"><i class="fas fa-edit small-icon"></i> Edit</button>
+            <button type="button" onclick="DeleteMentorDetails()"><i class="fas fa-trash-alt small-icon"></i>
+              Delete</button>
+          </div>
+          <!-- Add your navigation bar elements here if needed -->
+        </div>
+        <!-- Mentor form elements -->
+        <label for="mentorId"><i class="fas fa-id-card"></i> Mentor ID:</label>
+        <input type="text" id="mentorId" name="mentorId" placeholder="Enter Mentor ID">
+        <br>
+
+        <label for="mentorName"><i class="fas fa-user"></i> Mentor Name:</label>
+        <input type="text" id="mentorName" name="mentorName" placeholder="Enter Mentor Name">
+        <br>
+
+        <label for="mentorRaceEmailAddress"><i class="fas fa-envelope"></i> Race Email Address:</label>
+        <input type="email" id="mentorRaceEmailAddress" name="mentorRaceEmailAddress"
+          placeholder="Enter Race Email Address">
+        <br>
+
+        <label for="mentorEmailAddress"><i class="fas fa-envelope"></i> Email Address:</label>
+        <input type="email" id="mentorEmailAddress" name="mentorEmailAddress" placeholder="Enter Email Address">
+        <br>
+
+        <label for="mentorProfile"><i class="fas fa-user"></i> Profile:</label>
+        <input type="text" id="mentorProfile" name="mentorProfile" placeholder="Enter Mentor Profile">
+        <br>
+
+        <label for="mentorWhatsapp"><i class="fab fa-whatsapp"></i> Phone Number:</label>
+        <input type="text" id="mentorWhatsapp" name="mentorWhatsapp" placeholder="Enter Whatsapp Number">
+
+        <br>
+        <button type="button" onclick="showMentorDetails()"><i class="fas fa-eye"></i> Show</button>
+        <button type="button" onclick="closeMentorBox()"><i class="fas fa-times"></i> Close</button>
+      </form>
+    </div>
+
+    <!--Batch-->
+    <div id="BatchBox" class="course-box">
+      <span class="close-box" onclick="closeBatchBox()">&times;</span>
+      <form>
+        <!-- Navigation bar with mentor, add, edit, and delete buttons -->
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
+          <h2>Batch</h2>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="AddBatchDetails()"><i class="fas fa-plus small-icon"></i> Add</button>
+            <button type="button" onclick="EditBatchDetails()"><i class="fas fa-edit small-icon"></i> Edit</button>
+            <button type="button" onclick="DeleteBatchDetails()"><i
+                class="fas fa-trash-alt small-icon"></i>Delete</button>
+          </div>
+          <!-- Add your navigation bar elements here if needed -->
+        </div>
+        <label for="BatchID"><i class="fas fa-id-card"></i> Batch ID:</label>
+        <input type="text" id="BatchID" name="BatchID" placeholder="Enter Batch ID">
+        <br>
+
+        <label for="Batch_Name"><i class="fas fa-book"></i> Batch Name:</label>
+        <input type="text" id="Batch_Name" name="Batch_Name" placeholder="Enter Batch Name">
+        <br>
+
+        <button type="button" onclick="showBatchDetails()"><i class="fas fa-eye"></i> Show</button>
+        <button type="button" onclick="closeBatchBox()"><i class="fas fa-times"></i> Close</button>
+      </form>
+    </div>
+    <!--Program-->
+    <div id="ProgramBox" class="course-box">
+      <span class="close-box" onclick="closeProgramBox()">&times;</span>
+      <form>
+        <!-- Navigation bar with mentor, add, edit, and delete buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;gap: 10px;">
+          <h2>Program</h2>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="AddProgramDetails()"><i class="fas fa-plus small-icon"></i> Add</button>
+            <button type="button" onclick="EditProgramDetails()"><i class="fas fa-edit small-icon"></i> Edit</button>
+            <button type="button" onclick="DeleteProgramDetails()"><i
+                class="fas fa-trash-alt small-icon"></i>Delete</button>
+          </div>
+          <!-- Add your navigation bar elements here if needed -->
+        </div>
+        <label for="ProgramID"><i class="fas fa-id-card"></i> Program ID:</label>
+        <input type="text" id="ProgramID" name="ProgramID" placeholder="Enter Program ID">
+        <br>
+
+        <label for="Program_Name"><i class="fas fa-book"></i> Program Name:</label>
+        <input type="text" id="Program_Name" name="Program_Name" placeholder="Enter Program Name">
+        <br>
+
+        <button type="button" onclick="showProgramDetails()"><i class="fas fa-eye"></i> Show</button>
+        <button type="button" onclick="closeProgramBox()"><i class="fas fa-times"></i> Close</button>
+      </form>
+    </div>
+    <!--schedule-->
+    <div id="scheduleBox">
+      <span id="closeBtn" onclick="closeScheduleBox()">&times; </span>
+      <h2>Schedule Information</h2>
+      <form id="scheduleForm" method="POST" action="/Schedule">
+        <label for="CourseName11"><i class="fas fa-book"></i> Module Name:</label>
+        <select id="CourseName11" name="CourseName11" required>
+          <!-- Populate options dynamically using JavaScript or Flask templates -->
+        </select>
+
+        <label for="MentorName11"><i class="fas fa-user"></i> Mentor Name:</label>
+        <select id="MentorName11" name="MentorName11" required>
+          <!-- Populate options dynamically using JavaScript or Flask templates -->
+        </select>
+
+        <label for="program11"><i class="fas fa-book"></i> Program:</label>
+        <select id="program11" name="program11" required>
+          <!-- Populate options dynamically using JavaScript or Flask templates -->
+        </select>
+
+        <label for="batch11"><i class="fas fa-book"></i> Batch:</label>
+        <select id="batch11" name="batch11" required>
+          <!-- Populate options dynamically using JavaScript or Flask templates -->
+        </select>
+
+        <label for="date"><i class="far fa-calendar-alt"></i> Date:</label>
+        <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
+
+        <div id="buttonContainer">
+          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i class="fas fa-calendar-plus"></i> Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>View Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="profileBox" class="profile-box">
+    <div class="popup-contents">
+      <span class="closeProfilePopup" onclick="closeProfilePopup()">&times;</span>
+      <h2>Profile details</h2>
+
+      <form id="edit-profile-form" method="post" action="/signup1">
+        <input type="hidden" id="EditUsername" name="currentUsername" required value="{{username}}">
+
+        <label for="EditUsername"><i class="fas fa-user"></i> Username </label>
+        <input type="text" id="EditUsername" name="Username" required value="{{username}}">
+
+        <label for="EditFirstName"><i class="fas fa-user"></i> First Name </label>
+        <input type="text" id="EditFirstName" name="FirstName" required value="{{ FirstName }}">
+
+        <label for="EditLastName"><i class="fas fa-user"></i> Last Name </label>
+        <input type="text" id="EditLastName" name="LastName" required value="{{ LastName }}">
+
+        <label for="EditEmailAddress"><i class="fas fa-envelope"></i> Email Address </label>
+        <input type="email" id="EditEmailAddress" name="EmailAddress" required value="{{ EmailAddress }}">
+
+        <button type="submit"><i class="fas fa-user-edit"></i> Update Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="changePasswordBox" class="change-password-box">
+    <div class="popup-contents">
+      <span class="closeChangePasswordPopup" onclick="closeChangePasswordPopup()">&times;</span>
+      <h2>Change Password</h2>
+      <form id="edit-profile-forms" method="post" action="/changepassword">
+        <input type="hidden" name="currentUsername" value="{{ username }}">
+        <label for="Password"><i class="fas fa-lock"></i> Current Password </label>
+        <div class="password-input-container">
+          <input type="password" id="Password" name="Password" required value="{{ current_password }}">
+          <span class="toggle-password" onclick="togglePassword('Password')"><i class="fas fa-eye"></i></span>
+        </div>
+        <br>
+
+        <label for="NewPassword"><i class="fas fa-lock"></i> New Password </label>
+        <div class="password-input-container">
+          <input type="password" id="NewPassword" name="NewPassword" required>
+          <span class="toggle-password" onclick="togglePassword('NewPassword')"><i class="fas fa-eye"></i></span>
+        </div>
+        <button type="submit"><i class="fas fa-user-edit"></i> Change Password</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="calendarContainer">
+    <span id="closeButton" onclick="closeCalendar()">✖</span>
+    <div id="searchContainer">
+      <label for="searchInput">Search:</label>
+      <input type="text" id="searchInput" placeholder="Enter Batch" oninput="searchCalendar()">
+      <button onclick="searchCalendar()">Search</button>
+    </div>
+    <table id="scheduleTable">
+      <tr>
+        <th colspan="5" class="calendar-heading">Scheduled Calendar</th>
+      </tr>
+      <tr>
+        <th>Batch</th>
+        <th>Week 1</th>
+        <th>Week 2</th>
+        <th>Week 3</th>
+        <th>Week 4</th>
+      </tr>
+    </table>
+  </div>
+
+
+  <div id="overlay" onclick="closeCalendar()"></div>
+
+  <div id="scheduleItem"></div>
+
+  <div id="popupContent"></div>
+
+  <div id="PopupContainer"></div>
+
+  <table id="scheduleTable"></table>
+
+  <script src="static/script.js"></script>
+  <script src="static/Showdetails.js"></script>
+</body>
+
+</html>

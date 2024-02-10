@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/LandingPage_Login.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" type="x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>Race Portal - Welcome</title>
+</head>
+
+<body>
+    <div class="landing-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div id="flash-messages" class="fade-in">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+                <script>
+                    // Fade out after 2 seconds
+                    setTimeout(function () {
+                        var flashMessages = document.getElementById('flash-messages');
+                        flashMessages.classList.remove('fade-in');
+                        flashMessages.classList.add('fade-out');
+                    }, 1000);
+                </script>
+            {% endif %}
+        {% endwith %}
+
+        <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Race Portal Logo" class="logo">
+        <img src="{{ url_for('static', filename='images/Race_Logo.png') }}" alt="Race Portal Logo" class="logo_bottom">
+        <h2>
+            <span id="welcomeText"></span>
+            <span id="username" style="display:none;">{{ username }}!</span>
+        </h2>
+        <button1 onclick="redirectToIndex1()">Get Started</button1>
+    </div>
+
+    <script src="static/script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,410 @@
+@font-face {
+    font-family: 'Martain';
+    src: url('./Martian_Mono/MartianMono-VariableFont_wdth\,wght.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    font-family: 'Martain';
+    font-size: 13px;
+    background: url("/static/images/home1.jpg") center/cover no-repeat fixed;
+    backdrop-filter: blur(5px);/* Apply the same blur effect as in the body */
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+    z-index: 1;
+}
+
+.password-container {
+    position: relative;
+}
+
+#password {
+    padding-right: 30px;
+    /* Adjust the padding to make room for the eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    top: 35%;
+    right: 10px;
+    /* Adjust the right positioning as needed */
+    cursor: pointer;
+    transform: translate(0, -50%);
+    font-size: 14px;
+    /* Adjust the font size of the eye icon */
+}
+
+.login-box,
+.reset-box,
+.signup-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+    transition: box-shadow 0.3s;
+}
+
+.login-box:hover,
+.reset-box:hover,
+.signup-box:hover {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.login-box,
+.reset-box,
+.signup-box h1 {
+    color: #292727;
+}
+
+form,
+.signup-box form {
+    margin-top: 20px;
+}
+
+label,
+.signup-box label {
+    display: block;
+    margin-bottom: 10px;
+    color: #222121;
+    font-weight: bold;
+}
+
+input,
+.signup-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #c1c5c7;
+    border-radius: 6px;
+    box-sizing: border-box;
+    background-color: transparent;
+}
+
+button,
+.signup-box button {
+    background-color: orange;
+    font-family: 'Martain';
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    animation: glow 1.5s infinite alternate, shine 1.5s infinite linear;
+    /* Glowing and shining animations */
+}
+
+button:hover,
+.signup-box button:hover {
+    background-color: rgb(247, 175, 8);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+    /* Example scale transform on hover */
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px rgba(255, 165, 0, 0.8), 0 0 20px rgba(255, 255, 0, 0.8);
+    }
+
+    to {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 255, 0, 0.8);
+    }
+}
+
+
+.mentor-schedule-title {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    overflow: hidden; /* Ensure text doesn't overflow */
+}
+
+.mentor-schedule-title h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: lighter;
+    color: whitesmoke;
+    white-space: nowrap;
+    animation: running-text 15s linear infinite; /* Adjust duration for smoother effect */
+}
+
+@keyframes running-text {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.flashes {
+    list-style: none;
+    padding: 10px;
+    margin: 0 auto;
+    text-align: center;
+    color: red;
+    /* Set the text color to red */
+}
+
+
+.logo {
+    max-width: 250px;
+    /* Adjust the width as needed */
+    max-height: 250px;
+    /* Adjust the height as needed */
+    margin-right: 10px;
+    /* Optional margin for spacing */
+    position: absolute;
+    top: 10px;
+    /* Adjust the top position as needed */
+    left: 10px;
+    /* Adjust the left position as needed */
+}
+
+.logo_bottom {
+    max-width: 450px;
+    /* Adjust the width as needed */
+    max-height: 450px;
+    /* Adjust the height as needed */
+    margin-right: 10px;
+    /* Optional margin for spacing */
+    position: absolute;
+    bottom: 10px;
+    /* Adjust the top position as needed */
+    right: 10px;
+    /* Adjust the left position as needed */
+}
+
+#flash-messages {
+    position: fixed;
+    top: 7%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 10px;
+    background-color: #4CAF50;
+    /* Green background color */
+    color: #fff;
+    /* White text color */
+    border: 1px solid #2E8B57;
+    /* Darker green border color */
+    border-radius: 5px;
+    /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Box shadow for a subtle lift effect */
+    transition: opacity 0.5s ease-in-out;
+    visibility: hidden;
+    animation-duration: 1s;
+    /* Animation duration */
+}
+
+#flash-messages.show,
+#flash-messages.fade-in {
+    opacity: 1;
+    visibility: visible;
+    animation-name: fadeIn;
+}
+
+#flash-messages.fade-out {
+    visibility: hidden;
+    animation-name: fadeOut;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.landing-container {
+    font-size: x-large;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.904);
+
+}
+
+.landing-container h2 {
+    color: #e0dddd;
+    font-size: 3em;
+    /* Adjust the size as needed */
+    letter-spacing: 2px;
+    /* Add some letter spacing for better readability */
+    -webkit-text-stroke: 2px #383737;
+    /* Add a border to the text outline (adjust thickness and color as needed) */
+    margin-top: 20px;
+    /* Add some top margin for spacing */
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: #3498db;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+button1 {
+    padding: 15px 25px;
+    /* Increase padding for a larger button */
+    font-size: 20px;
+    /* Increase font size for larger text */
+    background-color: #FFA500;
+    /* Change the button color to orange */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+    /* Add a subtle glowing effect in orange */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Add transform and box-shadow transition for glowing and scale effect */
+}
+
+button1:hover {
+    background: linear-gradient(to right, #FFD700, #FFA500);
+    /* Add a shining effect using a linear gradient */
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 40px rgba(255, 165, 0, 0.6);
+    /* Add a more intense glowing effect in orange */
+    transform: scale(1.1);
+    /* Add scale transform for a different animation effect on hover */
+}
+
+
+
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 12px;
+    }
+
+    .login-container {
+        min-height: auto;
+    }
+
+    .login-container::before {
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+    }
+
+    .toggle-password {
+        top: 30%;
+    }
+
+    .login-box,
+    .reset-box,
+    .signup-box {
+        width: 80%;
+    }
+
+    .logo_bottom {
+        max-width: 300px;
+        max-height: 300px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 10px;
+    }
+
+    .login-container {
+        justify-content: flex-start;
+    }
+
+    .login-container::before {
+        background: none;
+    }
+
+    .toggle-password {
+        top: 25%;
+    }
+
+    .login-box,
+    .reset-box,
+    .signup-box {
+        width: 90%;
+    }
+
+    .logo_bottom {
+        max-width: 200px;
+        max-height: 200px;
+    }
+
+    #flash-messages {
+        top: 5%;
+    }
+}

@@ -1,0 +1,132 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-image: url("/static/images/home1.jpg") ;
+    background-size: cover;
+    backdrop-filter: blur(5px); /* Add background blur effect */
+}
+
+.logo {
+    max-width: 250px; /* Adjust the width as needed */
+    max-height: 250px; /* Adjust the height as needed */
+    margin-right: 10px; /* Optional margin for spacing */
+    position: absolute;
+    top: 10px; /* Adjust the top position as needed */
+    left: 10px; /* Adjust the left position as needed */
+}
+
+.logo_bottom {
+    max-width: 450px; /* Adjust the width as needed */
+    max-height: 450px; /* Adjust the height as needed */
+    margin-right: 10px; /* Optional margin for spacing */
+    position: absolute;
+    bottom: 10px; /* Adjust the top position as needed */
+    right: 10px; /* Adjust the left position as needed */
+}
+
+#success-box {
+    width: 300px;
+    padding: 50px;
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.1); /* Glass-like box shadow */
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px); /* Apply blur for a glass-like effect */
+    transform: scale(0.8);
+    opacity: 0;
+    animation: pop-in 0.5s forwards ease-out;
+}
+
+@keyframes pop-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#success-box p {
+    margin: 0;
+    font-size: 30px;
+}
+
+#ok-button {
+    padding: 12px 24px;
+    text-decoration: wavy;
+    background-color: #ff8c00; /* Change to orange color */
+    color: #fff;
+    border: 2px solid #ff8c00; /* Matching border color */
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#ok-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #ff8c00); /* Gradient matching the button color */
+    transition: left 0.3s;
+}
+
+#ok-button:hover:before {
+    left: 100%;
+}
+
+#ok-button:hover {
+    background-color: #e07b00; /* Darker orange on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    animation: pulse 1s infinite; /* Add a pulse animation on hover */
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+#ok-button.glow {
+    animation: glow 1.5s infinite;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 8px #4CAF50;
+    }
+
+    50% {
+        box-shadow: 0 0 20px #4CAF50, 0 0 30px #4CAF50;
+    }
+
+    100% {
+        box-shadow: 0 0 8px #4CAF50;
+    }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    #success-box {
+        width: 90%;
+    }
+}

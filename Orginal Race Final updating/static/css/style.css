@@ -1,0 +1,1290 @@
+@font-face {
+    font-family: 'Martain';
+    src: url('./Martian_Mono/MartianMono-VariableFont_wdth\,wght.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    overflow-x: hidden;
+    background-color: whitesmoke;
+    font-family: 'Martain';
+}
+
+#content {
+    display: none;
+}
+
+#preloader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the opacity and color of the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#preloader img {
+    width: 100px;
+    /* Adjust the size of the preloader image */
+    animation: spin 1s linear infinite;
+    /* Y-axis spin animation */
+}
+
+body.loading #preloader {
+    display: none;
+}
+
+@keyframes spin {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+.logo_bottom {
+    max-width: 450px;
+    /* Adjust the width as needed */
+    max-height: 450px;
+    /* Adjust the height as needed */
+    margin-right: 10px;
+    /* Optional margin for spacing */
+    position: absolute;
+    bottom: 0px;
+    /* Adjust the top position as needed */
+    right: 0px;
+    /* Adjust the left position as needed */
+}
+
+#navbar {
+    background-color: #ff8c00;
+    /* Slightly darker orange */
+    padding: 10px;
+    /* Increase padding-left to 20px (adjust as needed) */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s ease;
+    /* Smooth background color transition */
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    max-height: 35px;
+    margin-right: 15px;
+    /* Adjust the margin as needed */
+}
+
+.logo-container .logo-img:last-child {
+    max-height: 55px;
+    /* Adjust the maximum height for the second logo */
+}
+
+#navbar:hover {
+    background-color: #ff9900;
+    /* Darker orange on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Increased box-shadow on hover */
+}
+
+#navbar a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    /* Smooth text color transition */
+}
+
+#navbar a:hover {
+    color: #ffcc00;
+    /* Yellowish color on hover */
+}
+
+/* Dropdown styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    /* Adjusted to open below the navigation bar */
+    margin-top: 5px;
+    background-color: #ff8c00;
+    z-index: 1;
+    min-width: 160px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.dropdown-content:before {
+    position: absolute;
+    right: 10px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: #ff8c00;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #eee8e8;
+}
+
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Hover effect for the dropdown */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/*menu*/
+#menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 19%;
+    height: 100%;
+    background-color: #e0e5ec;
+    /* Background color for neumorphism */
+    padding-top: 85px;
+    padding-left: 5px;
+    /* Add padding to the left of the menu */
+    padding-right: 5px;
+    transition: 0.5s;
+    animation: slideIn 0.5s ease-out;
+    border-right: 2px solid #cfd8dc;
+    /* Add a border for separation */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    /* Increased shadow for a more pronounced 3D effect */
+}
+
+@keyframes slideIn {
+    from {
+        left: -30%;
+    }
+
+    to {
+        left: 0;
+    }
+}
+
+#menu a {
+    padding: 25px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #2c3e50;
+    display: block;
+    transition: 0.3s;
+    position: relative;
+    background-color: #e0e5ec;
+    border-radius: 10px;
+    /* Slightly increased border radius for smoother edges */
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    transform-origin: center;
+}
+
+#menu a:hover {
+    background-color: #cfd8dc;
+    transition: 0.3s;
+    transform: scale(1.08);
+    /* Increased scale for a more pronounced hover effect */
+}
+
+#menu a:hover::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    background-color: #e0e5ec;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    /* Increased shadow for pseudo-element */
+    z-index: -1;
+    border-radius: 10px;
+    /* Adjusted the value for a more pronounced curvature */
+    transform: scale(1.08);
+    /* Apply the same scale to the pseudo-element */
+}
+
+#menu {
+    background: linear-gradient(to bottom, #cfd8dc, #e0e5ec);
+}
+
+#menu a {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    /* Increased shadow for regular state */
+    transition: 0.3s;
+}
+
+#menu a:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    /* Increased shadow for hover state */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/*logo containter*/
+#logo-container {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    min-height: 65vh;
+}
+
+#logo {
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+    transition: transform 0.5s ease, filter 0.5s ease;
+    /* Added filter for hover effect */
+}
+
+#logo:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+    /* Slight brightness increase on hover */
+}
+
+#logo {
+    margin-top: 200px;
+    padding: 20px;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+.course-box,
+#BatchBox,
+#ProgramBox {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    width: 300px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.5s ease-in-out;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
+    background-blend-mode: overlay;
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.course-box .close-box,
+#BatchBox .close-box,
+#ProgramBox .close-box {
+    color: #aaa;
+    position: absolute;
+    top: 4px;
+    /* Adjust the top position as needed */
+    right: 10px;
+    /* Adjust the right position as needed */
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+
+.course-box .close-box:hover,
+#BatchBox .close-box:hover,
+#ProgramBox .close-box:hover,
+.course-box .close-box:focus,
+#BatchBox .close-box:focus,
+#ProgramBox .close-box:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.course-box form,
+#BatchBox form,
+#ProgramBox form {
+    display: flex;
+    flex-direction: column;
+}
+
+.course-box label,
+#BatchBox label,
+#ProgramBox label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: black;
+    /* Set the text color to black */
+    animation: fadeInText 0.5s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInText {
+    0% {
+        color: transparent;
+        opacity: 0;
+    }
+
+    100% {
+        color: black;
+        opacity: 1;
+    }
+}
+
+.course-box input,
+#BatchBox input,
+#ProgramBox input {
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease-in-out;
+    outline: none;
+    /* Remove the black outline on focus */
+}
+
+.course-box input:focus,
+#BatchBox input:focus,
+#ProgramBox input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.5);
+}
+
+
+.course-box button,
+#BatchBox button,
+#ProgramBox button {
+    padding: 11px;
+    margin-bottom: 10px;
+    background-color: #ff8c00;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.course-box button:hover,
+#BatchBox button:hover,
+#ProgramBox button:hover {
+    background-color: #ff8c00;
+    transform: scale(1.1);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+#mentorBox {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    left: 50%;
+    top: 53%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    width: 300px;
+    max-height: 75vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.5s ease-in-out;
+
+    /* Custom scrollbar for WebKit (Chrome, Safari) */
+    scrollbar-width: thin;
+    scrollbar-color: #ff8c00 #ffffff;
+
+    /* Custom scrollbar for Firefox */
+    &::-webkit-scrollbar {
+        width: 4px;
+        /* Set a smaller width for a thinner scrollbar */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ff8c00;
+        border-radius: 2px;
+        /* Smaller border-radius for a thinner thumb */
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: #ffffff;
+        border-radius: 4px;
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+#mentorBox form {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin-bottom: 10px;
+    animation: fadeInForm 1s ease-in-out;
+}
+
+@keyframes fadeInForm {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+#mentorBox label {
+    margin-bottom: 4px;
+    font-weight: bold;
+    animation: fadeInLabel 0.5s ease-in-out;
+}
+
+@keyframes fadeInLabel {
+    0% {
+        color: transparent;
+        opacity: 0;
+    }
+
+    100% {
+        color: black;
+        opacity: 1;
+    }
+}
+
+#mentorBox input {
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    outline: none;
+}
+
+#mentorBox input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.5);
+}
+
+#mentorBox button {
+    padding: 10px;
+    margin-bottom: 4px;
+    background-color: #ff8c00;
+    /* Orange color for buttons */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#mentorBox button:hover {
+    background-color: #e07b00;
+    /* Darker shade of orange on hover */
+    transform: scale(1.1);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+#mentorBox .close-box {
+    color: #aaa;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#mentorBox .close-box:hover,
+#mentorBox .close-box:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/*schedule box*/
+#scheduleBox {
+    display: none;
+    position: fixed;
+    top: 55%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border-radius: 10px;
+    text-align: center;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+#scheduleBox h2 {
+    margin-bottom: 20px;
+    color: black;
+}
+
+#scheduleForm {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+#scheduleForm label {
+    font-weight: bold;
+    color: black;
+    text-align: left;
+    flex-basis: 48%;
+}
+
+#scheduleForm input {
+    padding: 10px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#buttonContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.scheduleButton,
+.viewScheduleButton {
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.scheduleButton {
+    background-color: #4caf50;
+    color: white;
+}
+
+.viewScheduleButton {
+    background-color: #3498db;
+    color: white;
+}
+
+.scheduleButton:hover,
+.viewScheduleButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+#scheduleForm select {
+    padding: 10px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#scheduleForm select:hover {
+    border-color: #ff8c00;
+}
+
+#scheduleForm select:focus {
+    outline: none;
+    border-color: #ff8c00;
+    /* Change the color to the desired focus color */
+    box-shadow: 0 0 5px rgba(241, 157, 0, 0.808);
+    /* Add a subtle box shadow for focus */
+}
+
+#closeBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    transition: color 0.3s ease-in-out;
+}
+
+#closeBtn:hover {
+    color: black;
+}
+
+/* Add this animation style */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Search Container */
+#searchContainer {
+    margin-bottom: 10px;
+}
+
+#searchInput {
+    padding: 8px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#searchContainer button {
+    padding: 8px 12px;
+    border: 1px solid #ff8c00;
+    ;
+    /* Orange border color */
+    border-radius: 4px;
+    background-color: #ff8c00;
+    ;
+    /* Orange background color */
+    color: #fff;
+    /* White text color */
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+#searchContainer button:hover {
+    background-color: #ff8c00;
+    /* Darker orange on hover */
+    border-color: #ff8c00;
+}
+
+/* Calendar */
+#calendarContainer {
+    display: none;
+    position: fixed;
+    top: 52%;
+    left: 55%;
+    width: 800px;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 12px;
+    animation: fadeIn 0.5s ease-in-out;
+    cursor: pointer;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Customize scrollbar styles for calendarContainer */
+#calendarContainer::-webkit-scrollbar {
+    width: 5px;
+    /* Width of the scrollbar */
+}
+
+#calendarContainer::-webkit-scrollbar-thumb {
+    background-color: #6b6b6b;
+    /* Color of the thumb */
+    border-radius: 4px;
+}
+
+#calendarContainer::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    /* Color of the track */
+    border-radius: 4px;
+}
+
+#calendarContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#calendarContainer th,
+#calendarContainer td {
+    height: 50px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Add box shadow for 3D effect */
+}
+
+#calendarContainer th {
+    background-color: #f7f7f7;
+    color: #333;
+    font-weight: bold;
+}
+
+#calendarContainer td:hover {
+    background-color: #f2f2f2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    /* Adjust box shadow on hover for more depth */
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#calendarContainer .calendar-heading {
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Overlay */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+}
+
+/* Close Button */
+#closeButton {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #888;
+    transition: color 0.3s ease-in-out;
+}
+
+#closeButton:hover {
+    color: #666;
+}
+
+/* Add some styles for the draggable element */
+.draggable {
+    cursor: grab;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    /* Include box-shadow for additional 3D effect */
+}
+
+/* Add a different style when grabbing */
+.draggable:active {
+    transform: scale(1.1) rotate(3deg);
+    /* Increase size and add rotation on grabbing */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Add shadow for depth */
+}
+
+/* Add a different style when dragging */
+.dragging {
+    background-color: transparent;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Schedule Popup Styling */
+#schedulePopup {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    width: 400px;
+    position: fixed;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 75vh;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+#schedulePopup h2 {
+    text-align: center;
+}
+
+.scheduleItem {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scheduleItem select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.scheduleItem select:hover {
+    border-color: darkorange;
+}
+
+.scheduleItem select:focus {
+    outline: none;
+    border-color: orange;
+    box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.5);
+}
+
+#closeButtonContainer {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 24px;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+#closeButtonContainer:hover {
+    color: #333;
+}
+
+/* Customize scrollbar styles */
+#schedulePopup::-webkit-scrollbar {
+    width: 8px;
+}
+
+#schedulePopup::-webkit-scrollbar-thumb {
+    background-color: orange;
+    border-radius: 4px;
+}
+
+#schedulePopup::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+/*logout*/
+#logout-btn {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    font-family: 'Martain';
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.5s ease-in-out;
+    margin-right: 20px;
+    animation: fadeIn 1s ease-in-out;
+    /* Add animation */
+}
+
+#logout-btn {
+    background-color: #e74c3c;
+    /* Red color for contrast */
+    margin-right: 20px;
+    color: #fff;
+    /* Text color */
+    /* Other button styles */
+}
+
+#logout-btn:hover {
+    background-color: #c0392b;
+    /* Darker shade for hover effect */
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.8), 0 0 40px rgba(231, 76, 60, 0.6);
+    /* Red shadow for shining effect */
+}
+
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/*Username*/
+#username {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ecf0f1;
+    margin-right: 20px;
+    padding: 10px;
+    /* Added padding */
+    cursor: pointer;
+    animation: fadeInUsername 1s ease-in-out forwards;
+    /* Add animation */
+}
+
+#username:hover+.dropdown .dropdown-content:before {
+    top: -8px;
+    /* Adjusted position */
+    content: "";
+    position: absolute;
+    right: 10px;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: #ff8c00;
+}
+
+@keyframes fadeInUsername {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Style for the overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+
+/* Style for the profile popup */
+.profile-box {
+    display: none;
+    position: fixed;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.95);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
+    width: 300px;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+/* Keyframes for fade-in animation */
+@keyframes fadeInUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Close button styles */
+.profile-box .closeProfilePopup {
+    color: #aaa;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.profile-box .closeProfilePopup:hover,
+.profile-box .closeProfilePopup:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Form styles */
+.profile-box form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.profile-box label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: black;
+    animation: fadeInText 0.5s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+/* Input styles */
+.profile-box input {
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease-in-out;
+    outline: none;
+}
+
+.profile-box input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 8px rgba(245, 189, 6, 0.5);
+}
+
+/* Button styles */
+.profile-box button {
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: #ff8c00;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.profile-box button:hover {
+    background-color: #ff8c00;
+    transform: scale(1.1);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Style for the overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Style for the change password popup */
+.change-password-box {
+    display: none;
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.95);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
+    width: 300px;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+/* Close button styles for change password box */
+.change-password-box .closeChangePasswordPopup {
+    color: #aaa;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.change-password-box .closeChangePasswordPopup:hover,
+.change-password-box .closeChangePasswordPopup:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Form styles for change password box */
+.change-password-box form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.change-password-box label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: black;
+    animation: fadeInText 0.5s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+/* Input styles for change password box */
+.change-password-box input {
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: box-shadow 0.3s ease-in-out;
+    outline: none;
+}
+
+.change-password-box input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 8px rgba(247, 154, 16, 0.5);
+}
+
+/* Button styles for change password box */
+.change-password-box button {
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: #ff8c00;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.change-password-box button:hover {
+    background-color: #ff8c00;
+    transform: scale(1.1);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 100px;
+    /* Adjust the right distance as needed */
+    top: 35%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.password-input-container input {
+    padding-right: 30px;
+    /* Adjust the right padding to make space for the eye icon */
+}
+
+/* Responsive Styles */
+
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    #menu,
+    #navbar,
+    #content,
+    #logo-container {
+        padding: 10px;
+    }
+
+    #menu {
+        width: 100%;
+    }
+
+    #menu-btn {
+        display: block;
+    }
+
+    #menu a {
+        border-bottom: none;
+        padding: 10px;
+    }
+
+    #navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #content {
+        margin-top: 120px;
+    }
+
+    #logo-container {
+        min-height: 40vh;
+    }
+
+    #scheduleBox,
+    #calendarContainer {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Add more responsive styles as needed */
+}

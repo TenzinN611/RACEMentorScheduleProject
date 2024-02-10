@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/success.css') }}" rel="stylesheet">
+    <link rel ="shortcut icon" type="x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <title>Successfully scheduled page</title>
+</head>
+
+<body>
+    <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Race Portal Logo" class="logo">
+    <img src="{{ url_for('static', filename='images/Race_Logo.png') }}" alt="Race Portal Logo" class="logo_bottom">
+    <div id="success-box">
+        <p>{{ error_message }}</p>
+        <button id="ok-button" onclick="redirectToIndex()">OK</button>
+    </div>
+
+    <script src="static/script.js"></script>
+
+</body>
+
+</html>

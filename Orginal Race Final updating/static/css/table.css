@@ -1,0 +1,195 @@
+@font-face {
+    font-family: 'Martain';
+    src: url('./Martian_Mono/MartianMono-VariableFont_wdth\,wght.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("/static/images/home2.jpeg") center/cover no-repeat fixed;
+    backdrop-filter: blur(8px);
+}
+
+
+#content {
+    display: none;
+}
+
+#preloader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the opacity and color of the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#preloader img {
+    width: 100px;
+    /* Adjust the size of the preloader image */
+    animation: spin 1s linear infinite;
+    /* Y-axis spin animation */
+}
+
+body.loading #preloader {
+    display: none;
+}
+
+@keyframes spin {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+.logo {
+    max-width: 250px;
+    /* Adjust the width as needed */
+    max-height: 250px;
+    /* Adjust the height as needed */
+    margin-right: 10px;
+    /* Optional margin for spacing */
+    position: absolute;
+    top: 10px;
+    /* Adjust the top position as needed */
+    left: 10px;
+    /* Adjust the left position as needed */
+}
+
+.logo_bottom {
+    max-width: 450px;
+    /* Adjust the width as needed */
+    max-height: 450px;
+    /* Adjust the height as needed */
+    margin-right: 10px;
+    /* Optional margin for spacing */
+    position: absolute;
+    bottom: 10px;
+    /* Adjust the top position as needed */
+    right: 10px;
+    /* Adjust the left position as needed */
+}
+
+#courseDetailsContainer,
+#BatchDetailsContainer,
+#ProgramDetailsContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-family: 'Martain';
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+    padding: 20px;
+    max-width: 800px;   /* Adjust the maximum width as needed */
+    max-height: 500px;     /* Adjust the maximum width and height as needed */
+    transition: opacity 0.5s ease-in-out;
+    overflow-y: auto; /* Enable vertical scrolling */
+    scrollbar-width: thin; /* Set the width of the scrollbar */
+    scrollbar-color: grey #f0f0f0; /* Set the color of the scrollbar thumb and track */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 15px;
+}
+
+th {
+    background-color: #e9ecef;
+    /* Lighter background color */
+}
+
+h2 {
+    text-align: center;
+}
+
+#mentorDetailsContainer {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    font-family: 'Martain';
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in-out forwards;
+    padding: 15px;
+    max-width: 1300px;
+    max-height: 500px;
+    /* Adjust the maximum width and height as needed */
+    transition: opacity 0.5s ease-in-out;
+    overflow-y: auto; /* Enable vertical scrolling */
+    scrollbar-width: thin; /* Set the width of the scrollbar */
+    scrollbar-color: grey #f0f0f0; /* Set the color of the scrollbar thumb and track */
+}
+
+table {
+    border-collapse: collapse;
+    width: 110%;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 15px;
+}
+
+th {
+    background-color: #e9ecef;
+    /* Lighter background color */
+}
+
+h2 {
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    #courseDetailsContainer,
+    #BatchDetailsContainer,
+    #ProgramDetailsContainer,
+    #mentorDetailsContainer {
+        max-width: 90%;
+    }
+
+    table {
+        font-size: 14px; /* Adjust font size for tables on smaller screens */
+    }
+}
