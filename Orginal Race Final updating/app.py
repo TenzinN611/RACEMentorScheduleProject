@@ -65,6 +65,35 @@ app.config['MAIL_PASSWORD'] = os.environ.get('OUTLOOK_PASSWORD')  # Use environm
 
 mail = Mail(app)  # Create an instance of the Mail class
 
+def caesar_cipher(text, shift):
+    encrypted_text = ''
+    for char in text:
+        if char.isalpha():
+            # Determine if character is uppercase or lowercase
+            if char.isupper():
+                # Shift uppercase letters
+                encrypted_text += chr((ord(char) - 65 + shift) % 26 + 65)
+            else:
+                # Shift lowercase letters
+                encrypted_text += chr((ord(char) - 97 + shift) % 26 + 97)
+        else:
+            # Keep non-alphabetic characters unchanged
+            encrypted_text += char
+    return encrypted_text
+
+def caesar_decipher(text, shift):
+    return caesar_cipher(text, -shift)
+
+# Example usage
+plaintext = "Hello, World!"
+shift = 3
+encrypted_text = caesar_cipher(plaintext, shift)
+print("Encrypted:", encrypted_text)
+
+decrypted_text = caesar_decipher(encrypted_text, shift)
+print("Decrypted:", decrypted_text)
+
+
 # Set the permanent session lifetime (you can adjust this value)
 app.permanent_session_lifetime = timedelta(minutes=30)
 @app.before_request
@@ -107,7 +136,9 @@ def login():
     username = ""  # Define username before the conditional block
     
     if request.method == 'POST':
-        username = request.form['username']
+        username9 = request.form['username']
+        username = caesar_cipher(username9, shift)
+        print(username)
         passwordbf1 = request.form['password']
         password = hash_string(passwordbf1)
 
@@ -121,10 +152,10 @@ def login():
         if user:
             # Username exists, now check the password
             if user[-1] == password:
-                session['username'] = user[-2] # Store the username in the session
-                session['FirstName'] = user[1]
-                session['LastName'] = user[2]
-                session['EmailAddress'] = user[3]  
+                session['username'] = caesar_decipher(user[-2], shift) # Store the username in the session
+                session['FirstName'] = caesar_decipher(user[1], shift)
+                session['LastName'] = caesar_decipher(user[2], shift)
+                session['EmailAddress'] = caesar_decipher(user[3], shift)  
                 flash('Login successful', 'success')
                 return redirect(url_for('index1'))  # Redirect to index1.html on successful login
             else:
@@ -132,7 +163,7 @@ def login():
         else:
             flash('The entered username does not exist. Please try again or register for an account.', 'error')
 
-    return render_template('login.html', username=username)
+    return render_template('login.html', username=username9)
 
 
 @app.route('/LandingPage')
@@ -159,21 +190,25 @@ def index2():
 @app.route('/signup', methods=['POST'])
 def signup():
     if request.method == 'POST':
-        first_name = request.form['FirstName']
-        last_name = request.form['LastName']
-        email = request.form['EmailAddress']
-        username = request.form['username']
+        first_name9 = request.form['FirstName']
+        first_name = caesar_cipher(first_name9, shift)
+        last_name9 = request.form['LastName']
+        last_name = caesar_cipher(last_name9, shift)
+        email9 = request.form['EmailAddress']
+        email = caesar_cipher(email9, shift)
+        username9 = request.form['username']
+        username = caesar_cipher(username9, shift)
         passwordbf = request.form['password']
         password = hash_string(passwordbf)
 
 
         # Validate first_name (allow only alphabets)
-        if not first_name.isalpha():
+        if not first_name9.isalpha():
             flash('First name should contain only alphabets.', 'error')
             return render_template('login.html')
 
         # Validate last_name (allow only alphabets)
-        if not last_name.isalpha():
+        if not last_name9.isalpha():
             flash('Last name should contain only alphabets.', 'error')
             return render_template('login.html')
 
@@ -196,10 +231,10 @@ def signup():
             conn.commit()
             flash('Registration successful!', 'success')
             return render_template('login.html')
-        except Exception as e:
+        #except Exception as e:
             # Handle database insertion error
-            flash('An error occurred during registration. Please try again.', 'error')
-            return render_template('login.html')
+            #flash('An error occurred during registration. Please try again.', 'error')
+            #return render_template('login.html')
         finally:
             cursor.close()
 
@@ -209,19 +244,24 @@ def signup():
 @app.route('/signup1', methods=['POST'])
 def signup1():
     if request.method == 'POST':
-        first_name = request.form['FirstName']
-        last_name = request.form['LastName']
-        email = request.form['EmailAddress']
-        username = request.form['Username']
-        currentuser = request.form['currentUsername']
+        first_name9 = request.form['FirstName']
+        first_name = caesar_cipher(first_name9, shift)
+        last_name9 = request.form['LastName']
+        last_name = caesar_cipher(last_name9, shift)
+        email9 = request.form['EmailAddress']
+        email = caesar_cipher(email9, shift)
+        username9 = request.form['Username']
+        username = caesar_cipher(username9, shift)
+        currentuser9 = request.form['currentUsername']
+        currentuser = caesar_cipher(currentuser9, shift)
 
         # Validate first_name (allow only alphabets)
-        if not first_name.isalpha():
+        if not first_name9.isalpha():
             flash('First name should contain only alphabets.', 'error')
             return render_template('index.html')
 
         # Validate last_name (allow only alphabets)
-        if not last_name.isalpha():
+        if not last_name9.isalpha():
             flash('Last name should contain only alphabets.', 'error')
             return render_template('index.html')
 
@@ -233,10 +273,10 @@ def signup1():
                            UPDATE login SET first_name=%s, last_name=%s, email=%s, username=%s WHERE username=%s
                 """, (first_name, last_name, email, username, currentuser))
             conn.commit()
-            session['username'] = username  # Store the username in the session
-            session['FirstName'] = first_name
-            session['LastName'] = last_name
-            session['EmailAddress'] = email
+            session['username'] = username9  # Store the username in the session
+            session['FirstName'] = first_name9
+            session['LastName'] = last_name9
+            session['EmailAddress'] = email9
             #flash('Edit successful! Login Again Please', 'success')
         except Exception as e:
             # Handle database insertion error
