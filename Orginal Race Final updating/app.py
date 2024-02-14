@@ -299,7 +299,7 @@ def submit_form():
 
         # Insert data into the database
         query = "INSERT INTO Modules (ModuleID, moduleName, description) VALUES (%s, %s, %s)"
-        values = (data['CourseID'], data['courseName'], data['description'])
+        values = (data['CourseID'], caesar_cipher(data['courseName'], shift), caesar_cipher(data['description'], shift))
         cursor1.execute(query, values)
         conn1.commit()
 
@@ -311,8 +311,10 @@ def submit_form():
 def edit_course():
     try:
         CourseID = request.json.get('CourseID')
-        courseName = request.json.get('courseName')
-        description = request.json.get('description')
+        courseName9 = request.json.get('courseName')
+        description9 = request.json.get('description')
+        courseName = caesar_cipher(courseName9, shift)
+        description = caesar_cipher(description9, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Modules SET ModuleName=%s, description=%s WHERE ModuleID=%s"
@@ -352,7 +354,7 @@ def show_courses():
         data = cursor1.fetchall()
 
         # Prepare the data to be sent as JSON
-        course_details = [{'CourseID': course[0], 'courseName': course[1], 'description': course[2]} for course in data]
+        course_details = [{'CourseID':course[0], 'courseName': caesar_decipher(course[1], shift), 'description': caesar_decipher(course[2], shift)} for course in data]
 
         return jsonify(course_details)
     except Exception as e:
@@ -377,12 +379,12 @@ def submit_mentor_form():
         # Insert data into the database
         query = "INSERT INTO Mentors (mentorId, mentorName, mentorRaceEmailAddress, mentorEmailAddress, mentorProfile, mentorWhatsapp) VALUES (%s, %s, %s, %s, %s, %s)"
         values = (
-            data['mentorId'],
-            data['mentorName'],
-            data['mentorRaceEmailAddress'],
-            data['mentorEmailAddress'],
-            data['mentorProfile'],
-            data['mentorWhatsapp']
+            caesar_cipher(data['mentorId'], shift),
+            caesar_cipher(data['mentorName'], shift),
+            caesar_cipher(data['mentorRaceEmailAddress'], shift),
+            caesar_cipher(data['mentorEmailAddress'], shift),
+            caesar_cipher(data['mentorProfile'], shift),
+            caesar_cipher(data['mentorWhatsapp'], shift)
         )
 
         cursor1.execute(query, values)
@@ -403,7 +405,7 @@ def show_Mentors():
         data = cursor1.fetchall()
 
         # Prepare the data to be sent as JSON
-        Mentor_details = [{'mentorId': course[0], 'mentorName': course[1], 'mentorRaceEmailAddress': course[2],'mentorEmailAddress': course[3],'mentorProfile': course[4],'mentorWhatsapp':course[5]} for course in data]
+        Mentor_details = [{'mentorId': course[0], 'mentorName': caesar_decipher(course[1], shift), 'mentorRaceEmailAddress': caesar_decipher(course[2], shift),'mentorEmailAddress': caesar_decipher(course[3], shift),'mentorProfile': caesar_decipher(course[4], shift),'mentorWhatsapp':caesar_decipher(course[5], shift)} for course in data]
 
         return jsonify(Mentor_details)
     except Exception as e:
@@ -418,11 +420,16 @@ def Mentor_table():
 def edit_mentor():
     try:
         mentorId = request.json.get('mentorId')
-        mentorName = request.json.get('mentorName')
-        mentorRaceEmailAddress = request.json.get('mentorRaceEmailAddress')
-        mentorEmailAddress = request.json.get('mentorEmailAddress')
-        mentorProfile = request.json.get('mentorProfile')
-        mentorWhatsapp = request.json.get('mentorWhatsapp')
+        mentorName9 = request.json.get('mentorName')
+        mentorName = caesar_cipher(mentorName9, shift)
+        mentorRaceEmailAddress9 = request.json.get('mentorRaceEmailAddress')
+        mentorRaceEmailAddress = caesar_cipher(mentorRaceEmailAddress9, shift)
+        mentorEmailAddress9 = request.json.get('mentorEmailAddress')
+        mentorEmailAddress = caesar_cipher(mentorEmailAddress9, shift)
+        mentorProfile9 = request.json.get('mentorProfile')
+        mentorProfile = caesar_cipher(mentorProfile9, shift)
+        mentorWhatsapp9 = request.json.get('mentorWhatsapp')
+        mentorWhatsapp = caesar_cipher(mentorWhatsapp9, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Mentors SET mentorName=%s, mentorRaceEmailAddress=%s, mentorEmailAddress=%s, mentorProfile=%s, mentorWhatsapp=%s WHERE mentorId=%s"
@@ -459,7 +466,7 @@ def submit_batch_form():
 
         # Insert data into the database
         query = "INSERT INTO Batches (BatchID, batchName) VALUES (%s, %s)"
-        values = (data['BatchID'], data['batchName'])
+        values = (data['BatchID'], caesar_cipher(data['batchName'], shift))
         cursor1.execute(query, values)
         conn1.commit()
 
@@ -476,7 +483,7 @@ def show_batches():
         data = cursor1.fetchall()
 
         # Prepare the data to be sent as JSON
-        batch_details = [{'BatchID': batch[0], 'batchName': batch[1]} for batch in data]
+        batch_details = [{'BatchID': batch[0], 'batchName': caesar_decipher(batch[1], shift)} for batch in data]
 
         return jsonify(batch_details)
     except Exception as e:
@@ -490,7 +497,8 @@ def Batch_table():
 def edit_batch():
     try:
         BatchID = request.json.get('BatchID')
-        batchName = request.json.get('batchName')
+        batchName9 = request.json.get('batchName')
+        batchName = caesar_cipher(batchName9, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Batches SET batchName=%s WHERE BatchID=%s"
@@ -527,7 +535,7 @@ def submit_program_form():
 
         # Insert data into the database
         query = "INSERT INTO Programs (ProgramID, programName) VALUES (%s, %s)"
-        values = (data['ProgramID'], data['programName'])
+        values = (data['ProgramID'], caesar_cipher(data['programName'], shift))
         cursor1.execute(query, values)
         conn1.commit()
 
@@ -544,7 +552,7 @@ def show_programs():
         data = cursor1.fetchall()
 
         # Prepare the data to be sent as JSON
-        program_details = [{'ProgramID': program[0], 'programName': program[1]} for program in data]
+        program_details = [{'ProgramID': program[0], 'programName': caesar_decipher(program[1], shift)} for program in data]
 
         return jsonify(program_details)
     except Exception as e:
@@ -558,7 +566,8 @@ def Program_table():
 def edit_program():
     try:
         ProgramID = request.json.get('ProgramID')
-        programName = request.json.get('programName')
+        programName9 = request.json.get('programName')
+        programName = caesar_cipher(programName9, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Programs SET programName=%s WHERE ProgramID=%s"
@@ -624,20 +633,20 @@ def ScheduleS(CourseName, MentorName,ProgramName,BatchName,SDate):
     # Your logic for Method 1
 
         # Get CourseID
-        cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (CourseName,))
+        cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (caesar_cipher(CourseName, shift),))
         cid = cur.fetchone()
         print(cid)
 
         # Get MentorID
-        cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (MentorName,))
+        cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (caesar_cipher(MentorName, shift),))
         mid = cur.fetchone()
 
         # Get ProgramID
-        cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (ProgramName,))
+        cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (caesar_cipher(ProgramName, shift),))
         pid = cur.fetchone()
 
         # Get BatchID
-        cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (BatchName,))
+        cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (caesar_cipher(BatchName, shift),))
         bid = cur.fetchone()
 
         # Insert into ScheduleInformation
@@ -721,19 +730,19 @@ def update_schedule():
                 cur = conn1.cursor()
 
                 # Get CourseID
-                cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (course_name,))
+                cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (caesar_cipher(course_name, shift),))
                 cid = cur.fetchone()
 
                 # Get MentorID
-                cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (mentor_name,))
+                cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (caesar_cipher(mentor_name, shift),))
                 mid = cur.fetchone()
 
                 # Get ProgramID
-                cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (program_name,))
+                cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (caesar_cipher(program_name, shift),))
                 pid = cur.fetchone()
 
                 # Get BatchID
-                cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (batch_name,))
+                cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (caesar_cipher(batch_name, shift),))
                 bid = cur.fetchone()
 
                 # Update ScheduleInformation
@@ -794,7 +803,7 @@ def get_batch_names():
 
         cursor1.execute(query)
         data = cursor1.fetchall()
-        batch_names = [batch[0] for batch in data]
+        batch_names = [caesar_decipher(batch[0], shift) for batch in data]
         print(batch_names)
         return jsonify(batch_names)  # Return a JSON response directly as an array
     except Exception as e:
@@ -854,7 +863,7 @@ def show_schedule():
             Programs ON ScheduleInformation.ProgramID = Programs.ProgramID
         WHERE Batches.BatchName = %s
         """
-            values = ( ld)
+            values = ( caesar_cipher(ld, shift))
 
             cursor2.execute(query,values)
             data = cursor2.fetchall()
@@ -863,10 +872,10 @@ def show_schedule():
         # Prepare the data to be sent as JSON
             schedule_details = [
                 {
-                'Name': schedule[0],
-                'MentorName': schedule[1],
-                'BatchName': schedule[2],
-                'ProgramName': schedule[3],
+                'Name': caesar_decipher(schedule[0], shift),
+                'MentorName': caesar_decipher(schedule[1], shift),
+                'BatchName': caesar_decipher(schedule[2], shift),
+                'ProgramName': caesar_decipher(schedule[3], shift),
                 'SDate': schedule[4].strftime("%a, %d %b %Y")
                 }
                 for schedule in data
@@ -899,7 +908,7 @@ def show_schedule():
             Programs ON ScheduleInformation.ProgramID = Programs.ProgramID
         WHERE Batches.BatchName = %s AND ScheduleInformation.ScheduleDate = %s
         """
-            values = ( ld, td)
+            values = ( caesar_cipher(ld, shift), caesar_cipher(td, shift))
 
             cursor2.execute(query,values)
             data = cursor2.fetchall()
@@ -908,10 +917,10 @@ def show_schedule():
         # Prepare the data to be sent as JSON
             schedule_details = [
                 {
-                'Name': schedule[0],
-                'MentorName': schedule[1],
-                'BatchName': schedule[2],
-                'ProgramName': schedule[3],
+                'Name': caesar_decipher(schedule[0], shift),
+                'MentorName': caesar_decipher(schedule[1], shift),
+                'BatchName': caesar_decipher(schedule[2], shift),
+                'ProgramName': caesar_decipher(schedule[3], shift),
                 'SDate': schedule[4].strftime("%a, %d %b %Y"),
                 'ScheduleID': schedule[5]
                 }
@@ -974,7 +983,7 @@ def drop_schedule():
             Batches
         WHERE BatchName = %s
         """
-        values = (batch,)
+        values = (caesar_cipher(batch, shift),)
 
         cursor2.execute(query,values)
         bid = cursor2.fetchone()
@@ -988,7 +997,7 @@ def drop_schedule():
             Mentors
         WHERE MentorName = %s
         """
-        values1 = (mentor,)
+        values1 = (caesar_cipher(mentor, shift),)
 
         cursor2.execute(query1,values1)
         mid = cursor2.fetchone()
@@ -1060,8 +1069,8 @@ def get_mentorss():
         # Prepare the data to be sent as JSON
         schedule_details1 = [
             {
-                'MentorName': schedule[1],
-                'BatchName': schedule[2],
+                'MentorName': caesar_decipher(schedule[1], shift),
+                'BatchName': caesar_decipher(schedule[2], shift),
                 'Date': format_date(schedule[4].strftime("%a, %d %b %Y"))
             }
             for schedule in data
@@ -1103,10 +1112,10 @@ def fetch_dropdown_values():
         batches = cursor1.fetchall()
 
         return {
-            'courses': [course[0] for course in courses],
-            'mentors': [mentor[0] for mentor in mentors],
-            'programs':[program[0] for program in programs],
-            'batches': [batch[0] for batch in batches],
+            'courses': [caesar_decipher(course[0], shift) for course in courses],
+            'mentors': [caesar_decipher(mentor[0], shift) for mentor in mentors],
+            'programs':[caesar_decipher(program[0], shift) for program in programs],
+            'batches': [caesar_decipher(batch[0], shift) for batch in batches],
         }
     except Exception as e:
         print(f"Error in fetch_dropdown_values: {e}")
