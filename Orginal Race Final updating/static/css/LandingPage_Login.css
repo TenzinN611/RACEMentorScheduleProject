@@ -144,15 +144,20 @@ button:hover,
     right: 10px;
     padding: 10px;
     overflow: hidden; /* Ensure text doesn't overflow */
+    width: 1200px; /* Adjust the width as needed */
 }
 
 .mentor-schedule-title h2 {
     margin: 0;
-    font-size: 18px;
-    font-weight: lighter;
-    color: whitesmoke;
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
     white-space: nowrap;
     animation: running-text 15s linear infinite; /* Adjust duration for smoother effect */
+}
+
+.mentor-schedule-title h2:nth-of-type(2) {
+    animation-delay: 0s; /* Delay the animation of the second copy */
 }
 
 @keyframes running-text {
@@ -163,6 +168,10 @@ button:hover,
         transform: translateX(-100%);
     }
 }
+
+
+
+
 
 .flashes {
     list-style: none;

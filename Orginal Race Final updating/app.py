@@ -120,7 +120,7 @@ def hash_string(input_string):
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    username = ""  # Define username before the conditional block
+    username9 = ""  # Initialize username9 with an empty string
     
     if request.method == 'POST':
         username9 = request.form['username']
@@ -151,6 +151,7 @@ def login():
             flash('The entered username does not exist. Please try again or register for an account.', 'error')
 
     return render_template('login.html', username=username9)
+
 
 
 @app.route('/LandingPage')
