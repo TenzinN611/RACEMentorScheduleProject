@@ -1310,10 +1310,10 @@ function showPopup(td, ld) {
 document.addEventListener('DOMContentLoaded', function () {
   flatpickr("#date", {
     dateFormat: "Y-m-d",
-    enableTime: false,
-    time_24hr: true,
+    minDate: "today" // Set the minimum date to today
   });
 });
+
 
 function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, ScheduleProgram, ScheduleDate) {
   const courseNameElement = document.getElementById('CourseName12');
@@ -1578,6 +1578,7 @@ window.addEventListener('load', function() {
   document.getElementById("welcomeText").innerHTML = "";
   typeWriter(welcomeText, 0, fadeInUsername);
 });
+
 
 // Function to open change password popup
 function openChangePasswordPopup() {
