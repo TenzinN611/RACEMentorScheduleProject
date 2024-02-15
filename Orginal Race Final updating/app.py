@@ -24,12 +24,6 @@ DB_PASSWORD = 'oYGLpCWT1DK8'
 
 
 # Replace 'your_username', 'your_password', 'your_database', and 'your_host' with your PostgreSQL credentials
-db_params = {
-    'dbname': 'raceproject',
-    'user': 'postgres',
-    'password': 'root',
-    'host': 'localhost',
-}
 
 conn = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
@@ -37,13 +31,6 @@ conn = psycopg2.connect(host=DB_HOST,
         user=DB_USER ,
         password=DB_PASSWORD)
 
-db_params1 = {
-
-    'dbname': 'raceproject',
-    'user': 'postgres',
-    'password': 'root',
-    'host': 'localhost',
-}
 
 conn1 = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
@@ -824,13 +811,6 @@ def show_schedule():
     weeks = get_weeks_in_month(current_year, current_month)
     print(weeks[0][0])
 
-    db_params2 = {
-    'dbname': 'raceproject',
-    'user': 'postgres',
-    'password': 'root',
-    'host': 'localhost',
-    }
-
     conn2 = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
         database=DB_NAME,
@@ -963,12 +943,6 @@ def drop_schedule():
 
         # Check if the selected date is before today
     try:
-        db_params2 = {
-        'dbname': 'raceproject',
-        'user': 'postgres',
-        'password': 'root',
-        'host': 'localhost',
-        }
 
         conn2 = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
