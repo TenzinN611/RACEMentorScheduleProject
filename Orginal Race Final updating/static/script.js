@@ -73,7 +73,7 @@ function AddCourseDetails() {
   }
 
   // Validate description
-  if (!isValidSentenceCase(description)) {
+  if (!isValidSentenceCase1(description)) {
     alert('Description should be in sentence case.');
     resetField('description');
     return;
@@ -132,7 +132,7 @@ function EditCourseDetails() {
   }
 
   // Validate description
-  if (!isValidSentenceCase(description)) {
+  if (!isValidSentenceCase1(description)) {
     alert('Description should be in sentence case.');
     resetField('description');
     return;
@@ -477,6 +477,12 @@ function isValidNumber(number) {
 function isValidSentenceCase(text) {
   // Validate that the text is in sentence case with at least one space between words
   const sentenceCaseRegex = /^[A-Z][a-z]*(\s[A-Z][a-z]*)+$/;
+  return sentenceCaseRegex.test(text);
+}
+
+function isValidSentenceCase1(text) {
+  // Validate that the text is in sentence case with at least one space between words
+  const sentenceCaseRegex = /([A-Za-z]+( [A-Za-z]+)+)/i;
   return sentenceCaseRegex.test(text);
 }
 
