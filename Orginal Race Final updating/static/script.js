@@ -7,6 +7,7 @@ function showContent() {
 // Simulating the preloader completion with a timeout (you can replace this with your actual preloader logic)
 setTimeout(showContent, 2000); // Adjust the timeout as needed /* Hide content initially */
 
+ 
 const menuBtn = document.getElementById('menu-btn');
 const menu = document.getElementById('menu');
 const courseBox = document.getElementById('courseBox');
@@ -920,6 +921,7 @@ function closeAllBoxes() {
 }
 
 
+
 // Calendar functions
 function openCalendar() {
   closeScheduleBox(); // Close schedule box when opening calendar
@@ -1021,20 +1023,26 @@ function depopulateTable() {
   }
 }
 
-function makeDropTarget(cell) {
+async function makeDropTarget(cell) {
   cell.addEventListener('dragover', function (event) {
     event.preventDefault();
   });
+
+  const sat1 = await getSaturdaysInMonth();
 
   cell.addEventListener('drop', function (event) {
     event.preventDefault();
 
     const draggedData = event.dataTransfer.getData('text/plain');
     const draggedRowIndex = parseInt(event.dataTransfer.getData('rowIndex'));
+    const draggedColumnIndex = parseInt(event.dataTransfer.getData('columnIndex'));
+    console.log("draggedColumnIndex: ",draggedColumnIndex);
     const droppedRowIndex = cell.parentNode.rowIndex;
     const currentCellData = cell.textContent || cell.innerText;
     console.log('current cell data: ', currentCellData);
+    const topColumnValue = getTopColumnValue(cell);
 
+    console.log('topcolumnvalue: ', topColumnValue);
     console.log('scheduleData: ', scheduleData);
     console.log('draggedRowIndex: ', draggedRowIndex);
     console.log('droppedRowIndex: ', droppedRowIndex);
@@ -1071,6 +1079,7 @@ function makeDropTarget(cell) {
       console.log('date: ', datePart);
 
       const currentDate1 = new Date().toLocaleDateString();
+      
 
       
 
@@ -1085,7 +1094,7 @@ function makeDropTarget(cell) {
       const cdate = formattedDate.toISOString().split('T')[0];
       console.log('cdate:',cdate);
 
-      if (datePart < cdate ){
+      if (sat1[topColumnValue-1] < cdate){
         alert('Cannot Schedule as the Date is before today')
         populateTable();
       }
@@ -1104,6 +1113,24 @@ function makeDropTarget(cell) {
     alert(" Sorry, this week is already scheduled with another mentor. Please choose a different week  ")
   }
 });
+}
+
+function getTopColumnValue(cell) {
+  // Find the table element containing the cell
+  const table = cell.closest('table');
+  if (!table) return null;
+
+  // Find the first row (header row) of the table
+  const headerRow = table.querySelector('tr');
+  if (!headerRow) return null;
+
+  // Find the cell in the same column as the dropped cell
+  const columnIndex = cell.cellIndex;
+  console.log(columnIndex)
+  
+
+  // Extract the value from the top column cell
+  return columnIndex
 }
 
 async function dropcell11(datePart, batch, droppedCellColumnValue, mentor) {
@@ -1134,6 +1161,8 @@ function makeCellDraggable(cell) {
   cell.addEventListener('dragstart', function (event) {
     event.dataTransfer.setData('text/plain', cell.innerHTML);
     event.dataTransfer.setData('rowIndex', cell.parentNode.rowIndex);
+    const topColumnValue = getTopColumnValue(cell);
+    event.dataTransfer.setData('columnIndex', topColumnValue);
     cell.classList.add('dragging');
   });
 
@@ -1162,6 +1191,7 @@ function closeCalendar() {
   document.getElementById('calendarContainer').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
 }
+
 //search calender
 function searchCalendar() {
   var input, filter, table, tr, td, i, txtValue;
@@ -1604,6 +1634,8 @@ function fadeInUsername() {
   usernameElement.style.display = "inline";
   usernameElement.style.animation = "fadeIn 1s ease-in-out forwards";
 }
+
+
 
 
 
