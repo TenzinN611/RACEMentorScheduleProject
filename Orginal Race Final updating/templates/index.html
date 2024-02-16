@@ -53,9 +53,38 @@
 
 
     <img src="{{ url_for('static', filename='images/race_logo1.png') }}" alt="Race Portal Logo" class="logo_bottom">
-    <!-- Logo in the center of the page -->
-    <div id="logo-container">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" id="logo">
+    <!--Dashboard Container-->
+    <div class="dashboard-container">
+      <div class="dashboard-item">
+        <h2 id="module_count">Loading...</h2>
+        <p>Modules</p>
+        <a href="#" class="more-info" onclick="showCourseDetails()">More info →</a>
+      </div>      
+      <div class="dashboard-item">
+        <h2 id="mentor_count">Loading...</h2>
+        <p>Mentors</p>
+        <a href="#" class="more-info" onclick="showMentorDetails()">More info →</a>
+      </div>
+      <div class="dashboard-item">
+        <h2 id="batch_count">Loading...</h2>
+        <p>Batches</p>
+        <a href="#" class="more-info" onclick="showBatchDetails()">More info →</a>
+      </div>
+      <div class="dashboard-item">
+        <h2 id="program_count">Loading...</h2>
+        <p>Programs</p>
+        <a href="#" class="more-info" onclick="showProgramDetails()">More info →</a>
+      </div>
+      <div class="dashboard-item">
+        <h2 id="scheduled_count">Loading...</h2>
+        <p>Scheduled</p>
+        <a href="#" class="more-info">More info →</a>
+      </div>
+      <div class="dashboard-item">
+        <h2 id="conflict_count">Loading...</h2>
+        <p>Conflict</p>
+        <a href="#" class="more-info">More info →</a>
+      </div>
     </div>
     <!--Course-->
     <div id="courseBox" class="course-box">
@@ -291,6 +320,21 @@
       </tr>
     </table>
   </div>
+  <div id="noResultsMessage" style="display: none;">No results found</div>
+  </div>
+
+  <table id="scheduleTable1">
+    <tr>
+      <th colspan="5" class="calendar-heading">Scheduled Calendar</th>
+    </tr>
+    <tr>
+      <th>Batch</th>
+      <th>Week 1</th>
+      <th>Week 2</th>
+      <th>Week 3</th>
+      <th>Week 4</th>
+    </tr>
+  </table>
 
 
   <div id="overlay" onclick="closeCalendar()"></div>

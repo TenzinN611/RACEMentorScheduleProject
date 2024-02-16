@@ -44,6 +44,8 @@ function openCourseBox() {
   if (!courseBoxOpen) {
     courseBox.style.display = 'block';
     courseBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
 // Adding
@@ -244,6 +246,10 @@ function resetForm() {
 function closeCourseBox() {
   courseBox.style.display = 'none';
   courseBoxOpen = false;
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //Mentor:
@@ -252,6 +258,8 @@ function openMentorBox() {
   if (!mentorBoxOpen) {
     mentorBox.style.display = 'block';
     mentorBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
 
@@ -523,6 +531,10 @@ function resetMentorForm() {
 function closeMentorBox() {
   mentorBox.style.display = 'none';
   mentorBoxOpen = false;
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //Batch
@@ -531,6 +543,8 @@ function openBatchBox() {
   if (!BatchBoxOpen) {
     BatchBox.style.display = 'block';
     BatchBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
 
@@ -714,6 +728,10 @@ function resetBatchForm() {
 function closeBatchBox() {
   BatchBox.style.display = 'none';
   BatchBoxOpen = false;
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //Program
@@ -722,6 +740,8 @@ function openProgramBox() {
   if (!ProgramBoxOpen) {
     ProgramBox.style.display = 'block';
     ProgramBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
 
@@ -900,6 +920,10 @@ function resetProgramForm() {
 function closeProgramBox() {
   ProgramBox.style.display = 'none';
   ProgramBoxOpen = false;
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //schedule
@@ -908,12 +932,18 @@ function openScheduleBox() {
   if (!ScheduleBoxOpen) {
     document.getElementById('scheduleBox').style.display = 'block';
     ScheduleBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
 
 function closeScheduleBox() {
   document.getElementById('scheduleBox').style.display = 'none';
   ScheduleBoxOpen = false; // Reset the flag when closing the schedule box
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //close all boxes
@@ -924,6 +954,7 @@ function closeAllBoxes() {
       closeFunction();
     }
   });
+  fetchAndUpdateCounts();
 }
 
 
@@ -934,6 +965,8 @@ function openCalendar() {
   populateTable();
   document.getElementById('calendarContainer').style.display = 'block';
   document.getElementById('overlay').style.display = 'block';
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
 }
 
 const scheduleData = [];
@@ -1013,6 +1046,9 @@ async function populateTable() {
   }
 }
 
+
+
+
 function depopulateTable() {
   try {
     const table = document.getElementById('scheduleTable');
@@ -1028,6 +1064,89 @@ function depopulateTable() {
     console.error('Error depopulating table:', error);
   }
 }
+
+
+const scheduleData1 = [];
+async function  populateTable1() {
+  var rcount = 0;
+  try {
+    depopulateTable1();
+    // Fetch mentor data
+    const mentorsResponse1 = await fetch('/get_mentorss');
+    const mentorsData1 = await mentorsResponse1.json();
+    console.log('Mentors Data received:', mentorsData1);
+
+    // Fetch batch names from the server
+    const batchNamesResponse1 =await fetch('/get_batch_names');
+    const batchNames1 = await batchNamesResponse1.json();
+    console.log('Batch Names received:', batchNames1);
+
+    // Fetch Saturdays for the current month
+    const saturdayDates1 = await getSaturdaysInMonth();
+    console.log('Saturdays received:', saturdayDates1);
+
+    // Clear existing scheduleData
+    scheduleData1.length = 0;
+
+    // Populate scheduleData
+    batchNames1.forEach(batch => {
+      const scheduleItem1 = { batch };
+      saturdayDates1.forEach((date, index) => {
+        const mentorForWeek1 = mentorsData1.find(mentor => mentor.BatchName === batch && mentor.Date === date);
+        const combinedData1= mentorForWeek1 ? `${mentorForWeek1.MentorName} <br> ${date}` : 'Not Scheduled';
+        scheduleItem1[`cell${index + 1}`] = combinedData1;
+      });
+      scheduleData1.push(scheduleItem1);
+    });
+
+    // Now populate the table with the updated dynamic scheduleData
+    const table1 = document.getElementById('scheduleTable1');
+    const seenMentorNames1 = {};
+
+    scheduleData1.forEach((item, rowIndex) => {
+      const row = table1.insertRow();
+      Object.values(item).forEach((value1, columnIndex) => {
+        const cell = row.insertCell();
+        cell.innerHTML = value1;
+
+        if (columnIndex > 0) {
+          const mentorName = value1.split(' <br> ')[0];
+          if (seenMentorNames1[columnIndex]) {
+            if (seenMentorNames1[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled') {
+              cell.style.backgroundColor = 'red';
+              rcount = rcount + 1
+            }
+          }
+        }
+
+        seenMentorNames1[columnIndex] = seenMentorNames1[columnIndex] || {};
+        const mentorName = value1.split(' <br> ')[0];
+        seenMentorNames1[columnIndex][mentorName] = true;
+      });
+    });
+    console.log("populate rcount:", rcount);
+    return rcount;
+  } catch (error) {
+    console.error('Error populating table:', error);
+  }
+}
+
+function depopulateTable1() {
+  try {
+    const table1 = document.getElementById('scheduleTable1');
+
+    // Remove all rows from the table, starting from the second row
+    for (let i = table1.rows.length - 1; i > 1; i--) {
+      table1.deleteRow(i);
+    }
+
+    // Clear existing scheduleData
+    scheduleData1.length = 0;
+  } catch (error) {
+    console.error('Error depopulating table:', error);
+  }
+}
+
 
 async function makeDropTarget(cell) {
   cell.addEventListener('dragover', function (event) {
@@ -1196,6 +1315,10 @@ async function getSaturdaysInMonth() {
 function closeCalendar() {
   document.getElementById('calendarContainer').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  fetchAndUpdateCounts();
 }
 
 //search calender
@@ -1206,18 +1329,27 @@ function searchCalendar() {
   table = document.getElementById("scheduleTable");
   tr = table.getElementsByTagName("tr");
 
-  for (i = 1; i < tr.length; i++) {
-      // Start from index 1 to skip the header row
-      td = tr[i].getElementsByTagName("td")[0]; // Assuming Batch is in the first column
+  var batchFound = false;
 
-      if (td) {
-          txtValue = td.textContent || td.innerText;
-          if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-          } else {
-              tr[i].style.display = "none";
-          }
+  for (i = 1; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0]; // Assuming Batch is in the first column
+
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+        batchFound = true;
+      } else {
+        tr[i].style.display = "none";
       }
+    }
+  }
+
+  var noResultsMessage = document.getElementById("noResultsMessage");
+  if (!batchFound) {
+    noResultsMessage.style.display = "block";
+  } else {
+    noResultsMessage.style.display = "none";
   }
 }
 
@@ -1228,9 +1360,24 @@ function createAndPopulateDropdown(parentElement, id, dvalue, options) {
   dropdown.innerHTML += options.map(value => `<option value="${value}">${value}</option>`).join('');
 }
 
+function getCurrentDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  let month = today.getMonth() + 1;
+  let day = today.getDate();
+
+  // Ensure month and day have leading zeros if needed
+  month = month < 10 ? '0' + month : month;
+  day = day < 10 ? '0' + day : day;
+
+  return `${year}-${month}-${day}`;
+}
+
 //show popup
 function showPopup(td, ld) {
   closeCalendar();
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
   
   const popupContainer = document.getElementById('PopupContainer');
   const scheduleItemElement = document.getElementById('scheduleItem');
@@ -1283,7 +1430,7 @@ function showPopup(td, ld) {
           <p><strong><i class="fas fa-book"></i> Program Name:</strong></p>
           <select id="program12" name="program12" required></select>
           <p><strong><i class="far fa-calendar-alt"></i> Date:</strong><span>${schedule.SDate}</span></p>
-          <input type="date" id="scheduleDate12" name="scheduleDate12" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
+          <input type="date" id="scheduleDate12" name="scheduleDate12" min="${getCurrentDate()}" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
           <div style="justify-content: space-between; align-items: center;">
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="saveChanges('${schedule.ScheduleID}', '${schedule.Name}', '${schedule.MentorName}', '${schedule.BatchName}', '${schedule.ProgramName}', '${schedule.SDate}' )"><i class="fas fa-save" style="margin-right: 5px;"></i> Save Changes</button>
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="deleteSchedule('${schedule.ScheduleID}')"><i class="fas fa-trash-alt" style="margin-right: 5px;"></i> Delete</button>
@@ -1307,12 +1454,13 @@ function showPopup(td, ld) {
 }
 
 //popup calender for date
-document.addEventListener('DOMContentLoaded', function () {
+/*document.addEventListener('DOMContentLoaded', function () {
   flatpickr("#date", {
     dateFormat: "Y-m-d",
     minDate: "today" // Set the minimum date to today
   });
-});
+});*/
+
 
 
 function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, ScheduleProgram, ScheduleDate) {
@@ -1453,6 +1601,7 @@ async function fetchDropdownValues() {
     }
 
     const data = await response.json();
+    console.log("daata: ",data);
     return data;
   } catch (error) {
     console.error('Error fetching dropdown values:', error);
@@ -1480,7 +1629,7 @@ async function populateDropdownValues() {
 }
 
 // Call the function to populate dropdowns when the document is ready
-$(document).ready(populateDropdownValues);  
+//$(document).ready(populateDropdownValues);  
 
 
 //Schedule successful!
@@ -1494,6 +1643,52 @@ function redirectToIndex1() {
   window.location.href = '/index';
 }
 
+function fetchAndUpdateCounts() {
+  var rcount1 = 0;
+  // Call the populateTable1 function asynchronously
+  populateTable1().then(rcount => {
+    console.log("Number of red cells:", rcount);
+    rcount1 = rcount;
+
+    // Fetch counts after populateTable1 is finished
+    fetch("/get_counts")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch counts');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Update counts on the dashboard
+        document.getElementById("module_count").textContent = data.module_count;
+        document.getElementById("mentor_count").textContent = data.mentor_count;
+        document.getElementById("batch_count").textContent = data.batch_count;
+        document.getElementById("program_count").textContent = data.program_count;
+        document.getElementById("scheduled_count").textContent = data.scheduled_count;
+        console.log("rcount1: ",rcount1);
+        document.getElementById("conflict_count").textContent = rcount1;
+
+        // Show the dashboard container after updating counts
+        document.getElementById("dashboard-container").style.display = "block";
+      })
+      .catch(error => {
+        console.error(error.message);
+      });
+  }).catch(error => {
+    console.error('Error populating table:', error);
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", async function () {
+  flatpickr("#date", {
+    dateFormat: "Y-m-d",
+    minDate: "today" // Set the minimum date to today
+  });
+  await populateDropdownValues(); // Wait for populateDropdownValues to complete
+  fetchAndUpdateCounts();
+});
+
 // Function to open profile popup
 function openProfilePopup() {
   closeAllBoxes();
@@ -1503,6 +1698,8 @@ function openProfilePopup() {
 
   overlay.style.display = 'block';
   popup.style.display = 'block';
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
 }
 
 // Function to close profile popup
@@ -1512,6 +1709,10 @@ function closeProfilePopup() {
 
   overlay.style.display = 'none';
   popup.style.display = 'none';
+
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
 // Check if the page is loaded from a refresh
@@ -1590,8 +1791,11 @@ function openChangePasswordPopup() {
   overlay.style.display = 'block';
   popup.style.display = 'block';
 
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
+
   // Event listener for change password form submission
-  document.getElementById('edit-profile-forms').addEventListener('submit', function(e) {
+  document.getElementById('edit-profile-forms').addEventListener('submit', function (e) {
     var currentPassword = document.getElementById('Password').value;
     var newPassword = document.getElementById('NewPassword').value;
 
@@ -1610,7 +1814,11 @@ function closeChangePasswordPopup() {
 
   overlay.style.display = 'none';
   popup.style.display = 'none';
-}   
+
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
 
 document.getElementById('login-form').addEventListener('submit', function (e) {
   e.preventDefault();

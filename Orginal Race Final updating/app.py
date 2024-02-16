@@ -775,12 +775,56 @@ def delete_schedule():
             conn1.close()
 
         return jsonify({'message': 'Schedule deleted successfully'}), 200
+    
+@app.route('/get_counts', methods=['GET'])
+def get_counts():
+    try:
+        conn2 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cursor2 = conn2.cursor()
+        # Query database for counts
+        cursor2.execute("SELECT COUNT(ModuleID) FROM Modules")
+        module_count12 = cursor2.fetchone()[0]
+        print(module_count12)
+
+        cursor2.execute("SELECT COUNT(*) FROM Mentors")
+        mentor_count = cursor2.fetchone()[0]
+
+        cursor2.execute("SELECT COUNT(*) FROM Batches")
+        batch_count = cursor2.fetchone()[0]
+
+        cursor2.execute("SELECT COUNT(*) FROM Programs")
+        program_count = cursor2.fetchone()[0]
+
+        # Assume you have a query to get the count of scheduled items
+        cursor2.execute("SELECT COUNT(*) FROM ScheduleInformation")
+        scheduled_count = cursor2.fetchone()[0]
+
+        # Return counts as JSON response
+        return jsonify({
+            'module_count': module_count12,
+            'mentor_count': mentor_count,
+            'batch_count': batch_count,
+            'program_count': program_count,
+            'scheduled_count': scheduled_count
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 
 
 @app.route('/get_batch_names')
 def get_batch_names():
     try:
+        conn4 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cursor4 = conn4.cursor()
         # Fetch data from the database
         query = """
             SELECT
@@ -789,8 +833,8 @@ def get_batch_names():
                 batches
         """
 
-        cursor1.execute(query)
-        data = cursor1.fetchall()
+        cursor4.execute(query)
+        data = cursor4.fetchall()
         batch_names = [caesar_decipher(batch[0], shift) for batch in data]
         print(batch_names)
         return jsonify(batch_names)  # Return a JSON response directly as an array
@@ -917,7 +961,7 @@ def show_schedule():
 @app.route('/fetch_dropdown_values', methods=['GET'])
 def get_dropdown_values():
     try:
-        data = fetch_dropdown_values()
+        data = fetch_dropdown_values1()
         return jsonify(data)
     except Exception as e:
         print(f"Error in get_dropdown_values: {e}")
@@ -1019,6 +1063,12 @@ def drop_schedule():
 @app.route('/get_mentorss', methods=['GET'])
 def get_mentorss():
     try:
+        conn3 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cursor3 = conn3.cursor()
         # Fetch data from the database
         query = """
         SELECT
@@ -1038,8 +1088,8 @@ def get_mentorss():
         JOIN
             Programs ON ScheduleInformation.ProgramID = Programs.ProgramID"""
 
-        cursor1.execute(query)
-        data = cursor1.fetchall()
+        cursor3.execute(query)
+        data = cursor3.fetchall()
 
         # Prepare the data to be sent as JSON
         schedule_details1 = [
@@ -1067,7 +1117,7 @@ def format_date(input_string):
 
     return formatted_date
     
-def fetch_dropdown_values():
+def fetch_dropdown_values1():
     try:
 
         # Fetch distinct Course names from the database
