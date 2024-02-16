@@ -1820,7 +1820,7 @@ function closeChangePasswordPopup() {
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
-document.getElementById('login-form').addEventListener('submit', function (e) {
+/*document.getElementById('login-form').addEventListener('submit', function (e) {
   e.preventDefault();
   console.log('Sign In logic here');
 });
@@ -1828,7 +1828,7 @@ document.getElementById('login-form').addEventListener('submit', function (e) {
 document.getElementById('signup-form').addEventListener('submit', function (e) {
   e.preventDefault();
   console.log('Sign Up logic here');
-});
+});*/
 
 function typeWriter(text, i, callback) {
   const welcomeTextElement = document.getElementById("welcomeText");
