@@ -671,7 +671,24 @@ def get_saturdays_in_month():
     month = now.month
     year = now.year
 
-    first_day_of_month = datetime(year, month, 1)
+    saturdays = []
+    for month in range(1, 13):
+        first_day_of_month = datetime(year, month, 1)
+        next_month = first_day_of_month.replace(day=28) + timedelta(days=4)  # Move to the 1st day of next month
+        last_day_of_month = next_month - timedelta(days=next_month.day)
+
+        current_date = first_day_of_month
+        
+        # Iterate over all days in the month
+        while current_date <= last_day_of_month:
+            if current_date.weekday() == 5:  # Saturday has weekday() value 5
+                saturdays.append(current_date)
+            current_date += timedelta(days=1)
+
+    saturday_dates = [str(saturday.date()) for saturday in saturdays]
+
+    return jsonify({'saturdays': saturday_dates})
+    '''first_day_of_month = datetime(year, month, 1)
     next_month = first_day_of_month.replace(day=28) + timedelta(days=4)  # Move to the 1st day of next month
     last_day_of_month = next_month - timedelta(days=next_month.day)
 
@@ -685,7 +702,7 @@ def get_saturdays_in_month():
 
     saturday_dates = [str(saturday.date()) for saturday in saturdays]
 
-    return jsonify({'saturdays': saturday_dates})
+    return jsonify({'saturdays': saturday_dates})'''
 
 
 @app.route('/update_schedule', methods=['POST'])
@@ -840,6 +857,8 @@ def get_batch_names():
         return jsonify(batch_names)  # Return a JSON response directly as an array
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn4.close()
 
 @app.route('/show_schedule', methods=['GET'])
 def show_schedule():
@@ -1106,6 +1125,7 @@ def get_mentorss():
         return jsonify(schedule_details1)
     except Exception as e:
         print(f"Error in get_mentorss: {e}")
+        conn.close()
         return jsonify(error=str(e))
 
 def format_date(input_string):
