@@ -96,12 +96,17 @@ body.loading #preloader {
     opacity: 0;
     animation: fadeIn 0.5s ease-in-out forwards;
     padding: 20px;
-    max-width: 800px;   /* Adjust the maximum width as needed */
-    max-height: 500px;     /* Adjust the maximum width and height as needed */
+    max-width: 800px;
+    /* Adjust the maximum width as needed */
+    max-height: 550px;
+    /* Adjust the maximum width and height as needed */
     transition: opacity 0.5s ease-in-out;
-    overflow-y: auto; /* Enable vertical scrolling */
-    scrollbar-width: thin; /* Set the width of the scrollbar */
-    scrollbar-color: grey #f0f0f0; /* Set the color of the scrollbar thumb and track */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    scrollbar-width: thin;
+    /* Set the width of the scrollbar */
+    scrollbar-color: grey #f0f0f0;
+    /* Set the color of the scrollbar thumb and track */
 }
 
 table {
@@ -111,7 +116,8 @@ table {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
+th,
+td {
     border: 1px solid #dddddd;
     text-align: center;
     padding: 15px;
@@ -142,9 +148,12 @@ h2 {
     max-height: 500px;
     /* Adjust the maximum width and height as needed */
     transition: opacity 0.5s ease-in-out;
-    overflow-y: auto; /* Enable vertical scrolling */
-    scrollbar-width: thin; /* Set the width of the scrollbar */
-    scrollbar-color: grey #f0f0f0; /* Set the color of the scrollbar thumb and track */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    scrollbar-width: thin;
+    /* Set the width of the scrollbar */
+    scrollbar-color: grey #f0f0f0;
+    /* Set the color of the scrollbar thumb and track */
 }
 
 table {
@@ -182,6 +191,7 @@ h2 {
 
 /* Responsive styles */
 @media screen and (max-width: 768px) {
+
     #courseDetailsContainer,
     #BatchDetailsContainer,
     #ProgramDetailsContainer,
@@ -190,6 +200,7 @@ h2 {
     }
 
     table {
-        font-size: 14px; /* Adjust font size for tables on smaller screens */
+        font-size: 14px;
+        /* Adjust font size for tables on smaller screens */
     }
 }
