@@ -7,7 +7,7 @@ function showContent() {
 // Simulating the preloader completion with a timeout (you can replace this with your actual preloader logic)
 setTimeout(showContent, 2000); // Adjust the timeout as needed /* Hide content initially */
 
- 
+
 const menuBtn = document.getElementById('menu-btn');
 const menu = document.getElementById('menu');
 const courseBox = document.getElementById('courseBox');
@@ -90,7 +90,7 @@ function AddCourseDetails() {
   }
 
   // Validate description
-  if (!isValidSentenceCase1(description)) {
+  if (!isValidSentenceCase(description)) {
     alert('Description should be in sentence case.');
     resetField('description');
     return;
@@ -137,7 +137,7 @@ function EditCourseDetails() {
   // Validate CourseID
   if (!isValidNumber(CourseID)) {
     alert('Course ID should be a number. Special characters are not allowed.');
-    resetField('CourseID'); 
+    resetField('CourseID');
     return;
   }
 
@@ -149,7 +149,7 @@ function EditCourseDetails() {
   }
 
   // Validate description
-  if (!isValidSentenceCase1(description)) {
+  if (!isValidSentenceCase(description)) {
     alert('Description should be in sentence case.');
     resetField('description');
     return;
@@ -186,8 +186,8 @@ function EditCourseDetails() {
 function DeleteCourseDetails() {
   const CourseID = document.getElementById('CourseID').value;
 
-   // Validate fields
-   if (!CourseID) {
+  // Validate fields
+  if (!CourseID) {
     alert('Please enter the Course ID before deleting the course.');
     return;
   }
@@ -242,8 +242,8 @@ function isValidNumber(number) {
 }
 
 function isValidSentenceCase(text) {
-  // Validate that the text is in sentence case with one word immediately followed by another word
-  const sentenceCaseRegex = /^[A-Z][a-z]*[A-Z][a-z]*$/;
+  // Validate that the text is in sentence case with at least one space between words
+  const sentenceCaseRegex = /([A-Za-z]+( [A-Za-z]+)+)/i;
   return sentenceCaseRegex.test(text);
 }
 
@@ -499,12 +499,6 @@ function isValidNumber(number) {
 
 function isValidSentenceCase(text) {
   // Validate that the text is in sentence case with at least one space between words
-  const sentenceCaseRegex = /^[A-Z][a-z]*(\s[A-Z][a-z]*)+$/;
-  return sentenceCaseRegex.test(text);
-}
-
-function isValidSentenceCase1(text) {
-  // Validate that the text is in sentence case with at least one space between words
   const sentenceCaseRegex = /([A-Za-z]+( [A-Za-z]+)+)/i;
   return sentenceCaseRegex.test(text);
 }
@@ -679,7 +673,7 @@ function DeleteBatchDetails() {
     resetBatchForm();
     return;
   }
-  
+
   // Ask for confirmation
   const userConfirmed = confirm('Are you sure you want to delete this batch?');
 
@@ -877,7 +871,7 @@ function DeleteProgramDetails() {
     resetProgramForm();
     return;
   }
-  
+
 
   console.log('Deleting program with ID:', ProgramID);
 
@@ -1032,7 +1026,7 @@ async function populateTable() {
         if (columnIndex > 0) {
           const mentorName = value.split(' <br> ')[0];
           if (seenMentorNames[columnIndex]) {
-            if (seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled') {
+            if (seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
               cell.style.backgroundColor = 'red';
             }
           }
@@ -1076,7 +1070,7 @@ function depopulateTable() {
 }
 
 const scheduleData1 = [];
-async function  populateTable1() {
+async function populateTable1() {
   var rcount = 0;
   try {
     depopulateTable1();
@@ -1086,7 +1080,7 @@ async function  populateTable1() {
     console.log('Mentors Data received:', mentorsData1);
 
     // Fetch batch names from the server
-    const batchNamesResponse1 =await fetch('/get_batch_names');
+    const batchNamesResponse1 = await fetch('/get_batch_names');
     const batchNames1 = await batchNamesResponse1.json();
     console.log('Batch Names received:', batchNames1);
 
@@ -1102,7 +1096,7 @@ async function  populateTable1() {
       const scheduleItem1 = { batch };
       saturdayDates1.forEach((date, index) => {
         const mentorForWeek1 = mentorsData1.find(mentor => mentor.BatchName === batch && mentor.Date === date);
-        const combinedData1= mentorForWeek1 ? `${mentorForWeek1.MentorName} <br> ${date}` : 'Not Scheduled';
+        const combinedData1 = mentorForWeek1 ? `${mentorForWeek1.MentorName} <br> ${date}` : 'Not Scheduled';
         scheduleItem1[`cell${index + 1}`] = combinedData1;
       });
       scheduleData1.push(scheduleItem1);
@@ -1121,7 +1115,7 @@ async function  populateTable1() {
         if (columnIndex > 0) {
           const mentorName = value1.split(' <br> ')[0];
           if (seenMentorNames1[columnIndex]) {
-            if (seenMentorNames1[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled') {
+            if (seenMentorNames1[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
               cell.style.backgroundColor = 'red';
               rcount = rcount + 1
             }
@@ -1169,7 +1163,7 @@ async function makeDropTarget(cell) {
     const draggedData = event.dataTransfer.getData('text/plain');
     const draggedRowIndex = parseInt(event.dataTransfer.getData('rowIndex'));
     const draggedColumnIndex = parseInt(event.dataTransfer.getData('columnIndex'));
-    console.log("draggedColumnIndex: ",draggedColumnIndex);
+    console.log("draggedColumnIndex: ", draggedColumnIndex);
     const droppedRowIndex = cell.parentNode.rowIndex;
     const currentCellData = cell.textContent || cell.innerText;
     console.log('current cell data: ', currentCellData);
@@ -1182,60 +1176,60 @@ async function makeDropTarget(cell) {
     console.log('Array.isArray(scheduleData): ', Array.isArray(scheduleData));
     console.log('scheduleData[droppedRowIndex]: ', scheduleData[droppedRowIndex - 2]);
 
-    if (currentCellData == 'Not Scheduled'){
-    if (scheduleData && Array.isArray(scheduleData) && scheduleData[droppedRowIndex - 2] && (draggedRowIndex === droppedRowIndex)) {
-      // Set the HTML content of the drop target cell
-      cell.innerHTML = draggedData;
+    if (currentCellData == 'Not Scheduled') {
+      if (scheduleData && Array.isArray(scheduleData) && scheduleData[droppedRowIndex - 2] && (draggedRowIndex === droppedRowIndex)) {
+        // Set the HTML content of the drop target cell
+        cell.innerHTML = draggedData;
 
-      // Extract information from the dragged cell
-      const topCellData = draggedData;
-      console.log('topcelldata: ', topCellData);
+        // Extract information from the dragged cell
+        const topCellData = draggedData;
+        console.log('topcelldata: ', topCellData);
 
-      // Extract the batch from the dropped row
-      const batch = scheduleData[droppedRowIndex - 2].batch;
-      console.log('batch: ', batch);
+        // Extract the batch from the dropped row
+        const batch = scheduleData[droppedRowIndex - 2].batch;
+        console.log('batch: ', batch);
 
-      // Extract the value of the dropped cell column using cellIndex
-      const droppedCellColumnValue = cell.cellIndex-1;
-      console.log('droppedCellColumnValue: ', droppedCellColumnValue);
+        // Extract the value of the dropped cell column using cellIndex
+        const droppedCellColumnValue = cell.cellIndex - 1;
+        console.log('droppedCellColumnValue: ', droppedCellColumnValue);
 
-      // Extract the date part from the dragged cell's content
-      const datePart = topCellData.split(' <br> ')[1];
-      console.log('date: ', datePart);
+        // Extract the date part from the dragged cell's content
+        const datePart = topCellData.split(' <br> ')[1];
+        console.log('date: ', datePart);
 
-      const currentDate1 = new Date().toLocaleDateString();
-      
+        const currentDate1 = new Date().toLocaleDateString();
 
-      const mentor = topCellData.split(' <br> ')[0];
-      console.log('mentor: ', mentor);
-      console.log('datePart:',datePart);
-      console.log('currentDate1:',currentDate1);
 
-      const parts = currentDate1.split('/'); // Split the string into parts based on '/'
-      const formattedDate = new Date(`${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
-      console.log('formattedDate:',formattedDate);
-      const cdate = formattedDate.toISOString().split('T')[0];
-      console.log('cdate:',cdate);
+        const mentor = topCellData.split(' <br> ')[0];
+        console.log('mentor: ', mentor);
+        console.log('datePart:', datePart);
+        console.log('currentDate1:', currentDate1);
 
-      if (sat1[topColumnValue-1] < cdate){
-        alert('Cannot Schedule as the Date is before today')
-        populateTable();
+        const parts = currentDate1.split('/'); // Split the string into parts based on '/'
+        const formattedDate = new Date(`${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
+        console.log('formattedDate:', formattedDate);
+        const cdate = formattedDate.toISOString().split('T')[0];
+        console.log('cdate:', cdate);
+
+        if (sat1[topColumnValue - 1] < cdate) {
+          alert('Cannot Schedule as the Date is before today')
+          populateTable();
+        }
+        else {
+          dropcell11(datePart, batch, droppedCellColumnValue, mentor);
+        }
+
+        // Call your function with the extracted information
+
+      } else {
+        // Prevent dropping in a different row and display an alert
+        alert('You can only drop in the same batch.');
       }
-      else {
-        dropcell11(datePart, batch, droppedCellColumnValue, mentor);
-      }
-
-      // Call your function with the extracted information
-      
-    } else {
-      // Prevent dropping in a different row and display an alert
-      alert('You can only drop in the same batch.');
     }
-  }
-  else {
-    alert(" Sorry, this week is already scheduled with another mentor. Please choose a different week  ")
-  }
-});
+    else {
+      alert(" Sorry, this week is already scheduled with another mentor. Please choose a different week  ")
+    }
+  });
 }
 
 function getTopColumnValue(cell) {
@@ -1250,7 +1244,7 @@ function getTopColumnValue(cell) {
   // Find the cell in the same column as the dropped cell
   const columnIndex = cell.cellIndex;
   console.log(columnIndex)
-  
+
 
   // Extract the value from the top column cell
   return columnIndex
@@ -1259,8 +1253,8 @@ function getTopColumnValue(cell) {
 async function dropcell11(datePart, batch, droppedCellColumnValue, mentor) {
 
   const sat = await getSaturdaysInMonth();
-  console.log('sat: ',sat);
-  console.log('sat: ',sat[droppedCellColumnValue]);
+  console.log('sat: ', sat);
+  console.log('sat: ', sat[droppedCellColumnValue]);
 
   const url = `/drop_schedule?datePart=${encodeURIComponent(datePart)}&batch=${encodeURIComponent(batch)}&newdate=${encodeURIComponent(sat[droppedCellColumnValue])}&mentor=${encodeURIComponent(mentor)}`;
 
@@ -1275,7 +1269,7 @@ async function dropcell11(datePart, batch, droppedCellColumnValue, mentor) {
       console.log('Schedule Updated');
       populateTable();
     });
-  }
+}
 
 
 function makeCellDraggable(cell) {
@@ -1494,21 +1488,21 @@ function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, 
         if (updatedData.error) {
           // Display an alert for the error message
           alert('Error: ' + updatedData.error);
-      } else {
-        console.log('Schedule updated:', updatedData);
+        } else {
+          console.log('Schedule updated:', updatedData);
 
-        // Update the HTML elements with the new values
-        courseNameElement.innerText = updatedData.courseName;
-        mentorNameElement.innerText = updatedData.mentorName;
-        batchNameElement.innerText = updatedData.batchName;
-        programNameElement.innerText = updatedData.programName;
-        scheduleDateElement.innerText = updatedData.scheduleDate;
+          // Update the HTML elements with the new values
+          courseNameElement.innerText = updatedData.courseName;
+          mentorNameElement.innerText = updatedData.mentorName;
+          batchNameElement.innerText = updatedData.batchName;
+          programNameElement.innerText = updatedData.programName;
+          scheduleDateElement.innerText = updatedData.scheduleDate;
 
-        // Display an alert message when the schedule is edited successfully
+          // Display an alert message when the schedule is edited successfully
 
-        alert('Schedule edited successfully');
-        closePopup();
-      }
+          alert('Schedule edited successfully');
+          closePopup();
+        }
       })
       .catch(error => console.error('Error:', error));
   } else if (!isConfirmed) {
@@ -1573,8 +1567,6 @@ function initializeFlatpickr() {
   });
 }
 
-/*async function populateDropdownValues() {
-}*/
 
 // Dropdown population function
 function populateDropdown(dropdown, options, defaultLabel) {
@@ -1590,7 +1582,7 @@ async function fetchDropdownValues() {
     }
 
     const data = await response.json();
-    console.log("data: ",data);
+    console.log("data: ", data);
     return data;
   } catch (error) {
     console.error('Error fetching dropdown values:', error);
@@ -1605,8 +1597,8 @@ async function populateDropdownValues() {
     if (data && data.courses && data.mentors && data.programs && data.batches) {
       populateDropdown($('#CourseName11'), data.courses, 'Course Name');
       populateDropdown($('#MentorName11'), data.mentors, 'Mentor Name');
-      populateDropdown($('#program11'), data.programs, 'Program');
       populateDropdown($('#batch11'), data.batches, 'Batch');
+      populateDropdown($('#program11'), data.programs, 'Program');
     } else {
       console.log('Invalid data received from the server.');
       // Handle invalid data as needed
@@ -1618,7 +1610,7 @@ async function populateDropdownValues() {
 }
 
 // Call the function to populate dropdowns when the document is ready
-$(document).ready(populateDropdownValues);  
+$(document).ready(populateDropdownValues);
 
 
 //Schedule successful!
@@ -1654,7 +1646,7 @@ function fetchAndUpdateCounts() {
         document.getElementById("batch_count").textContent = data.batch_count;
         document.getElementById("program_count").textContent = data.program_count;
         document.getElementById("scheduled_count").textContent = data.scheduled_count;
-        console.log("rcount1: ",rcount1);
+        console.log("rcount1: ", rcount1);
         document.getElementById("conflict_count").textContent = rcount1;
 
         // Show the dashboard container after updating counts
@@ -1674,67 +1666,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   fetchAndUpdateCounts();
 });
 
-
-// Assuming you have functions to handle login and logout events
-document.addEventListener("DOMContentLoaded", function() {
-  var activityLog = document.getElementById('activityLog');
-
-  function logActivity(action, details) {
-      var listItem = document.createElement('li');
-      listItem.textContent = action + ": " + details;
-      activityLog.appendChild(listItem);
-  }
-
-  // Logging form field changes
-  document.getElementById('courseForm').addEventListener('input', function(event) {
-      if (event.target.tagName === 'INPUT') {
-          logActivity("Input", event.target.name + " changed to " + event.target.value);
-      }
-  });
-
-  // Logging button clicks
-  document.getElementById('courseForm').addEventListener('click', function(event) {
-      if (event.target.tagName === 'BUTTON') {
-          var buttonText = event.target.textContent.trim();
-          if (buttonText === "Add") {
-              logActivity("Course Added", "Course ID: " + document.getElementById('CourseID').value);
-          } else if (buttonText === "Edit") {
-              logActivity("Course Edited", "Course ID: " + document.getElementById('CourseID').value);
-          } else if (buttonText === "Delete") {
-              logActivity("Course Deleted", "Course ID: " + document.getElementById('CourseID').value);
-          } else {
-              logActivity("Button Click", buttonText);
-          }
-      }
-  });
-});
-
-
-// Function to open profile popup
-function openProfilePopup() {
-  closeAllBoxes();
-  closeChangePasswordPopup();
-  var overlay = document.getElementById('overlay');
-  var popup = document.getElementById('profileBox');
-
-  overlay.style.display = 'block';
-  popup.style.display = 'block';
-  // Hide the dashboard-container
-  document.querySelector('.dashboard-container').style.display = 'none';
-}
-
-// Function to close profile popup
-function closeProfilePopup() {
-  var overlay = document.getElementById('overlay');
-  var popup = document.getElementById('profileBox');
-
-  overlay.style.display = 'none';
-  popup.style.display = 'none';
-
-  // Show the dashboard-container and reset its styles
-  var dashboardContainer = document.querySelector('.dashboard-container');
-  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
-}
 
 // Check if the page is loaded from a refresh
 /**$(document).ready(function() {
@@ -1795,12 +1726,147 @@ function validateSignupForm() {
   return true;
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
   const welcomeText = "Welcome to Race Portal, ";
   document.getElementById("welcomeText").innerHTML = "";
   typeWriter(welcomeText, 0, fadeInUsername);
 });
 
+
+//Logs
+function initializeLogging() {
+  var activityLog = document.getElementById('activityLog');
+
+  function logActivity(action, details) {
+    var listItem = document.createElement('li');
+    listItem.textContent = action + ": " + details;
+    activityLog.appendChild(listItem);
+  }
+
+  function sendActivity(action, details) {
+    // Simulating AJAX request to server
+    // Replace this with actual AJAX request to your server
+    setTimeout(function () {
+      // Simulating success callback
+      logActivity(action, details);
+    }, 500); // Simulating a delay of 500 milliseconds
+  }
+
+  // Logging button clicks for course form
+  document.getElementById('courseForm').addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      var buttonText = event.target.textContent.trim();
+      if (buttonText === "Add") {
+        sendActivity("Course Added", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Edit") {
+        var courseId = event.target.dataset.courseId;
+        sendActivity("Course Edited", "Course ID: " + courseId);
+      } else if (buttonText === "Delete") {
+        var courseId = event.target.dataset.courseId;
+        sendActivity("Course Deleted", "Course ID: " + courseId);
+      } else {
+        sendActivity("Button Click", 'Module ' + buttonText);
+      }
+    }
+  });
+
+  // Logging button clicks for mentor form
+  document.getElementById('mentorForm').addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      var buttonText = event.target.textContent.trim();
+      if (buttonText === "Add") {
+        sendActivity("Mentor Added", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Edit") {
+        sendActivity("Mentor Edited", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Delete") {
+        sendActivity("Mentor Deleted", "Course ID: " + document.getElementById('CourseID').value);
+      } else {
+        sendActivity("Button Click",  'Mentor ' + buttonText);
+      }
+    }
+  });
+
+  // Logging button clicks for batch form
+  document.getElementById('BatchForm').addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      var buttonText = event.target.textContent.trim();
+      if (buttonText === "Add") {
+        sendActivity("Batch Added", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Edit") {
+        sendActivity("Batch Edited", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Delete") {
+        sendActivity("Batch Deleted", "Course ID: " + document.getElementById('CourseID').value);
+      } else {
+        sendActivity("Button Click", 'Batch ' + buttonText);
+      }
+    }
+  });
+
+  // Logging button clicks for program form
+  document.getElementById('ProgramForm').addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      var buttonText = event.target.textContent.trim();
+      if (buttonText === "Add") {
+        sendActivity("Program Added", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Edit") {
+        sendActivity("Program Edited", "Course ID: " + document.getElementById('CourseID').value);
+      } else if (buttonText === "Delete") {
+        sendActivity("Program Deleted", "Course ID: " + document.getElementById('CourseID').value);
+      } else {
+        sendActivity("Button Click", 'Program ' + buttonText);
+      }
+    }
+  });
+
+  // Logging button clicks for schedule form
+  document.getElementById('scheduleForm').addEventListener('click', function (event) {
+    if (event.target.tagName === 'BUTTON') {
+      var buttonText = event.target.textContent.trim();
+      if (buttonText === "Schedule") {
+        sendActivity("Schedule Added", "Module Name: " + document.getElementById('CourseName11').value);
+      } else if (buttonText === "View Schedule") {
+        sendActivity("View Schedule", "Clicked");
+      } else {
+        sendActivity("Button Click", 'Schedule ' + buttonText);
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initializeLogging);
+
+
+// Function to open profile popup
+function openProfilePopup() {
+  closeAllBoxes();
+  closeChangePasswordPopup();
+  var overlay = document.getElementById('overlay');
+  var popup = document.getElementById('profileBox');
+
+  overlay.style.display = 'block';
+  popup.style.display = 'block';
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
+
+  // Add event listener to close popup when overlay is clicked
+  overlay.addEventListener('click', closeProfilePopup);
+}
+
+// Function to close profile popup
+function closeProfilePopup() {
+  var overlay = document.getElementById('overlay');
+  var popup = document.getElementById('profileBox');
+
+  overlay.style.display = 'none';
+  popup.style.display = 'none';
+
+  // Remove event listener to prevent unwanted closing
+  overlay.removeEventListener('click', closeProfilePopup);
+
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
 
 // Function to open change password popup
 function openChangePasswordPopup() {
@@ -1814,6 +1880,9 @@ function openChangePasswordPopup() {
 
   // Hide the dashboard-container
   document.querySelector('.dashboard-container').style.display = 'none';
+
+  // Add event listener to close change password popup when overlay is clicked
+  overlay.addEventListener('click', closeChangePasswordPopup);
 
   // Event listener for change password form submission
   document.getElementById('edit-profile-forms').addEventListener('submit', function (e) {
@@ -1835,6 +1904,9 @@ function closeChangePasswordPopup() {
 
   overlay.style.display = 'none';
   popup.style.display = 'none';
+
+  // Remove event listener to prevent unwanted closing
+  overlay.removeEventListener('click', closeChangePasswordPopup);
 
   // Show the dashboard-container and reset its styles
   var dashboardContainer = document.querySelector('.dashboard-container');
@@ -1870,6 +1942,8 @@ function fadeInUsername() {
   usernameElement.style.display = "inline";
   usernameElement.style.animation = "fadeIn 1s ease-in-out forwards";
 }
+
+
 
 
 

@@ -11,7 +11,7 @@ import hashlib
 
 
 app = Flask(__name__, static_url_path='/static')
-app.secret_key = 'password'  # Add a secret key
+app.secret_key = 'ufxxbtwi'  # Add a secret key
 
 # Database connection details
 DB_HOST = 'ep-steep-meadow-a1gz0jau.ap-southeast-1.aws.neon.tech'
@@ -52,6 +52,8 @@ app.config['MAIL_PASSWORD'] = os.environ.get('OUTLOOK_PASSWORD')  # Use environm
 
 mail = Mail(app)  # Create an instance of the Mail class
 
+
+#encryption
 def caesar_cipher(text, shift):
     encrypted_text = ''
     for char in text:
@@ -120,11 +122,11 @@ def hash_string(input_string):
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    username9 = ""  # Initialize username9 with an empty string
+    username1 = ""  # Initialize username9 with an empty string
     
     if request.method == 'POST':
-        username9 = request.form['username']
-        username = caesar_cipher(username9, shift)
+        username1 = request.form['username']
+        username = caesar_cipher(username1, shift)
         print(username)
         passwordbf1 = request.form['password']
         password = hash_string(passwordbf1)
@@ -150,7 +152,7 @@ def login():
         else:
             flash('The entered username does not exist. Please try again or register for an account.', 'error')
 
-    return render_template('login.html', username=username9)
+    return render_template('login.html', username=username1)
 
 
 
@@ -178,25 +180,25 @@ def index2():
 @app.route('/signup', methods=['POST'])
 def signup():
     if request.method == 'POST':
-        first_name9 = request.form['FirstName']
-        first_name = caesar_cipher(first_name9, shift)
-        last_name9 = request.form['LastName']
-        last_name = caesar_cipher(last_name9, shift)
-        email9 = request.form['EmailAddress']
-        email = caesar_cipher(email9, shift)
-        username9 = request.form['username']
-        username = caesar_cipher(username9, shift)
+        first_name1 = request.form['FirstName']
+        first_name = caesar_cipher(first_name1, shift)
+        last_name1 = request.form['LastName']
+        last_name = caesar_cipher(last_name1, shift)
+        email1 = request.form['EmailAddress']
+        email = caesar_cipher(email1, shift)
+        username2 = request.form['username']
+        username = caesar_cipher(username2, shift)
         passwordbf = request.form['password']
         password = hash_string(passwordbf)
 
 
         # Validate first_name (allow only alphabets)
-        if not first_name9.isalpha():
+        if not first_name1.isalpha():
             flash('First name should contain only alphabets.', 'error')
             return render_template('login.html')
 
         # Validate last_name (allow only alphabets)
-        if not last_name9.isalpha():
+        if not last_name1.isalpha():
             flash('Last name should contain only alphabets.', 'error')
             return render_template('login.html')
 
@@ -219,11 +221,12 @@ def signup():
             conn.commit()
             flash('Registration successful!', 'success')
             return render_template('login.html')
-        #except Exception as e:
+        except Exception as e:
             # Handle database insertion error
             #flash('An error occurred during registration. Please try again.', 'error')
-            #return render_template('login.html')
+            return render_template('login.html')
         finally:
+            conn.commit()
             cursor.close()
 
     return render_template('login.html')
@@ -232,24 +235,24 @@ def signup():
 @app.route('/signup1', methods=['POST'])
 def signup1():
     if request.method == 'POST':
-        first_name9 = request.form['FirstName']
-        first_name = caesar_cipher(first_name9, shift)
-        last_name9 = request.form['LastName']
-        last_name = caesar_cipher(last_name9, shift)
-        email9 = request.form['EmailAddress']
-        email = caesar_cipher(email9, shift)
-        username9 = request.form['Username']
-        username = caesar_cipher(username9, shift)
-        currentuser9 = request.form['currentUsername']
-        currentuser = caesar_cipher(currentuser9, shift)
+        first_name1 = request.form['FirstName']
+        first_name = caesar_cipher(first_name1, shift)
+        last_name1 = request.form['LastName']
+        last_name = caesar_cipher(last_name1, shift)
+        email1 = request.form['EmailAddress']
+        email = caesar_cipher(email1, shift)
+        username2 = request.form['Username']
+        username = caesar_cipher(username2, shift)
+        currentuser1 = request.form['currentUsername']
+        currentuser = caesar_cipher(currentuser1, shift)
 
         # Validate first_name (allow only alphabets)
-        if not first_name9.isalpha():
+        if not first_name1.isalpha():
             flash('First name should contain only alphabets.', 'error')
             return render_template('index.html')
 
         # Validate last_name (allow only alphabets)
-        if not last_name9.isalpha():
+        if not last_name1.isalpha():
             flash('Last name should contain only alphabets.', 'error')
             return render_template('index.html')
 
@@ -261,16 +264,17 @@ def signup1():
                            UPDATE login SET first_name=%s, last_name=%s, email=%s, username=%s WHERE username=%s
                 """, (first_name, last_name, email, username, currentuser))
             conn.commit()
-            session['username'] = username9  # Store the username in the session
-            session['FirstName'] = first_name9
-            session['LastName'] = last_name9
-            session['EmailAddress'] = email9
+            session['username'] = username1  # Store the username in the session
+            session['FirstName'] = first_name1
+            session['LastName'] = last_name1
+            session['EmailAddress'] = email1
             #flash('Edit successful! Login Again Please', 'success')
         except Exception as e:
             # Handle database insertion error
             #flash('An error occurred during registration. Please try again.', 'error')
             return render_template('index.html')
         finally:
+            conn.commit()
             cursor.close()
 
         # Redirect to a specific page after successful update
@@ -294,15 +298,17 @@ def submit_form():
         return jsonify({'message': 'Data inserted successfully'})
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
 
 @app.route('/edit_course', methods=['POST'])
 def edit_course():
     try:
         CourseID = request.json.get('CourseID')
-        courseName9 = request.json.get('courseName')
-        description9 = request.json.get('description')
-        courseName = caesar_cipher(courseName9, shift)
-        description = caesar_cipher(description9, shift)
+        courseName1 = request.json.get('courseName')
+        description1 = request.json.get('description')
+        courseName = caesar_cipher(courseName1, shift)
+        description = caesar_cipher(description1, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Modules SET ModuleName=%s, description=%s WHERE ModuleID=%s"
@@ -313,6 +319,8 @@ def edit_course():
         return jsonify({'success': True, 'message': 'Module edited successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/delete_course', methods=['POST'])
@@ -330,6 +338,8 @@ def delete_course():
         # Log the error for debugging
         print(f"Error deleting course: {e}")
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 
@@ -347,6 +357,8 @@ def show_courses():
         return jsonify(course_details)
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
     
 @app.route('/course_table')
 def course_table():
@@ -382,6 +394,8 @@ def submit_mentor_form():
     except Exception as e:
         print("Error:", str(e))  # Log the error for debugging
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
     
 
 @app.route('/show_mentors', methods=['GET'])
@@ -398,6 +412,8 @@ def show_Mentors():
         return jsonify(Mentor_details)
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
     
 @app.route('/mentor_table')
 def Mentor_table():
@@ -408,16 +424,16 @@ def Mentor_table():
 def edit_mentor():
     try:
         mentorId = request.json.get('mentorId')
-        mentorName9 = request.json.get('mentorName')
-        mentorName = caesar_cipher(mentorName9, shift)
-        mentorRaceEmailAddress9 = request.json.get('mentorRaceEmailAddress')
-        mentorRaceEmailAddress = caesar_cipher(mentorRaceEmailAddress9, shift)
-        mentorEmailAddress9 = request.json.get('mentorEmailAddress')
-        mentorEmailAddress = caesar_cipher(mentorEmailAddress9, shift)
-        mentorProfile9 = request.json.get('mentorProfile')
-        mentorProfile = caesar_cipher(mentorProfile9, shift)
-        mentorWhatsapp9 = request.json.get('mentorWhatsapp')
-        mentorWhatsapp = caesar_cipher(mentorWhatsapp9, shift)
+        mentorName1 = request.json.get('mentorName')
+        mentorName = caesar_cipher(mentorName1, shift)
+        mentorRaceEmailAddress1 = request.json.get('mentorRaceEmailAddress')
+        mentorRaceEmailAddress = caesar_cipher(mentorRaceEmailAddress1, shift)
+        mentorEmailAddress1 = request.json.get('mentorEmailAddress')
+        mentorEmailAddress = caesar_cipher(mentorEmailAddress1, shift)
+        mentorProfile1 = request.json.get('mentorProfile')
+        mentorProfile = caesar_cipher(mentorProfile1, shift)
+        mentorWhatsapp1 = request.json.get('mentorWhatsapp')
+        mentorWhatsapp = caesar_cipher(mentorWhatsapp1, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Mentors SET mentorName=%s, mentorRaceEmailAddress=%s, mentorEmailAddress=%s, mentorProfile=%s, mentorWhatsapp=%s WHERE mentorId=%s"
@@ -428,6 +444,8 @@ def edit_mentor():
         return jsonify({'success': True, 'message': 'Mentor edited successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/delete_mentor', methods=['POST'])
@@ -445,6 +463,8 @@ def delete_mentor():
         # Log the error for debugging
         print(f"Error deleting mentor: {e}")
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/submit_batch_form', methods=['POST'])
@@ -461,6 +481,8 @@ def submit_batch_form():
         return jsonify({'message': 'Data inserted successfully'})
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
 
 @app.route('/show_batches', methods=['GET'])
 def show_batches():
@@ -476,6 +498,8 @@ def show_batches():
         return jsonify(batch_details)
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
         
 @app.route('/batch_table')
 def Batch_table():
@@ -485,8 +509,8 @@ def Batch_table():
 def edit_batch():
     try:
         BatchID = request.json.get('BatchID')
-        batchName9 = request.json.get('batchName')
-        batchName = caesar_cipher(batchName9, shift)
+        batchName1 = request.json.get('batchName')
+        batchName = caesar_cipher(batchName1, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Batches SET batchName=%s WHERE BatchID=%s"
@@ -497,6 +521,8 @@ def edit_batch():
         return jsonify({'success': True, 'message': 'Batch edited successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/delete_batch', methods=['POST'])
@@ -514,6 +540,8 @@ def delete_batch():
         # Log the error for debugging
         print(f"Error deleting batch: {e}")
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/submit_program_form', methods=['POST'])
@@ -530,6 +558,8 @@ def submit_program_form():
         return jsonify({'message': 'Data inserted successfully'})
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
 
 @app.route('/show_programs', methods=['GET'])
 def show_programs():
@@ -545,6 +575,8 @@ def show_programs():
         return jsonify(program_details)
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn1.commit()
 
 @app.route('/program_table')
 def Program_table():
@@ -554,8 +586,8 @@ def Program_table():
 def edit_program():
     try:
         ProgramID = request.json.get('ProgramID')
-        programName9 = request.json.get('programName')
-        programName = caesar_cipher(programName9, shift)
+        programName1 = request.json.get('programName')
+        programName = caesar_cipher(programName1, shift)
 
         # Perform the necessary update in your database
         query = "UPDATE Programs SET programName=%s WHERE ProgramID=%s"
@@ -566,6 +598,8 @@ def edit_program():
         return jsonify({'success': True, 'message': 'Program edited successfully'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/delete_program', methods=['POST'])
@@ -583,6 +617,8 @@ def delete_program():
         # Log the error for debugging
         print(f"Error deleting program: {e}")
         return jsonify({'success': False, 'message': str(e)})
+    finally:
+        conn1.commit()
 
 
 @app.route('/Schedule', methods=['GET', 'POST'])
@@ -607,9 +643,6 @@ def Schedule1():
         error_message = "Scheduled Successfully."
     return render_template('success.html', error_message=error_message)
         
-
-
-
 def ScheduleS(CourseName, MentorName,ProgramName,BatchName,SDate):
     conn1 = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
@@ -646,7 +679,7 @@ def ScheduleS(CourseName, MentorName,ProgramName,BatchName,SDate):
         print("Something Wrong")
     finally:
         cur.close()
-        conn1.close()
+        conn1.commit()
     return render_template('success.html')
 
 def get_weeks_in_month(year, month):
@@ -688,23 +721,7 @@ def get_saturdays_in_month():
     saturday_dates = [str(saturday.date()) for saturday in saturdays]
 
     return jsonify({'saturdays': saturday_dates})
-    '''first_day_of_month = datetime(year, month, 1)
-    next_month = first_day_of_month.replace(day=28) + timedelta(days=4)  # Move to the 1st day of next month
-    last_day_of_month = next_month - timedelta(days=next_month.day)
-
-    current_date = first_day_of_month
-    saturdays = []
-
-    while current_date <= last_day_of_month:
-        if current_date.weekday() == 5:  # Saturday has weekday() value 5
-            saturdays.append(current_date)
-        current_date += timedelta(days=1)
-
-    saturday_dates = [str(saturday.date()) for saturday in saturdays]
-
-    return jsonify({'saturdays': saturday_dates})'''
-
-
+   
 @app.route('/update_schedule', methods=['POST'])
 def update_schedule():
     if request.method == 'POST':
@@ -760,7 +777,7 @@ def update_schedule():
                 return jsonify({'error': 'Failed to update schedule'})
             finally:
                 cur.close()
-                conn1.close()
+                conn1.commit()   
 
         return jsonify({'message': 'Schedule updated successfully'})
 
@@ -789,7 +806,7 @@ def delete_schedule():
             return jsonify({'error': 'Failed to delete schedule'}), 500
         finally:
             cur.close()
-            conn1.close()
+            conn1.commit()
 
         return jsonify({'message': 'Schedule deleted successfully'}), 200
     
@@ -830,6 +847,8 @@ def get_counts():
         })
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn2.commit()
 
 
 
@@ -858,6 +877,7 @@ def get_batch_names():
     except Exception as e:
         return jsonify({'error': str(e)})
     finally:
+        conn4.commit()
         conn4.close()
 
 @app.route('/show_schedule', methods=['GET'])
@@ -928,6 +948,8 @@ def show_schedule():
             return jsonify(schedule_details)
         except Exception as e:
             return jsonify({'error': str(e)})
+        finally:
+            conn2.commit()
     else:
         #get data from week1 and ld
         try:
@@ -974,6 +996,8 @@ def show_schedule():
             return jsonify(schedule_details)
         except Exception as e:
             return jsonify({'error': str(e)})
+        finally:
+            conn2.commit()
     
 
 
@@ -1076,6 +1100,8 @@ def drop_schedule():
         return jsonify(schedule_details1)
     except Exception as e:
         return jsonify({'error': str(e)})
+    finally:
+        conn2.commit()
         
     
 
@@ -1125,8 +1151,10 @@ def get_mentorss():
         return jsonify(schedule_details1)
     except Exception as e:
         print(f"Error in get_mentorss: {e}")
-        conn.close()
+        conn3.close()
         return jsonify(error=str(e))
+    finally:
+        conn3.commit()
 
 def format_date(input_string):
     # Parse the input string using strptime
@@ -1170,8 +1198,7 @@ def fetch_dropdown_values1():
         # Close the cursor and connection in the 'finally' block
         if 'cursor1' in locals() and cursor1:
             cursor1.close()
-        if 'conn1' in locals() and conn1.is_connected():
-            conn1.close()
+
 
 @app.route('/changepassword', methods=['POST'])
 def changepassword():
@@ -1255,9 +1282,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
 

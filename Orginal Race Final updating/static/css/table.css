@@ -81,7 +81,6 @@ body.loading #preloader {
     right: 10px;
     /* Adjust the left position as needed */
 }
-
 #courseDetailsContainer,
 #BatchDetailsContainer,
 #ProgramDetailsContainer {
@@ -96,17 +95,12 @@ body.loading #preloader {
     opacity: 0;
     animation: fadeIn 0.5s ease-in-out forwards;
     padding: 20px;
-    max-width: 800px;
-    /* Adjust the maximum width as needed */
-    max-height: 550px;
-    /* Adjust the maximum width and height as needed */
+    max-width: 900px; /* Adjust the maximum width as needed */
+    max-height: 550px; /* Adjust the maximum width and height as needed */
     transition: opacity 0.5s ease-in-out;
-    overflow-y: auto;
-    /* Enable vertical scrolling */
-    scrollbar-width: thin;
-    /* Set the width of the scrollbar */
-    scrollbar-color: grey #f0f0f0;
-    /* Set the color of the scrollbar thumb and track */
+    overflow: auto; /* Enable overflow and scrolling */
+    scrollbar-width: thin; /* Set the width of the scrollbar */
+    scrollbar-color: grey #f0f0f0; /* Set the color of the scrollbar thumb and track */
 }
 
 table {
@@ -114,6 +108,7 @@ table {
     width: 100%;
     margin-top: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    table-layout: fixed; /* Fixed table layout */
 }
 
 th,
@@ -121,11 +116,11 @@ td {
     border: 1px solid #dddddd;
     text-align: center;
     padding: 15px;
+    word-wrap: break-word; /* Allow long words to break and wrap */
 }
 
 th {
-    background-color: #e9ecef;
-    /* Lighter background color */
+    background-color: #e9ecef; /* Lighter background color */
 }
 
 h2 {
@@ -134,7 +129,7 @@ h2 {
 
 #mentorDetailsContainer {
     position: fixed;
-    top: 45%;
+    top: 50%;
     left: 50%;
     font-family: 'Martain';
     transform: translate(-50%, -50%);
