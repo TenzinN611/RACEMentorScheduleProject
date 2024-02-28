@@ -66,33 +66,86 @@
     <!--Dashboard Container-->
     <div class="dashboard-container">
       <div class="dashboard-item">
-        <h2 id="module_count">Loading...</h2>
-        <p>Modules</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="module_count"><p>Loading...</p></h2>
+            <p>Modules</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="showCourseDetails()">More info →</a>
       </div>
+
       <div class="dashboard-item">
-        <h2 id="mentor_count">Loading...</h2>
-        <p>Mentors</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="mentor_count"><p>Loading...</p></h2>
+            <p>Mentors</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="showMentorDetails()">More info →</a>
       </div>
+
       <div class="dashboard-item">
-        <h2 id="batch_count">Loading...</h2>
-        <p>Batches</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="batch_count"><p>Loading...</p></h2>
+            <p>Batches</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="showBatchDetails()">More info →</a>
       </div>
+
       <div class="dashboard-item">
-        <h2 id="program_count">Loading...</h2>
-        <p>Programs</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="program_count"><p>Loading...</p></h2>
+            <p>Programs</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="showProgramDetails()">More info →</a>
       </div>
+
       <div class="dashboard-item">
-        <h2 id="scheduled_count">Loading...</h2>
-        <p>Scheduled</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="scheduled_count"><p>Loading...</p></h2>
+            <p>Scheduled</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="openCalendar()">More info →</a>
       </div>
+
       <div class="dashboard-item">
-        <h2 id="conflict_count">Loading...</h2>
-        <p>Conflict</p>
+        <div class="progress-ring">
+          <svg class="progress-ring-circle">
+            <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
+            <circle class="progress-ring-circle-fill" r="54" cx="60" cy="60"></circle>
+          </svg>
+          <div class="progress-info">
+            <h2 id="conflict_count"><p>Loading...</p></h2>
+            <p>Conflict</p>
+          </div>
+        </div>
         <a href="#" class="more-info" onclick="openCalendar()">More info →</a>
       </div>
     </div>
@@ -174,7 +227,7 @@
     <!--Batch-->
     <div id="BatchBox" class="course-box">
       <span class="close-box" onclick="closeBatchBox()">&times;</span>
-      <form>
+      <form  id="BatchForm" action="/submit_batch_form" method="POST">
         <!-- Navigation bar with mentor, add, edit, and delete buttons -->
         <div
           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
@@ -182,8 +235,7 @@
           <div style="display: flex; gap: 10px;">
             <button type="button" onclick="AddBatchDetails()"><i class="fas fa-plus small-icon"></i> Add</button>
             <button type="button" onclick="EditBatchDetails()"><i class="fas fa-edit small-icon"></i> Edit</button>
-            <button type="button" onclick="DeleteBatchDetails()"><i
-                class="fas fa-trash-alt small-icon"></i>Delete</button>
+            <button type="button" onclick="DeleteBatchDetails()"><i class="fas fa-trash-alt small-icon"></i>Delete</button>
           </div>
           <!-- Add your navigation bar elements here if needed -->
         </div>
@@ -202,7 +254,7 @@
     <!--Program-->
     <div id="ProgramBox" class="course-box">
       <span class="close-box" onclick="closeProgramBox()">&times;</span>
-      <form>
+      <form  id="ProgramForm" action="/submit_program_form" method="POST">
         <!-- Navigation bar with mentor, add, edit, and delete buttons -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;gap: 10px;">
           <h2>Program</h2>
@@ -241,13 +293,13 @@
           <!-- Populate options dynamically using JavaScript or Flask templates -->
         </select>
 
-        <label for="program11"><i class="fas fa-book"></i> Program:</label>
-        <select id="program11" name="program11" required>
+        <label for="batch11"><i class="fas fa-book"></i> Batch:</label>
+        <select id="batch11" name="batch11" required>
           <!-- Populate options dynamically using JavaScript or Flask templates -->
         </select>
 
-        <label for="batch11"><i class="fas fa-book"></i> Batch:</label>
-        <select id="batch11" name="batch11" required>
+        <label for="program11"><i class="fas fa-book"></i> Program:</label>
+        <select id="program11" name="program11" required>
           <!-- Populate options dynamically using JavaScript or Flask templates -->
         </select>
 
@@ -255,15 +307,13 @@
         <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
 
         <div id="buttonContainer">
-          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i
-              class="fas fa-calendar-plus"></i> Schedule</button>
-          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i
-              class="fas fa-calendar-alt"></i>View Schedule</button>
+          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i class="fas fa-calendar-plus"></i> Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>View Schedule</button>
         </div>
       </form>
     </div>
   </div>
-
+<!--Profile-->
   <div id="profileBox" class="profile-box">
     <div class="popup-contents">
       <span class="closeProfilePopup" onclick="closeProfilePopup()">&times;</span>
@@ -288,7 +338,7 @@
       </form>
     </div>
   </div>
-
+<!--Change Password-->
   <div id="changePasswordBox" class="change-password-box">
     <div class="popup-contents">
       <span class="closeChangePasswordPopup" onclick="closeChangePasswordPopup()">&times;</span>
@@ -311,7 +361,7 @@
       </form>
     </div>
   </div>
-
+<!--Calender-->
   <div id="calendarContainer">
     <span id="closeButton" onclick="closeCalendar()">✖</span>
     <div id="searchContainer">

@@ -50,9 +50,9 @@ body.loading #preloader {
 }
 
 .logo_bottom {
-    max-width: 450px;
+    max-width: 400px;
     /* Adjust the width as needed */
-    max-height: 450px;
+    max-height: 400px;
     /* Adjust the height as needed */
     margin-right: 10px;
     /* Optional margin for spacing */
@@ -262,6 +262,8 @@ body.loading #preloader {
     /* Increased shadow for hover state */
 }
 
+
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -316,8 +318,21 @@ body.loading #preloader {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    transition: width 0.3s; /* Add transition for smooth resizing */
+    transition: width 0.3s, opacity 0.5s; /* Add transition for smooth resizing and opacity change */
     z-index: 1; /* Ensure dashboard appears above sidebar */
+    opacity: 0; /* Initially set opacity to 0 */
+    animation: popIn 1s ease forwards; /* Apply pop-in animation with a slower duration */
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0; /* Start with opacity 0 */
+        transform: scale(0.5); /* Start with smaller size */
+    }
+    100% {
+        opacity: 1; /* End with opacity 1 */
+        transform: scale(1); /* End with original size */
+    }
 }
 
 .dashboard-item {
@@ -387,6 +402,53 @@ body.loading #preloader {
     /* Darker color on hover */
 }
 
+.progress-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto; /* Center horizontally */
+  background: linear-gradient(145deg, #e0e5ec, #ffffff); /* Add gradient for 3D effect */
+  border-radius: 50%; /* Make it round */
+  box-shadow: 10px 10px 20px #a7afb8, -10px -10px 20px #ffffff, inset 5px 5px 10px #c2c7cc, inset -5px -5px 10px #ffffff; /* Soft box shadow with inset shadow for depth */
+}
+
+.progress-ring-circle {
+  fill: none;
+}
+
+.progress-ring-circle-bg {
+  stroke: #e0e5ec;
+  stroke-width: 8;
+}
+
+.progress-ring-circle-fill {
+  stroke: #ffae00;
+  stroke-width: 8;
+  stroke-dasharray: 339.292;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.3s;
+}
+
+.progress-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-info h2 {
+  font-size: 25px;
+  margin: 0;
+  color: #343a40;
+}
+
+.progress-info p {
+  font-size: 13px;
+  margin: 0;
+  color: #6c757d;
+}
+
 #noResultsMessage {
     margin-top: 20px;
     text-align: center;
@@ -437,6 +499,7 @@ body.loading #preloader {
     animation: fadeInUp 0.5s ease-in-out;
     background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
     background-blend-mode: overlay;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 50px rgba(0, 0, 0, 0.1); /* Added 3D effect */
 }
 
 @keyframes fadeInUp {
@@ -547,6 +610,7 @@ body.loading #preloader {
     transform: scale(1.1);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
 }
+
 /* mentor box*/
 #mentorBox {
     display: none;
@@ -559,8 +623,8 @@ body.loading #preloader {
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    width: 350px;
-    max-height: 80vh;
+    width: 345px;
+    max-height: 75vh;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     animation: fadeInUp 0.5s ease-in-out;
@@ -689,7 +753,7 @@ body.loading #preloader {
 #scheduleBox {
     display: none;
     position: fixed;
-    top: 55%;
+    top: 52%;
     left: 55%;
     transform: translate(-50%, -50%);
     padding: 20px;
@@ -717,20 +781,24 @@ body.loading #preloader {
     margin-bottom: 20px;
     color: black;
 }
-
 #scheduleForm {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: space-between;
+    flex-direction: column; /* Changed from row to column */
+    gap: 10px;
 }
 
 #scheduleForm label {
     font-weight: bold;
     color: black;
     text-align: left;
-    flex-basis: 48%;
+}
+
+#scheduleForm select {
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%; /* Set all select elements to occupy 100% of the container width */
 }
 
 #scheduleForm input {
@@ -771,14 +839,6 @@ body.loading #preloader {
 .viewScheduleButton:hover {
     transform: scale(1.1);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-#scheduleForm select {
-    padding: 10px;
-    box-sizing: border-box;
-    flex-grow: 1;
-    border: 1px solid #ddd;
-    border-radius: 5px;
 }
 
 #scheduleForm select:hover {
@@ -856,7 +916,7 @@ body.loading #preloader {
 #calendarContainer {
     display: none;
     position: fixed;
-    top: 52%;
+    top: 55%;
     left: 60%;
     width: 1000px;
     transform: translate(-50%, -50%);
@@ -868,7 +928,6 @@ body.loading #preloader {
     animation: fadeIn 0.5s ease-in-out;
     cursor: pointer;
     max-height: 530px;
-    scrollbar-color: transparent transparent; /* Make scrollbar transparent */
 }
 
 /* Overlay */
@@ -882,21 +941,40 @@ body.loading #preloader {
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 0;
 }
-
 /* Schedule Container */
 #scheduleContainer {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-height: 420px; /* Adjust height as needed */
+    max-height: 480px; /* Adjust height as needed */
     overflow-y: auto;
     overflow-x: auto; /* Hide horizontal scrollbar */
-    padding: 20px;
+    padding: 0px;
     background-color: #ffffff;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     margin-top: 10px; /* Adjust spacing from calendarContainer */
+
+    /* Style the vertical scrollbar */
+    scrollbar-width: thin; /* For Firefox */
 }
+
+/* Style the horizontal scrollbar in WebKit-based browsers */
+#scheduleContainer::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+/* Style the track of the horizontal scrollbar */
+#scheduleContainer::-webkit-scrollbar-track {
+    background: grey; /* Transparent background */
+}
+
+/* Style the thumb/grip of the horizontal scrollbar */
+#scheduleContainer::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners */
+}
+
 
 #scheduleContainer table {
     width: 100%;
@@ -924,6 +1002,24 @@ body.loading #preloader {
     transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+/* Fixed header row */
+/*#scheduleTable th:first-child {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: #f7f7f7;
+    z-index: 2;
+}*/
+
+/* Fixed first column */
+#scheduleTable td:first-child {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    background-color: #f7f7f7;
+    z-index: 2;
+}
+
 #scheduleContainer .noResultsMessage {
     display: none;
     text-align: center; /* Center align the message */
@@ -935,12 +1031,12 @@ body.loading #preloader {
 }
 
 #scheduleContainer::-webkit-scrollbar-thumb {
-    background-color: #787777;
+    background-color: #6b6b6b;
     border-radius: 4px;
 }
 
 #scheduleContainer::-webkit-scrollbar-track {
-    background-color: #fdfdfd;
+    background-color: #f0f0f0;
     border-radius: 4px;
 }
 

@@ -58,7 +58,7 @@ function renderCourseTable() {
         // Add sorting options for each column
         columnDefs: [
             { orderable: true, targets: [0] }, // Course ID
-            { orderable: true, targets: [1] }, // Course Name
+            { orderable: false, targets: [1] }, // Course Name
             { orderable: false, targets: [2] }, // Description
             { orderable: false, targets: [3] }  // Actions
         ],
@@ -82,14 +82,19 @@ function editCourse(courseID) {
     // Validate and convert course name to sentence case
     if (newCourseName) {
         newCourseName = newCourseName.toLowerCase();
-        newCourseName = newCourseName.charAt(0).toUpperCase() + newCourseName.slice(1);
+        newCourseName = newCourseName.replace(/\b\w/g, function (char) {
+            return char.toUpperCase();
+        });
     }
 
     // Validate and convert description to sentence case
     if (newDescription) {
         newDescription = newDescription.toLowerCase();
-        newDescription = newDescription.charAt(0).toUpperCase() + newDescription.slice(1);
+        newDescription = newDescription.replace(/\b\w/g, function (char) {
+            return char.toUpperCase();
+        });
     }
+
 
     // Display a confirmation dialog before editing the course
     if (confirm('Are you sure you want to edit this course?')) {
@@ -238,7 +243,7 @@ function renderMentorTable() {
         // Add sorting options for each column
         columnDefs: [
             { orderable: true, targets: [0] }, // Mentor ID
-            { orderable: true, targets: [1] }, // Mentor Name
+            { orderable: false, targets: [1] }, // Mentor Name
             { orderable: false, targets: [2] }, // Reva Email
             { orderable: false, targets: [3] }, // Email
             { orderable: false, targets: [4] }, // Profile
@@ -442,7 +447,7 @@ function renderBatchTable() {
         // Add sorting options for each column
         columnDefs: [
             { orderable: true, targets: [0] }, // Batch ID
-            { orderable: true, targets: [1] }, // Batch Name
+            { orderable: false, targets: [1] }, // Batch Name
             { orderable: false, targets: [2] }  // Actions
         ],
     });
@@ -597,7 +602,7 @@ function renderProgramTable() {
         // Add sorting options for each column
         columnDefs: [
             { orderable: true, targets: [0] }, // Program ID
-            { orderable: true, targets: [1] }, // Program Name
+            { orderable: false, targets: [1] }, // Program Name
             { orderable: false, targets: [2] }  // Actions
         ],
     });
