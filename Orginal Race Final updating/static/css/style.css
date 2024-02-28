@@ -305,28 +305,23 @@ body.loading #preloader {
     animation: fadeIn 1s forwards;
 }
 
-/* Base styles */
+/* Base styles for dashboard container */
 .dashboard-container {
     position: fixed;
     top: 65px;
-    /* Height of the navbar */
     left: 20%;
-    /* Width of the menu */
     width: 80%;
-    /* Remaining width */
     height: auto;
-    /* Adjust height based on content */
     padding: 20px;
-    /* Padding for top, left, and bottom */
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    /* Add space between flex items */
+    transition: width 0.3s; /* Add transition for smooth resizing */
+    z-index: 1; /* Ensure dashboard appears above sidebar */
 }
 
 .dashboard-item {
     background-color: #e0e5ec;
-    ;
     /* Light background color */
     border-radius: 8px;
     margin-top: 25px;
@@ -397,6 +392,33 @@ body.loading #preloader {
     text-align: center;
 }
 
+/* Styles for the sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Initially hidden */
+    width: 300px;
+    text-align: center;
+    height: 100%;
+    background-color: #e0e5ec;
+    padding-top: 50px;
+    transition: all 0.3s ease;
+    z-index: 2; /* Ensure sidebar appears above dashboard */
+    overflow-y: auto; /* Add scrollbar */
+    scrollbar-width: thin; /* Thin scrollbar */
+    scrollbar-color: #ccc transparent; /* Scrollbar color */
+}
+
+.sidebar.show {
+    right: 0; /* Visible when toggled */
+}
+
+.sidebar-content {
+    padding: 20px;
+    color: #333
+}
+
+/*course,batch,mentor box*/
 .course-box,
 #BatchBox,
 #ProgramBox {
@@ -525,20 +547,20 @@ body.loading #preloader {
     transform: scale(1.1);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
 }
-
+/* mentor box*/
 #mentorBox {
     display: none;
     position: fixed;
     z-index: 3;
     left: 50%;
-    top: 53%;
+    top: 55%;
     transform: translate(-50%, -50%);
     background-color: #ffffff;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 12px;
-    width: 300px;
-    max-height: 75vh;
+    width: 350px;
+    max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     animation: fadeInUp 0.5s ease-in-out;
@@ -580,8 +602,8 @@ body.loading #preloader {
 #mentorBox form {
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
     animation: fadeInForm 1s ease-in-out;
 }
 
@@ -614,8 +636,8 @@ body.loading #preloader {
 }
 
 #mentorBox input {
-    padding: 8px;
-    margin-bottom: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -629,7 +651,7 @@ body.loading #preloader {
 
 #mentorBox button {
     padding: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 10px;
     background-color: #ff8c00;
     /* Orange color for buttons */
     color: #fff;
@@ -653,7 +675,7 @@ body.loading #preloader {
     cursor: pointer;
     transition: color 0.3s ease-in-out;
     position: absolute;
-    top: 10px;
+    top: 15px;
     right: 10px;
 }
 
@@ -796,6 +818,7 @@ body.loading #preloader {
     }
 }
 
+
 /* Search Container */
 #searchContainer {
     margin-bottom: 10px;
@@ -834,8 +857,8 @@ body.loading #preloader {
     display: none;
     position: fixed;
     top: 52%;
-    left: 55%;
-    width: 800px;
+    left: 60%;
+    width: 1000px;
     transform: translate(-50%, -50%);
     padding: 20px;
     background-color: #ffffff;
@@ -844,59 +867,8 @@ body.loading #preloader {
     border-radius: 12px;
     animation: fadeIn 0.5s ease-in-out;
     cursor: pointer;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-/* Customize scrollbar styles for calendarContainer */
-#calendarContainer::-webkit-scrollbar {
-    width: 5px;
-    /* Width of the scrollbar */
-}
-
-#calendarContainer::-webkit-scrollbar-thumb {
-    background-color: #6b6b6b;
-    /* Color of the thumb */
-    border-radius: 4px;
-}
-
-#calendarContainer::-webkit-scrollbar-track {
-    background-color: #f0f0f0;
-    /* Color of the track */
-    border-radius: 4px;
-}
-
-#calendarContainer table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-#calendarContainer th,
-#calendarContainer td {
-    height: 50px;
-    padding: 20px;
-    text-align: center;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    /* Add box shadow for 3D effect */
-}
-
-#calendarContainer th {
-    background-color: #f7f7f7;
-    color: #333;
-    font-weight: bold;
-}
-
-#calendarContainer td:hover {
-    background-color: #f2f2f2;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    /* Adjust box shadow on hover for more depth */
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-#calendarContainer .calendar-heading {
-    font-size: 1.5em;
-    color: #333;
+    max-height: 530px;
+    scrollbar-color: transparent transparent; /* Make scrollbar transparent */
 }
 
 /* Overlay */
@@ -909,6 +881,67 @@ body.loading #preloader {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 0;
+}
+
+/* Schedule Container */
+#scheduleContainer {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-height: 420px; /* Adjust height as needed */
+    overflow-y: auto;
+    overflow-x: auto; /* Hide horizontal scrollbar */
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-top: 10px; /* Adjust spacing from calendarContainer */
+}
+
+#scheduleContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#scheduleContainer th,
+#scheduleContainer td {
+    height: 50px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#scheduleContainer th {
+    background-color: #f7f7f7;
+    color: #333;
+    font-weight: bold;
+}
+
+#scheduleContainer td:hover {
+    background-color: #f2f2f2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#scheduleContainer .noResultsMessage {
+    display: none;
+    text-align: center; /* Center align the message */
+    margin-top: 20px; /* Add some space between the table and the message */
+}
+
+#scheduleContainer::-webkit-scrollbar {
+    width: 5px;
+}
+
+#scheduleContainer::-webkit-scrollbar-thumb {
+    background-color: #787777;
+    border-radius: 4px;
+}
+
+#scheduleContainer::-webkit-scrollbar-track {
+    background-color: #fdfdfd;
+    border-radius: 4px;
 }
 
 /* Close Button */

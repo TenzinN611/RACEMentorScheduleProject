@@ -38,6 +38,21 @@ function showContentAndMenu() {
 // Simulating the preloader completion with a timeout (you can replace this with your actual preloader logic)
 setTimeout(showContentAndMenu, 2000); // Adjust the timeout as needed
 
+// my activity sildebar
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const dashboardContainer = document.querySelector('.dashboard-container');
+
+  sidebar.classList.toggle('show');
+
+  // Adjust dashboard container width based on sidebar visibility
+  if (sidebar.classList.contains('show')) {
+    dashboardContainer.style.width = 'calc(75% - 250px)'; // Adjusted width with sidebar
+  } else {
+    dashboardContainer.style.width = '80%'; // Normal width without sidebar
+  }
+}
+
 //course
 function openCourseBox() {
   closeAllBoxes();
@@ -958,14 +973,12 @@ function closeAllBoxes() {
 }
 
 
-
 // Calendar functions
 function openCalendar() {
   closeScheduleBox(); // Close schedule box when opening calendar
   populateTable();
   document.getElementById('calendarContainer').style.display = 'block';
   document.getElementById('overlay').style.display = 'block';
-  // Hide the dashboard-container
   document.querySelector('.dashboard-container').style.display = 'none';
 }
 
@@ -1046,9 +1059,6 @@ async function populateTable() {
   }
 }
 
-
-
-
 function depopulateTable() {
   try {
     const table = document.getElementById('scheduleTable');
@@ -1064,7 +1074,6 @@ function depopulateTable() {
     console.error('Error depopulating table:', error);
   }
 }
-
 
 const scheduleData1 = [];
 async function  populateTable1() {
@@ -1103,7 +1112,7 @@ async function  populateTable1() {
     const table1 = document.getElementById('scheduleTable1');
     const seenMentorNames1 = {};
 
-    scheduleData1.forEach((item, rowIndex) => {
+    scheduleData1.forEach((item) => {
       const row = table1.insertRow();
       Object.values(item).forEach((value1, columnIndex) => {
         const cell = row.insertCell();
@@ -1147,7 +1156,6 @@ function depopulateTable1() {
   }
 }
 
-
 async function makeDropTarget(cell) {
   cell.addEventListener('dragover', function (event) {
     event.preventDefault();
@@ -1187,14 +1195,6 @@ async function makeDropTarget(cell) {
       const batch = scheduleData[droppedRowIndex - 2].batch;
       console.log('batch: ', batch);
 
-      // Extract the left cell data from the dropped row
-      /*const leftCellData = scheduleData[droppedRowIndex - 2][`cell${cell.cellIndex + 1}`];
-      console.log('leftcelldata: ', leftCellData);
-
-      // Extract the top row data
-      const topRowData = scheduleData[0][`cell${cell.cellIndex + 1}`];
-      console.log('topRowdata: ', topRowData);*/
-
       // Extract the value of the dropped cell column using cellIndex
       const droppedCellColumnValue = cell.cellIndex-1;
       console.log('droppedCellColumnValue: ', droppedCellColumnValue);
@@ -1204,8 +1204,6 @@ async function makeDropTarget(cell) {
       console.log('date: ', datePart);
 
       const currentDate1 = new Date().toLocaleDateString();
-      
-
       
 
       const mentor = topCellData.split(' <br> ')[0];
@@ -1360,25 +1358,12 @@ function createAndPopulateDropdown(parentElement, id, dvalue, options) {
   dropdown.innerHTML += options.map(value => `<option value="${value}">${value}</option>`).join('');
 }
 
-function getCurrentDate() {
-  const today = new Date();
-  const year = today.getFullYear();
-  let month = today.getMonth() + 1;
-  let day = today.getDate();
-
-  // Ensure month and day have leading zeros if needed
-  month = month < 10 ? '0' + month : month;
-  day = day < 10 ? '0' + day : day;
-
-  return `${year}-${month}-${day}`;
-}
-
 //show popup
 function showPopup(td, ld) {
   closeCalendar();
   // Hide the dashboard-container
   document.querySelector('.dashboard-container').style.display = 'none';
-  
+
   const popupContainer = document.getElementById('PopupContainer');
   const scheduleItemElement = document.getElementById('scheduleItem');
   const overlayElement = document.getElementById('overlay');
@@ -1430,7 +1415,7 @@ function showPopup(td, ld) {
           <p><strong><i class="fas fa-book"></i> Program Name:</strong></p>
           <select id="program12" name="program12" required></select>
           <p><strong><i class="far fa-calendar-alt"></i> Date:</strong><span>${schedule.SDate}</span></p>
-          <input type="date" id="scheduleDate12" name="scheduleDate12" min="${getCurrentDate()}" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
+          <input type="date" id="scheduleDate12" name="scheduleDate12" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
           <div style="justify-content: space-between; align-items: center;">
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="saveChanges('${schedule.ScheduleID}', '${schedule.Name}', '${schedule.MentorName}', '${schedule.BatchName}', '${schedule.ProgramName}', '${schedule.SDate}' )"><i class="fas fa-save" style="margin-right: 5px;"></i> Save Changes</button>
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="deleteSchedule('${schedule.ScheduleID}')"><i class="fas fa-trash-alt" style="margin-right: 5px;"></i> Delete</button>
@@ -1440,6 +1425,10 @@ function showPopup(td, ld) {
         createAndPopulateDropdown(scheduleItem, 'MentorName12', schedule.MentorName, data1.mentors);
         createAndPopulateDropdown(scheduleItem, 'batch12', schedule.BatchName, data1.batches);
         createAndPopulateDropdown(scheduleItem, 'program12', schedule.ProgramName, data1.programs);
+
+        // Set minimum date for the dynamically created date input
+        const dateInput = scheduleItem.querySelector('#scheduleDate12');
+        dateInput.min = new Date().toISOString().split('T')[0];
 
         scheduleItemsContainer.appendChild(scheduleItem);
       });
@@ -1452,17 +1441,6 @@ function showPopup(td, ld) {
       console.error('Error:', error);
     });
 }
-
-//popup calender for date
-/*document.addEventListener('DOMContentLoaded', function () {
-  flatpickr("#date", {
-    dateFormat: "Y-m-d",
-    minDate: "today" // Set the minimum date to today
-  });
-});*/
-
-
-
 
 function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, ScheduleProgram, ScheduleDate) {
   const courseNameElement = document.getElementById('CourseName12');
@@ -1588,6 +1566,16 @@ function closePopup() {
   popupContainer.style.display = 'none';
 }
 
+function initializeFlatpickr() {
+  flatpickr("#date", {
+    dateFormat: "Y-m-d",
+    minDate: "today" // Set the minimum date to today
+  });
+}
+
+/*async function populateDropdownValues() {
+}*/
+
 // Dropdown population function
 function populateDropdown(dropdown, options, defaultLabel) {
   dropdown.empty().append($('<option>').text(`Select ${defaultLabel}`).attr('value', ''));
@@ -1602,7 +1590,7 @@ async function fetchDropdownValues() {
     }
 
     const data = await response.json();
-    console.log("daata: ",data);
+    console.log("data: ",data);
     return data;
   } catch (error) {
     console.error('Error fetching dropdown values:', error);
@@ -1630,7 +1618,7 @@ async function populateDropdownValues() {
 }
 
 // Call the function to populate dropdowns when the document is ready
-//$(document).ready(populateDropdownValues);  
+$(document).ready(populateDropdownValues);  
 
 
 //Schedule successful!
@@ -1680,15 +1668,47 @@ function fetchAndUpdateCounts() {
   });
 }
 
-
 document.addEventListener("DOMContentLoaded", async function () {
-  flatpickr("#date", {
-    dateFormat: "Y-m-d",
-    minDate: "today" // Set the minimum date to today
-  });
+  initializeFlatpickr();
   await populateDropdownValues(); // Wait for populateDropdownValues to complete
   fetchAndUpdateCounts();
 });
+
+
+// Assuming you have functions to handle login and logout events
+document.addEventListener("DOMContentLoaded", function() {
+  var activityLog = document.getElementById('activityLog');
+
+  function logActivity(action, details) {
+      var listItem = document.createElement('li');
+      listItem.textContent = action + ": " + details;
+      activityLog.appendChild(listItem);
+  }
+
+  // Logging form field changes
+  document.getElementById('courseForm').addEventListener('input', function(event) {
+      if (event.target.tagName === 'INPUT') {
+          logActivity("Input", event.target.name + " changed to " + event.target.value);
+      }
+  });
+
+  // Logging button clicks
+  document.getElementById('courseForm').addEventListener('click', function(event) {
+      if (event.target.tagName === 'BUTTON') {
+          var buttonText = event.target.textContent.trim();
+          if (buttonText === "Add") {
+              logActivity("Course Added", "Course ID: " + document.getElementById('CourseID').value);
+          } else if (buttonText === "Edit") {
+              logActivity("Course Edited", "Course ID: " + document.getElementById('CourseID').value);
+          } else if (buttonText === "Delete") {
+              logActivity("Course Deleted", "Course ID: " + document.getElementById('CourseID').value);
+          } else {
+              logActivity("Button Click", buttonText);
+          }
+      }
+  });
+});
+
 
 // Function to open profile popup
 function openProfilePopup() {
@@ -1821,7 +1841,7 @@ function closeChangePasswordPopup() {
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
-/*document.getElementById('login-form').addEventListener('submit', function (e) {
+document.getElementById('login-form').addEventListener('submit', function (e) {
   e.preventDefault();
   console.log('Sign In logic here');
 });
@@ -1829,7 +1849,7 @@ function closeChangePasswordPopup() {
 document.getElementById('signup-form').addEventListener('submit', function (e) {
   e.preventDefault();
   console.log('Sign Up logic here');
-});*/
+});
 
 function typeWriter(text, i, callback) {
   const welcomeTextElement = document.getElementById("welcomeText");

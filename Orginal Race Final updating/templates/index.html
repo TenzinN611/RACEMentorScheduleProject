@@ -35,6 +35,7 @@
           <div class="dropdown-content">
             <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
             <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
+            <a href="#" onclick="toggleSidebar()"><i class="fas fa-user"></i> My Activity</a>
           </div>
         </div>
         <a href="{{ url_for('logout') }}">
@@ -42,6 +43,7 @@
         </a>
       </div>
     </div>
+
 
     <div id="menu">
       <a href="#" onclick="openCourseBox()"><i class="fas fa-book"></i> Module</a>
@@ -53,13 +55,21 @@
 
 
     <img src="{{ url_for('static', filename='images/race_logo1.png') }}" alt="Race Portal Logo" class="logo_bottom">
+
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-content">
+        <h2>My Activity Log</h2>
+        <ul id="activityLog"></ul>
+      </div>
+    </div>
+
     <!--Dashboard Container-->
     <div class="dashboard-container">
       <div class="dashboard-item">
         <h2 id="module_count">Loading...</h2>
         <p>Modules</p>
         <a href="#" class="more-info" onclick="showCourseDetails()">More info →</a>
-      </div>      
+      </div>
       <div class="dashboard-item">
         <h2 id="mentor_count">Loading...</h2>
         <p>Mentors</p>
@@ -245,8 +255,10 @@
         <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
 
         <div id="buttonContainer">
-          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i class="fas fa-calendar-plus"></i> Schedule</button>
-          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>View Schedule</button>
+          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i
+              class="fas fa-calendar-plus"></i> Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i
+              class="fas fa-calendar-alt"></i>View Schedule</button>
         </div>
       </form>
     </div>
@@ -307,74 +319,74 @@
       <input type="text" id="searchInput" placeholder="Enter Batch" oninput="searchCalendar()">
       <button onclick="searchCalendar()">Search</button>
     </div>
-    <table id="scheduleTable">
-      <tr>
-        <th colspan="54" class="calendar-heading">Scheduled Calendar 2024</th>
-      </tr>
-      <tr>
-        <th>Batch</th>
-        <th>Week 1</th>
-        <th>Week 2</th>
-        <th>Week 3</th>
-        <th>Week 4</th>
-        <th>Week 5</th>
-        <th>Week 6</th>
-        <th>Week 7</th>
-        <th>Week 8</th>
-        <th>Week 9</th>
-        <th>Week 10</th>
-        <th>Week 11</th>
-        <th>Week 12</th>
-        <th>Week 13</th>
-        <th>Week 14</th>
-        <th>Week 15</th>
-        <th>Week 16</th>
-        <th>Week 17</th>
-        <th>Week 18</th>
-        <th>Week 19</th>
-        <th>Week 20</th>
-        <th>Week 21</th>
-        <th>Week 22</th>
-        <th>Week 23</th>
-        <th>Week 24</th>
-        <th>Week 25</th>
-        <th>Week 26</th>
-        <th>Week 27</th>
-        <th>Week 28</th>
-        <th>Week 29</th>
-        <th>Week 30</th>
-        <th>Week 31</th>
-        <th>Week 32</th>
-        <th>Week 33</th>
-        <th>Week 34</th>
-        <th>Week 35</th>
-        <th>Week 36</th>
-        <th>Week 37</th>
-        <th>Week 38</th>
-        <th>Week 39</th>
-        <th>Week 40</th>
-        <th>Week 41</th>
-        <th>Week 42</th>
-        <th>Week 43</th>
-        <th>Week 44</th>
-        <th>Week 45</th>
-        <th>Week 46</th>
-        <th>Week 47</th>
-        <th>Week 48</th>
-        <th>Week 49</th>
-        <th>Week 50</th>
-        <th>Week 51</th>
-        <th>Week 52</th>
-        <th>Week 53</th>
-    </tr>
-    </table>
-  </div>
-  <div id="noResultsMessage" style="display: none;">No results found</div>
+    <div id="scheduleContainer">
+      <table id="scheduleTable">
+        <tr>
+          <th colspan="53" class="calendar-heading">Scheduled Calendar 2024</th>
+        </tr>
+        <tr>
+          <th>Batch</th>
+          <th>Week 1</th>
+          <th>Week 2</th>
+          <th>Week 3</th>
+          <th>Week 4</th>
+          <th>Week 5</th>
+          <th>Week 6</th>
+          <th>Week 7</th>
+          <th>Week 8</th>
+          <th>Week 9</th>
+          <th>Week 10</th>
+          <th>Week 11</th>
+          <th>Week 12</th>
+          <th>Week 13</th>
+          <th>Week 14</th>
+          <th>Week 15</th>
+          <th>Week 16</th>
+          <th>Week 17</th>
+          <th>Week 18</th>
+          <th>Week 19</th>
+          <th>Week 20</th>
+          <th>Week 21</th>
+          <th>Week 22</th>
+          <th>Week 23</th>
+          <th>Week 24</th>
+          <th>Week 25</th>
+          <th>Week 26</th>
+          <th>Week 27</th>
+          <th>Week 28</th>
+          <th>Week 29</th>
+          <th>Week 30</th>
+          <th>Week 31</th>
+          <th>Week 32</th>
+          <th>Week 33</th>
+          <th>Week 34</th>
+          <th>Week 35</th>
+          <th>Week 36</th>
+          <th>Week 37</th>
+          <th>Week 38</th>
+          <th>Week 39</th>
+          <th>Week 40</th>
+          <th>Week 41</th>
+          <th>Week 42</th>
+          <th>Week 43</th>
+          <th>Week 44</th>
+          <th>Week 45</th>
+          <th>Week 46</th>
+          <th>Week 47</th>
+          <th>Week 48</th>
+          <th>Week 49</th>
+          <th>Week 50</th>
+          <th>Week 51</th>
+          <th>Week 52</th>
+        </tr>
+      </table>
+      <div id="noResultsMessage" style="display: none;">No results found</div>
+    </div>
   </div>
 
   <table id="scheduleTable1">
     <tr>
-      <th colspan="5" class="calendar-heading">Scheduled Calendar</th>
+      <th colspan="53" class="calendar-heading">Scheduled Calendar</th>
     </tr>
     <tr>
       <th>Batch</th>
@@ -430,10 +442,8 @@
       <th>Week 50</th>
       <th>Week 51</th>
       <th>Week 52</th>
-      <th>Week 53</th>
-  </tr>
+    </tr>
   </table>
-
 
   <div id="overlay" onclick="closeCalendar()"></div>
 
