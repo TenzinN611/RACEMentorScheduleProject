@@ -63,6 +63,41 @@ body.loading #preloader {
     /* Adjust the left position as needed */
 }
 
+#loadingLogo-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Adjust the opacity and color of the overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#loadingLogo img {
+    width: 100px;
+    /* Adjust the size of the loadingLogo image */
+    animation: spin 1s linear infinite;
+    /* Y-axis spin animation */
+}
+
+body.loading #loadingLogo {
+    display: none;
+}
+
+@keyframes spin {
+    from {
+        transform: rotateY(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
 #navbar {
     background-color: #ff8c00;
     /* Slightly darker orange */

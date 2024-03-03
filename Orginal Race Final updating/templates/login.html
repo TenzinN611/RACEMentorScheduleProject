@@ -27,7 +27,8 @@
       <h1>Sign In</h1>
       <form id="login-form" action="{{ url_for('login') }}" method="post">
         <label for="username"><i class="fas fa-user"></i> Username </label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" value="{{ username }}" required>
+        <input type="text" id="username" name="username" placeholder="Enter your username" value="{{ username }}"
+          required>
 
         <label for="password"><i class="fas fa-lock"></i> Password </label>
         <div class="password-container">
@@ -78,7 +79,7 @@
 
       <button type="submit">Sign Up</button>
     </form>
-    
+
     <p id="login-toggle">Already have an account? <a href="#" onclick="toggleSignIn()">Sign In</a></p>
   </div>
   </div>
@@ -86,7 +87,20 @@
   <div class="mentor-schedule-title">
     <h2>Student Course Mentor Scheduling Portal</h2>
   </div>
-  
+
+  <!-- Add the "Quick Guide" icon and label -->
+  <div class="quick-guide">
+    <a href="#" onclick="toggleQuickGuide()">Quick Guide</a>
+    <div class="popup-container" id="popupContainer">
+      <div class="popup-content">
+        <!-- Replace this with your video element -->
+        <video class="video-popup" controls>
+          <source src="/static/images/Quick Guide.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+
   <script src="static/script.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </body>

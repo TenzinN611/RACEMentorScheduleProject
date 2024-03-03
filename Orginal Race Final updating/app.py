@@ -1167,6 +1167,12 @@ def format_date(input_string):
     
 def fetch_dropdown_values1():
     try:
+        conn33 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cursor1 = conn33.cursor()
 
         # Fetch distinct Course names from the database
         cursor1.execute("SELECT DISTINCT ModuleName FROM Modules")
@@ -1196,8 +1202,9 @@ def fetch_dropdown_values1():
 
     finally:
         # Close the cursor and connection in the 'finally' block
-        if 'cursor1' in locals() and cursor1:
-            cursor1.close()
+        conn33.commit()
+        cursor1.close()
+        
 
 
 @app.route('/changepassword', methods=['POST'])
@@ -1207,23 +1214,32 @@ def changepassword():
         cpassword = hash_string(cpasswordbf)
         newpasswordbf = request.form['NewPassword']
         newpassword = hash_string(newpasswordbf)
-        currentuser = request.form['currentUsername']
+        currentuserbf = request.form['currentUsername']
+        currentuser = caesar_cipher(currentuserbf, shift)
 
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM login WHERE username = %s", (currentuser,))
-        user = cursor.fetchone()
+
+        conn34 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cursor11 = conn34.cursor()
+
+        cursor11.execute("SELECT * FROM login WHERE username = %s", (currentuser,))
+        user = cursor11.fetchone()
 
         if user and user[-1] == cpassword:
             # Update the password in the database
-            cursor.execute("UPDATE login SET password = %s WHERE username = %s", (newpassword ,currentuser))
-            conn.commit()
-            cursor.close()
+            cursor11.execute("UPDATE login SET password = %s WHERE username = %s", (newpassword ,currentuser))
+            conn34.commit()
+            cursor11.close()
 
             flash('Password changed successfully! Please log in with your new password.', 'success')
             return render_template('login.html')
         else:
             flash('Invalid current password. Please try again.', 'error')
-            cursor.close()
+            conn34.commit()
+            cursor11.close()
             return render_template('login.html')
     else:
         flash('Please Enter some value')
