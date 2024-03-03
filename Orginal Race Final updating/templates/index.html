@@ -344,7 +344,7 @@
       <span class="closeChangePasswordPopup" onclick="closeChangePasswordPopup()">&times;</span>
       <h2>Change Password</h2>
       <form id="edit-profile-forms" method="post" action="/changepassword">
-        <input type="hidden" name="currentUsername" value="{{ username }}">
+        <input type="hidden" name="currentUsername" value="{{username}}">
         <label for="Password"><i class="fas fa-lock"></i> Current Password </label>
         <div class="password-input-container">
           <input type="password" id="Password" name="Password" required value="{{ current_password }}">
@@ -370,6 +370,9 @@
       <button onclick="searchCalendar()">Search</button>
     </div>
     <div id="scheduleContainer">
+      <div id="loadingLogo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Loading..." width="100px" height="100px">
+    </div>
       <table id="scheduleTable">
         <tr>
           <th colspan="53" class="calendar-heading">Scheduled Calendar 2024</th>

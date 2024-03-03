@@ -8,9 +8,74 @@ body {
     font-family: 'Martain';
     font-size: 13px;
     background: url("/static/images/home1.jpg") center/cover no-repeat fixed;
-    backdrop-filter: blur(5px);/* Apply the same blur effect as in the body */
+    backdrop-filter: blur(5px);
+    /* Apply the same blur effect as in the body */
 }
 
+/*Quick Guide*/
+.quick-guide {
+    position: fixed;
+    bottom: 25px;
+    left: 30px;
+    z-index: 999;
+    background-color: orange;
+    padding: 8px 15px;
+    border-radius: 30px;
+    display: inline-block;
+    animation: pulse 2s infinite, shine 2s infinite;
+    box-shadow: 0 0 10px orange;
+    animation: glow 1.5s infinite alternate, shine 1.5s infinite linear;
+}
+
+.quick-guide a {
+    text-decoration: none;
+    color: #f3f3f3;
+}
+
+.popup-container {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 135%;
+    transform: translateX(-50%);
+    width: 80vw; /* Set width to 90% of viewport width */
+    max-width: 400px; /* Limit maximum width */
+    height: auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    animation: popin 0.3s ease forwards;
+}
+
+@keyframes popin {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.popup-content {
+    padding: 0;
+}
+
+.video-popup {
+    width: 100%;
+    height: auto;
+    transition: width 0.3s ease;
+}
+
+.video-popup.expanded {
+    width: 100vw;
+    /* Expand to full viewport width */
+}
+
+/*Login Container*/
 .login-container {
     display: flex;
     justify-content: center;
@@ -143,22 +208,25 @@ button:hover,
     top: 10px;
     right: 10px;
     padding: 10px;
-    overflow: hidden; /* Ensure text doesn't overflow */
+    overflow: hidden;
+    /* Ensure text doesn't overflow */
 }
 
 .mentor-schedule-title h2 {
     margin: 0;
     font-size: 17px;
-    font-weight:bold;
+    font-weight: bold;
     color: rgb(236, 231, 231);
     white-space: nowrap;
-    animation: running-text 15s linear infinite; /* Adjust duration for smoother effect */
+    animation: running-text 15s linear infinite;
+    /* Adjust duration for smoother effect */
 }
 
 @keyframes running-text {
     0% {
         transform: translateX(100%);
     }
+
     100% {
         transform: translateX(-100%);
     }
@@ -262,6 +330,7 @@ button:hover,
         visibility: hidden;
     }
 }
+
 
 .landing-container {
     font-size: x-large;

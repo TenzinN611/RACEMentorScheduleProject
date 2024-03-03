@@ -980,25 +980,22 @@ const scheduleData = [];
 
 async function populateTable() {
   try {
+    // Display loading indicator
+    const loadingLogo = document.getElementById('loadingLogo');
+    loadingLogo.style.display = 'block';
     depopulateTable();
-    // Fetch mentor data
-    const mentorsResponse = await fetch('/get_mentorss');
-    const mentorsData = await mentorsResponse.json();
-    console.log('Mentors Data received:', mentorsData);
+    const table = document.getElementById('scheduleTable');
+    const fragment = document.createDocumentFragment();
 
-    // Fetch batch names from the server
-    const batchNamesResponse = await fetch('/get_batch_names');
-    const batchNames = await batchNamesResponse.json();
-    console.log('Batch Names received:', batchNames);
-
-    // Fetch Saturdays for the current month
-    const saturdayDates = await getSaturdaysInMonth();
-    console.log('Saturdays received:', saturdayDates);
+    const [mentorsData, batchNames, saturdayDates] = await Promise.all([
+      fetch('/get_mentorss').then(response => response.json()),
+      fetch('/get_batch_names').then(response => response.json()),
+      getSaturdaysInMonth()
+    ]);
 
     // Clear existing scheduleData
     scheduleData.length = 0;
 
-    // Populate scheduleData
     batchNames.forEach(batch => {
       const scheduleItem = { batch };
       saturdayDates.forEach((date, index) => {
@@ -1009,15 +1006,19 @@ async function populateTable() {
       scheduleData.push(scheduleItem);
     });
 
-    // Now populate the table with the updated dynamic scheduleData
-    const table = document.getElementById('scheduleTable');
     const seenMentorNames = {};
 
     scheduleData.forEach((item, rowIndex) => {
-      const row = table.insertRow();
+      const row = document.createElement('tr');
       Object.values(item).forEach((value, columnIndex) => {
-        const cell = row.insertCell();
+        const cell = document.createElement('td');
         cell.innerHTML = value;
+        if (value != 'Not Scheduled' && columnIndex > 0){
+          cell.style.backgroundColor = 'green';
+        }
+        if (columnIndex == 0){
+          cell.style.backgroundColor = 'lightblue';
+        }
 
         // Add drag-and-drop functionality to each cell
         makeCellDraggable(cell);
@@ -1029,27 +1030,36 @@ async function populateTable() {
             if (seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
               cell.style.backgroundColor = 'red';
             }
-          }
+          } 
         }
 
         seenMentorNames[columnIndex] = seenMentorNames[columnIndex] || {};
         const mentorName = value.split(' <br> ')[0];
         seenMentorNames[columnIndex][mentorName] = true;
 
-        cell.addEventListener('click', function (event) {
-          const clickedRowIndex = rowIndex;
-          const topCellData = value;
-          const leftCellData = scheduleData[clickedRowIndex][Object.keys(scheduleData[0])[0]];
-          const datePart = topCellData.split(' <br> ')[1];
+        if (value !== 'Not Scheduled') { // Only attach event listener if not 'Not Scheduled'
+          cell.addEventListener('click', function (event) {
+            const clickedRowIndex = rowIndex;
+            const topCellData = value;
+            const leftCellData = scheduleData[clickedRowIndex][Object.keys(scheduleData[0])[0]];
+            const datePart = topCellData.split(' <br> ')[1];
 
-          showPopup(datePart, leftCellData);
+            showPopup(datePart, leftCellData);
 
-          console.log(`Clicked Cell: (${datePart},${leftCellData})`);
-        });
+            console.log(`Clicked Cell: (${datePart},${leftCellData})`);
+          });
+        }
+        row.appendChild(cell);
       });
+      fragment.appendChild(row);
     });
+    table.appendChild(fragment);
+    loadingLogo.style.display = 'none';
   } catch (error) {
     console.error('Error populating table:', error);
+    // Hide loading indicator on error
+    const loadingLogo = document.getElementById('loadingLogo');
+    loadingLogo.style.display = 'none';
   }
 }
 
@@ -1068,6 +1078,7 @@ function depopulateTable() {
     console.error('Error depopulating table:', error);
   }
 }
+
 
 const scheduleData1 = [];
 async function populateTable1() {
@@ -1212,8 +1223,8 @@ async function makeDropTarget(cell) {
         console.log('cdate:', cdate);
 
         if (sat1[topColumnValue - 1] < cdate) {
+          cell.innerHTML= 'Not Scheduled';
           alert('Cannot Schedule as the Date is before today')
-          populateTable();
         }
         else {
           dropcell11(datePart, batch, droppedCellColumnValue, mentor);
@@ -1365,6 +1376,9 @@ function showPopup(td, ld) {
   scheduleItemElement.style.display = 'block';
   overlayElement.style.display = 'block';
 
+  // Add event listener to close popup when overlay is clicked
+  overlay.addEventListener('click', closePopups);
+
   const url = `/show_schedule?td=${encodeURIComponent(td)}&ld=${encodeURIComponent(ld)}`;
 
   fetch(url)
@@ -1387,7 +1401,7 @@ function showPopup(td, ld) {
 
       const closeButtonContainer = document.createElement('div');
       closeButtonContainer.id = 'closeButtonContainer';
-      closeButtonContainer.onclick = closePopup;
+      closeButtonContainer.onclick = closePopups;
       closeButtonContainer.innerHTML = '&times;';
 
       scheduleItemsContainer.appendChild(closeButtonContainer);
@@ -1545,7 +1559,7 @@ function deleteSchedule(scheduleID) {
         // Display an alert message when the schedule is deleted successfully
         alert('Schedule deleted successfully');
         // Close the popup or perform any other necessary actions
-        closePopup();
+        closePopups();
       })
       .catch(error => console.error('Error:', error));
   } else {
@@ -1554,10 +1568,12 @@ function deleteSchedule(scheduleID) {
   }
 }
 
-function closePopup() {
+function closePopups() {
   openCalendar();
   const popupContainer = document.getElementById('schedulePopup');
   popupContainer.style.display = 'none';
+  // Remove event listener to prevent unwanted closing
+  overlay.removeEventListener('click', closePopups);
 }
 
 function initializeFlatpickr() {
@@ -1834,6 +1850,26 @@ function initializeLogging() {
 }
 
 document.addEventListener("DOMContentLoaded", initializeLogging);
+
+//Quick Guide
+function toggleQuickGuide() {
+  var popupContainer = document.getElementById("popupContainer");
+  var video = popupContainer.querySelector("video");
+  if (popupContainer.style.display === "block") {
+    popupContainer.style.display = "none";
+    video.pause(); // Pause the video when closing the popup
+  } else {
+    popupContainer.style.display = "block";
+    video.play(); // Play the video when opening the popup
+  }
+}
+
+function closePopup() {
+  var popupContainer = document.getElementById("popupContainer");
+  var video = popupContainer.querySelector("video");
+  popupContainer.style.display = "none";
+  video.pause(); // Pause the video when closing the popup
+}
 
 
 // Function to open profile popup
