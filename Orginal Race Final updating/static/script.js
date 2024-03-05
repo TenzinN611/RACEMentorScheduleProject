@@ -983,10 +983,11 @@ async function populateTable() {
     // Display loading indicator
     const loadingLogo = document.getElementById('loadingLogo');
     loadingLogo.style.display = 'block';
-    depopulateTable();
-    const table = document.getElementById('scheduleTable');
-    const fragment = document.createDocumentFragment();
 
+    // Clear existing table data
+    depopulateTable();
+
+    // Fetch necessary data asynchronously
     const [mentorsData, batchNames, saturdayDates] = await Promise.all([
       fetch('/get_mentorss').then(response => response.json()),
       fetch('/get_batch_names').then(response => response.json()),
@@ -996,6 +997,18 @@ async function populateTable() {
     // Clear existing scheduleData
     scheduleData.length = 0;
 
+    // Initialize the scheduleItem object with the "Batch" column header
+    const scheduleItem = { batch: 'Batch' };
+
+    // Create column headers for each Saturday date
+    saturdayDates.forEach((date, index) => {
+      scheduleItem[`cell${index + 1}`] = `Week ${index + 1}`;
+    });
+
+    // Push the column header object to the scheduleData array
+    scheduleData.push(scheduleItem);
+
+    // Populate scheduleData with mentor data
     batchNames.forEach(batch => {
       const scheduleItem = { batch };
       saturdayDates.forEach((date, index) => {
@@ -1006,38 +1019,48 @@ async function populateTable() {
       scheduleData.push(scheduleItem);
     });
 
+    // Track seen mentor names
     const seenMentorNames = {};
 
+    // Create table rows and cells
+    const table = document.getElementById('scheduleTable');
+    const fragment = document.createDocumentFragment();
     scheduleData.forEach((item, rowIndex) => {
       const row = document.createElement('tr');
       Object.values(item).forEach((value, columnIndex) => {
         const cell = document.createElement('td');
         cell.innerHTML = value;
-        if (value != 'Not Scheduled' && columnIndex > 0){
+
+        // Set background color based on conditions
+        if (value != 'Not Scheduled' && columnIndex > 0 && !/^Week \d+$/.test(value)) {
           cell.style.backgroundColor = 'green';
         }
-        if (columnIndex == 0){
+        if (columnIndex == 0) {
           cell.style.backgroundColor = 'lightblue';
+        }
+        if (/^Week \d+$/.test(value)){
+          cell.style.backgroundColor = 'orange';
         }
 
         // Add drag-and-drop functionality to each cell
         makeCellDraggable(cell);
         makeDropTarget(cell);
 
+        // Set background color based on seen mentor names
         if (columnIndex > 0) {
           const mentorName = value.split(' <br> ')[0];
-          if (seenMentorNames[columnIndex]) {
-            if (seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
-              cell.style.backgroundColor = 'red';
-            }
-          } 
+          if (seenMentorNames[columnIndex] && seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
+            cell.style.backgroundColor = 'red';
+          }
         }
 
+        // Track seen mentor names
         seenMentorNames[columnIndex] = seenMentorNames[columnIndex] || {};
         const mentorName = value.split(' <br> ')[0];
         seenMentorNames[columnIndex][mentorName] = true;
 
-        if (value !== 'Not Scheduled') { // Only attach event listener if not 'Not Scheduled'
+        // Attach event listener to non-'Not Scheduled' cells
+        if (value !== 'Not Scheduled') {
           cell.addEventListener('click', function (event) {
             const clickedRowIndex = rowIndex;
             const topCellData = value;
@@ -1049,11 +1072,16 @@ async function populateTable() {
             console.log(`Clicked Cell: (${datePart},${leftCellData})`);
           });
         }
+
         row.appendChild(cell);
       });
       fragment.appendChild(row);
     });
+
+    // Append the fragment to the table
     table.appendChild(fragment);
+
+    // Hide loading indicator
     loadingLogo.style.display = 'none';
   } catch (error) {
     console.error('Error populating table:', error);
@@ -1063,12 +1091,13 @@ async function populateTable() {
   }
 }
 
+
 function depopulateTable() {
   try {
     const table = document.getElementById('scheduleTable');
 
     // Remove all rows from the table, starting from the second row
-    for (let i = table.rows.length - 1; i > 1; i--) {
+    for (let i = table.rows.length - 1; i > 0; i--) {
       table.deleteRow(i);
     }
 
@@ -1101,6 +1130,14 @@ async function populateTable1() {
 
     // Clear existing scheduleData
     scheduleData1.length = 0;
+
+    const scheduleItem1 = { batch: 'Batch' };
+
+    // Create column headers for each Saturday date
+    saturdayDates1.forEach((date, index) => {
+      scheduleItem1[`cell${index + 1}`] = `Week ${index + 1}`;
+    });
+
 
     // Populate scheduleData
     batchNames1.forEach(batch => {
@@ -1197,7 +1234,7 @@ async function makeDropTarget(cell) {
         console.log('topcelldata: ', topCellData);
 
         // Extract the batch from the dropped row
-        const batch = scheduleData[droppedRowIndex - 2].batch;
+        const batch = scheduleData[droppedRowIndex - 1].batch;
         console.log('batch: ', batch);
 
         // Extract the value of the dropped cell column using cellIndex
