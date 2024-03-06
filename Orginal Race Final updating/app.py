@@ -13,18 +13,17 @@ import hashlib
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'ufxxbtwi'  # Add a secret key
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Database connection details
-DB_HOST = 'ep-steep-meadow-a1gz0jau.ap-southeast-1.aws.neon.tech'
-DB_PORT = '5432'
-DB_NAME = 'raceproject'
-DB_USER = 'tenzinnamsey611'
-DB_PASSWORD = 'oYGLpCWT1DK8'
-
-
-
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 # Replace 'your_username', 'your_password', 'your_database', and 'your_host' with your PostgreSQL credentials
-
 conn = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,
         database=DB_NAME,
@@ -154,8 +153,6 @@ def login():
 
     return render_template('login.html', username=username1)
 
-
-
 @app.route('/LandingPage')
 def index1():
     if 'username' in session:
@@ -191,7 +188,6 @@ def signup():
         passwordbf = request.form['password']
         password = hash_string(passwordbf)
 
-
         # Validate first_name (allow only alphabets)
         if not first_name1.isalpha():
             flash('First name should contain only alphabets.', 'error')
@@ -219,6 +215,12 @@ def signup():
                 INSERT INTO login (first_name, last_name, email, username, password)
                 VALUES (%s, %s, %s, %s, %s)""", (first_name, last_name, email, username, password))
             conn.commit()
+
+            # Send email notification
+            msg = Message('Registration Successful', sender=app.config['MAIL_USERNAME'], recipients=[email])
+            msg.body = f'Hello {first_name},\n\nThank you for registering on our Student Course Mentor Scheduling Portal!'
+            mail.send(msg)
+
             flash('Registration successful!', 'success')
             return render_template('login.html')
         except Exception as e:
@@ -264,7 +266,7 @@ def signup1():
                            UPDATE login SET first_name=%s, last_name=%s, email=%s, username=%s WHERE username=%s
                 """, (first_name, last_name, email, username, currentuser))
             conn.commit()
-            session['username'] = username1  # Store the username in the session
+            session['username'] = username2  # Store the username in the session
             session['FirstName'] = first_name1
             session['LastName'] = last_name1
             session['EmailAddress'] = email1
@@ -278,11 +280,11 @@ def signup1():
             cursor.close()
 
         # Redirect to a specific page after successful update
-        username1 = session['username']
+        username2 = session['username']
         FirstName1 = session['FirstName']
         LastName1 = session['LastName']
         EmailAddress1 = session['EmailAddress']
-        return render_template('index.html', username=username1, FirstName=FirstName1, LastName=LastName1, EmailAddress=EmailAddress1)
+        return render_template('index.html', username=username2, FirstName=FirstName1, LastName=LastName1, EmailAddress=EmailAddress1)
 
 @app.route('/submit_form', methods=['POST'])
 def submit_form():
@@ -632,16 +634,9 @@ def Schedule1():
         BatchName = request.form.get('batch11')
         SDate = request.form.get('date')
         action = request.form.get('action')
-        selected_date = datetime.strptime(SDate, '%Y-%m-%d')
-
-        # Check if the selected date is before today
-        if selected_date < datetime.now():
-            error_message = "ERROR\n  Selected date must be today or later."
-            return render_template('success.html', error_message=error_message)
-        
+    
         ScheduleS(CourseName, MentorName, ProgramName, BatchName, SDate)
-        error_message = "Scheduled Successfully."
-    return render_template('success.html', error_message=error_message)
+    return render_template('success.html')
         
 def ScheduleS(CourseName, MentorName,ProgramName,BatchName,SDate):
     conn1 = psycopg2.connect(host=DB_HOST,
@@ -1216,7 +1211,6 @@ def changepassword():
         newpassword = hash_string(newpasswordbf)
         currentuserbf = request.form['currentUsername']
         currentuser = caesar_cipher(currentuserbf, shift)
-
 
         conn34 = psycopg2.connect(host=DB_HOST,
         port=DB_PORT,

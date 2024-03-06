@@ -7,6 +7,19 @@ function showContent() {
 // Simulating the preloader completion with a timeout (you can replace this with your actual preloader logic)
 setTimeout(showContent, 2000); // Adjust the timeout as needed /* Hide content initially */
 
+// Function to escape HTML characters
+function escapeHTML(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 // Show Course details
 function showCourseDetails() {
     fetch('/show_courses')
@@ -38,11 +51,11 @@ function renderCourseTable() {
     const tableRows = data.map(course => `
         <tr>
           <td>${course.CourseID}</td>
-          <td contenteditable="true" data-courseid="${course.CourseID}" data-field="courseName">${course.courseName}</td>
-          <td contenteditable="true" data-courseid="${course.CourseID}" data-field="description">${course.description}</td>
+          <td contenteditable="true" data-courseid="${escapeHTML(course.CourseID)}" data-field="courseName">${escapeHTML(course.courseName)}</td>
+          <td contenteditable="true" data-courseid="${escapeHTML(course.CourseID)}" data-field="description">${escapeHTML(course.description)}</td>
           <td>
-            <button class="btn btn-success" onclick="editCourse(${course.CourseID})"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger" onclick="deleteCourse(${course.CourseID})"><i class="fas fa-trash-alt"></i></button>
+            <button class="btn btn-success" onclick="editCourse(${escapeHTML(course.CourseID)})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" onclick="deleteCourse(${escapeHTML(course.CourseID)})"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>`
     );
@@ -73,8 +86,8 @@ renderCourseTable();
 
 // Function to handle course editing
 function editCourse(courseID) {
-    const courseNameElement = $(`#courseTable td[data-courseid="${courseID}"][data-field="courseName"]`);
-    const descriptionElement = $(`#courseTable td[data-courseid="${courseID}"][data-field="description"]`);
+    const courseNameElement = $(`#courseTable td[data-courseid="${escapeHTML(courseID)}"][data-field="courseName"]`);
+    const descriptionElement = $(`#courseTable td[data-courseid="${escapeHTML(courseID)}"][data-field="description"]`);
 
     let newCourseName = courseNameElement.text();
     let newDescription = descriptionElement.text();
@@ -171,7 +184,7 @@ function deleteCourse(courseID) {
                 if (data.success) {
                     alert('Course deleted successfully');
                     // Remove the table row in the current tab after deleting
-                    $(`#courseTable tr[data-courseid="${courseID}"]`).remove();
+                    $(`#courseTable tr[data-courseid="${escapeHTML(courseID)}}"]`).remove();
                     // Reload the page with the updated table
                     fetchAndUpdateTable();
                 } else {
@@ -220,14 +233,14 @@ function renderMentorTable() {
     const tableRows = data.map(mentor => `
         <tr>
           <td>${mentor.mentorId}</td>
-          <td contenteditable="true" data-mentorid="${mentor.mentorId}" data-field="mentorName">${mentor.mentorName}</td>
-          <td contenteditable="true" data-mentorid="${mentor.mentorId}" data-field="mentorRaceEmailAddress">${mentor.mentorRaceEmailAddress}</td>
-          <td contenteditable="true" data-mentorid="${mentor.mentorId}" data-field="mentorEmailAddress">${mentor.mentorEmailAddress}</td>
-          <td contenteditable="true" data-mentorid="${mentor.mentorId}" data-field="mentorProfile">${mentor.mentorProfile}</td>
-          <td contenteditable="true" data-mentorid="${mentor.mentorId}" data-field="mentorWhatsapp">${mentor.mentorWhatsapp}</td>
+          <td contenteditable="true" data-mentorid="${escapeHTML(mentor.mentorId)}" data-field="mentorName">${escapeHTML(mentor.mentorName)}</td>
+          <td contenteditable="true" data-mentorid="${escapeHTML(mentor.mentorId)}" data-field="mentorRaceEmailAddress">${escapeHTML(mentor.mentorRaceEmailAddress)}</td>
+          <td contenteditable="true" data-mentorid="${escapeHTML(mentor.mentorId)}" data-field="mentorEmailAddress">${escapeHTML(mentor.mentorEmailAddress)}</td>
+          <td contenteditable="true" data-mentorid="${escapeHTML(mentor.mentorId)}" data-field="mentorProfile">${escapeHTML(mentor.mentorProfile)}</td>
+          <td contenteditable="true" data-mentorid="${escapeHTML(mentor.mentorId)}" data-field="mentorWhatsapp">${escapeHTML(mentor.mentorWhatsapp)}</td>
           <td>
-            <button class="btn btn-success" onclick="editMentor(${mentor.mentorId})"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger" onclick="deleteMentor(${mentor.mentorId})"><i class="fas fa-trash-alt"></i></button>
+            <button class="btn btn-success" onclick="editMentor(${escapeHTML(mentor.mentorId)})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" onclick="deleteMentor(${escapeHTML(mentor.mentorId)})"><i class="fas fa-trash-alt"></i></button>
           </td>
         </tr>`
     );
@@ -261,11 +274,11 @@ renderMentorTable();
 
 // Function to handle mentor editing
 function editMentor(mentorId) {
-    const mentorNameElement = $(`#mentorTable td[data-mentorid="${mentorId}"][data-field="mentorName"]`);
-    const raceEmailElement = $(`#mentorTable td[data-mentorid="${mentorId}"][data-field="mentorRaceEmailAddress"]`);
-    const emailElement = $(`#mentorTable td[data-mentorid="${mentorId}"][data-field="mentorEmailAddress"]`);
-    const profileElement = $(`#mentorTable td[data-mentorid="${mentorId}"][data-field="mentorProfile"]`);
-    const whatsappElement = $(`#mentorTable td[data-mentorid="${mentorId}"][data-field="mentorWhatsapp"]`);
+    const mentorNameElement = $(`#mentorTable td[data-mentorid="${escapeHTML(mentorId)}"][data-field="mentorName"]`);
+    const raceEmailElement = $(`#mentorTable td[data-mentorid="${escapeHTML(mentorId)}"][data-field="mentorRaceEmailAddress"]`);
+    const emailElement = $(`#mentorTable td[data-mentorid="${escapeHTML(mentorId)}"][data-field="mentorEmailAddress"]`);
+    const profileElement = $(`#mentorTable td[data-mentorid="${escapeHTML(mentorId)}"][data-field="mentorProfile"]`);
+    const whatsappElement = $(`#mentorTable td[data-mentorid="${escapeHTML(mentorId)}"][data-field="mentorWhatsapp"]`);
 
     let newMentorName = mentorNameElement.text();
     let newRaceEmail = raceEmailElement.text();
@@ -382,7 +395,7 @@ function deleteMentor(mentorId) {
                 if (data.success) {
                     alert('Mentor deleted successfully');
                     // Remove the table row in the current tab after deleting
-                    $(`#mentorTable tr[data-mentorid="${mentorId}"]`).remove();
+                    $(`#mentorTable tr[data-mentorid="${escapeHTML(mentorId)}"]`).remove();
                     // Reload the page with the updated table
                     fetchAndUpdateMentorTable();
                 } else {
@@ -428,10 +441,10 @@ function renderBatchTable() {
     const tableRows = data.map(batch => `
       <tr>
         <td>${batch.BatchID}</td>
-        <td contenteditable="true" data-batchid="${batch.BatchID}" data-field="batchName">${batch.batchName}</td>
+        <td contenteditable="true" data-batchid="${escapeHTML(batch.BatchID)}" data-field="batchName">${escapeHTML(batch.batchName)}</td>
         <td>
-          <button class="btn btn-success" onclick="editBatch(${batch.BatchID})"><i class="fas fa-edit"></i></button>
-          <button class="btn btn-danger" onclick="deleteBatch(${batch.BatchID})"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-success" onclick="editBatch(${escapeHTML(batch.BatchID)})"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-danger" onclick="deleteBatch(${escapeHTML(batch.BatchID)})"><i class="fas fa-trash-alt"></i></button>
         </td>
       </tr>`
     );
@@ -460,7 +473,7 @@ renderBatchTable();
 
 // Function to edit batch details
 function editBatch(batchID) {
-    const batchNameElement = $(`#batchTable td[data-batchid="${batchID}"][data-field="batchName"]`);
+    const batchNameElement = $(`#batchTable td[data-batchid="${escapeHTML(batchID)}"][data-field="batchName"]`);
     const newBatchName = batchNameElement.text();
 
     // Display a confirmation dialog before editing the batch
@@ -536,7 +549,7 @@ function deleteBatch(batchID) {
                 if (data.success) {
                     alert('Batch deleted successfully');
                     // Remove the table row in the current tab after deleting
-                    $(`#batchTable tr[data-batchid="${batchID}"]`).remove();
+                    $(`#batchTable tr[data-batchid="${escapeHTML(batchID)}"]`).remove();
                     // Fetch and render the updated data without reloading the page
                     fetchAndUpdateBatchTable();
                 } else {
@@ -583,10 +596,10 @@ function renderProgramTable() {
     const tableRows = data.map(program => `
       <tr>
         <td>${program.ProgramID}</td>
-        <td contenteditable="true" data-programid="${program.ProgramID}" data-field="programName">${program.programName}</td>
+        <td contenteditable="true" data-programid="${escapeHTML(program.ProgramID)}" data-field="programName">${escapeHTML(program.programName)}</td>
         <td>
-          <button class="btn btn-success" onclick="editProgram(${program.ProgramID})"><i class="fas fa-edit"></i></button>
-          <button class="btn btn-danger" onclick="deleteProgram(${program.ProgramID})"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-success" onclick="editProgram(${escapeHTML(program.ProgramID)})"><i class="fas fa-edit"></i></button>
+          <button class="btn btn-danger" onclick="deleteProgram(${escapeHTML(program.ProgramID)})"><i class="fas fa-trash-alt"></i></button>
         </td>
       </tr>`
     );
@@ -615,7 +628,7 @@ renderProgramTable();
 
 //edit program
 function editProgram(programID) {
-    const programNameElement = $(`#programTable td[data-programid="${programID}"][data-field="programName"]`);
+    const programNameElement = $(`#programTable td[data-programid="${escapeHTML(programID)}"][data-field="programName"]`);
     const newProgramName = programNameElement.text();
 
     // Display a confirmation dialog before editing the program
@@ -693,7 +706,7 @@ function deleteProgram(programID) {
                 if (data.success) {
                     alert('Program deleted successfully');
                     // Remove the table row in the current tab after deleting
-                    $(`#programTable tr[data-programid="${programID}"]`).remove();
+                    $(`#programTable tr[data-programid="${escapeHTML(programID)}"]`).remove();
                     // Fetch and render the updated data without reloading the page
                     fetchAndUpdateProgramTable();
                 } else {
