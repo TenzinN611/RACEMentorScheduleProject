@@ -9,6 +9,8 @@ setTimeout(showContent, 2000); // Adjust the timeout as needed /* Hide content i
 
 // Function to escape HTML characters
 function escapeHTML(text) {
+    if (typeof text !== 'string') return text;
+
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -30,18 +32,15 @@ function showCourseDetails() {
             // Store the course data in sessionStorage
             sessionStorage.setItem('courseData', JSON.stringify(data));
 
-            // Open a new tab with course.html
-            const newTab = window.open('/course_table');
-            newTab.onload = function () {
-                // Call a function to render the table using the stored data
-                renderCourseTable();
-            };
+            // Navigate to course_table.html in the same tab
+            window.location.href = '/course_table';
+
+            // Alternatively, you can use:
+            //window.location.replace('/course_table');
         })
         .catch(error => console.error('Error:', error));
 }
 
-// Call the function to show course details
-//showCourseDetails();
 //renderCourseTable
 function renderCourseTable() {
     const storedData = sessionStorage.getItem('courseData');
@@ -198,7 +197,6 @@ function deleteCourse(courseID) {
     }
 }
 
-
 // Function to show mentor details
 function showMentorDetails() {
     // Fetch mentor details from the server
@@ -210,18 +208,14 @@ function showMentorDetails() {
             // Store the mentor data in sessionStorage
             sessionStorage.setItem('mentorData', JSON.stringify(data));
 
-            // Open a new tab with mentor_table.html
-            const newTab = window.open('/mentor_table');
-            newTab.onload = function () {
-                // Call a function to render the mentor table using the stored data
-                renderMentorTable();
-            };
+            // Navigate to mentor_table.html in the same tab
+            window.location.href = '/mentor_table';
+
+            // Alternatively, you can use:
+            // window.location.replace('/mentor_table');
         })
         .catch(error => console.error('Error:', error));
 }
-
-// Call the function to show mentor details
-//showMentorDetails();
 
 // Function to render the mentor table
 function renderMentorTable() {
@@ -420,18 +414,15 @@ function showBatchDetails() {
             // Store the batch data in sessionStorage
             sessionStorage.setItem('batchData', JSON.stringify(data));
 
-            // Open a new tab with batch.html
-            const newTab = window.open('/batch_table');
-            newTab.onload = function () {
-                // Call a function to render the table using the stored data
-                renderBatchTable();
-            };
+            // Navigate to batch_table.html in the same tab
+            window.location.href = '/batch_table';
+
+            // Alternatively, you can use:
+            // window.location.replace('/batch_table');
         })
         .catch(error => console.error('Error:', error));
 }
 
-// Call the function to show batch details
-//showBatchDetails();
 function renderBatchTable() {
     // Retrieve the batch data from sessionStorage
     const storedData = sessionStorage.getItem('batchData');
@@ -564,7 +555,7 @@ function deleteBatch(batchID) {
 }
 
 
-//Show Program
+// Show Program
 function showProgramDetails() {
     fetch('/show_programs')
         .then(response => response.json())
@@ -574,18 +565,14 @@ function showProgramDetails() {
             // Store the program data in sessionStorage
             sessionStorage.setItem('programData', JSON.stringify(data));
 
-            // Open a new tab with program.html
-            const newTab = window.open('/program_table');
-            newTab.onload = function () {
-                // Call a function to render the table using the stored data
-                renderProgramTable();
-            };
+            // Navigate to program_table.html in the same tab
+            window.location.href = '/program_table';
+
+            // Alternatively, you can use:
+            // window.location.replace('/program_table');
         })
         .catch(error => console.error('Error:', error));
 }
-
-// Call the function to show program details
-//showProgramDetails();
 
 function renderProgramTable() {
     // Retrieve the program data from sessionStorage

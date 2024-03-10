@@ -1,11 +1,11 @@
 @font-face {
-    font-family: 'Martain';
-    src: url('./Martian_Mono/MartianMono-VariableFont_wdth\,wght.ttf') format('truetype');
+    font-family: 'Poppins';
+    src: url('./Poppins/Poppins-ExtraBold.ttf') format('truetype');
 }
 
 body {
     margin: 0;
-    font-family: 'Martain';
+    font-family: 'Poppins';
     font-size: 13px;
     background: url("/static/images/home1.jpg") center/cover no-repeat fixed;
     backdrop-filter: blur(5px);
@@ -173,7 +173,7 @@ input,
 button,
 .signup-box button {
     background-color: orange;
-    font-family: 'Martain';
+    font-family: 'Poppins';
     color: #fff;
     padding: 12px 24px;
     border: none;

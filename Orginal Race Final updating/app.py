@@ -831,14 +831,40 @@ def get_counts():
         # Assume you have a query to get the count of scheduled items
         cursor2.execute("SELECT COUNT(*) FROM ScheduleInformation")
         scheduled_count = cursor2.fetchone()[0]
+        print(scheduled_count)
+
+        current_date = datetime.today().date()
+        print("Current Date:", current_date)
+
+        # Execute SQL query to get completed count
+        cursor2.execute("""
+            SELECT COUNT(modulename) AS modulename_count
+            FROM scheduledetails
+            WHERE date < %s
+            GROUP BY modulename
+            HAVING COUNT(modulename) = 4;
+        """, (current_date,))
+        completed_count = cursor2.fetchone()
+        if completed_count == None:
+            completed_count = 0
+        print("Completed Count:", completed_count)
+
+        cursor2.execute("""
+                        SELECT COUNT(DISTINCT mentorid) AS active_module_count
+                        FROM scheduleinformation
+                        WHERE scheduledate >= DATE_TRUNC('week', %s) AND scheduledate <= DATE_TRUNC('week', %s + INTERVAL '1 week');
+                        """, (current_date,current_date))
+        active_count = cursor2.fetchone()[0]
 
         # Return counts as JSON response
         return jsonify({
             'module_count': module_count12,
             'mentor_count': mentor_count,
-            'batch_count': batch_count,
+            'batch_count': batch_count, 
             'program_count': program_count,
-            'scheduled_count': scheduled_count
+            'scheduled_count': scheduled_count,
+            'completed_count': completed_count,
+            'active_count' : active_count
         })
     except Exception as e:
         return jsonify({'error': str(e)})
