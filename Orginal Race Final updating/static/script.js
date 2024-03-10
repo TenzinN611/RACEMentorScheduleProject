@@ -22,21 +22,35 @@ let ProgramBoxOpen = false;
 let ScheduleBoxOpen = false;
 let mentorDetailsVisible = false;
 
-
-// Function to hide the preloader, show the content, and slide in the menu
-function showContentAndMenu() {
-  document.getElementById('preloader-overlay').style.display = 'none';
-  document.getElementById('content').style.display = 'block';
-
-  var menu = document.getElementById('menu');
-  if (menu) {
-    // Slide in the menu after preloader is complete
-    menu.style.display = 'block';
-  }
+//menu
+function expandMenu() {
+  const menuWidth = '15%';
+  const sidebar = document.getElementById('menu');
+  const dashboardContainer = document.querySelector('.dashboard-container');
+  
+  sidebar.style.transition = 'width 0.3s ease'; // Increase transition duration and use ease timing function
+  sidebar.style.width = menuWidth;
+  sidebar.style.left = '0'; // Position menu from the left
+  
+  // Adjust dashboard container width and left position based on expanded menu
+  dashboardContainer.style.transition = 'width 0.3s ease, margin-left 0.3s ease'; // Increase transition duration and use ease timing function
+  dashboardContainer.style.width = 'calc(90% - ' + menuWidth + ')';
+  dashboardContainer.style.marginLeft = menuWidth;
 }
 
-// Simulating the preloader completion with a timeout (you can replace this with your actual preloader logic)
-setTimeout(showContentAndMenu, 2000); // Adjust the timeout as needed
+function collapseMenu() {
+  const sidebar = document.getElementById('menu');
+  const dashboardContainer = document.querySelector('.dashboard-container');
+
+  sidebar.style.transition = 'width 0.3s ease'; // Increase transition duration and use ease timing function
+  sidebar.style.width = 'auto';
+  sidebar.style.left = ''; // Reset left position
+  
+  // Set dashboard container width and left position to normal
+  dashboardContainer.style.transition = 'width 0.3s ease, margin-left 0.3s ease'; // Increase transition duration and use ease timing function
+  dashboardContainer.style.width = '90%';
+  dashboardContainer.style.marginLeft = '';
+}
 
 // my activity sildebar
 function toggleSidebar() {
@@ -47,9 +61,9 @@ function toggleSidebar() {
 
   // Adjust dashboard container width based on sidebar visibility
   if (sidebar.classList.contains('show')) {
-    dashboardContainer.style.width = 'calc(75% - 250px)'; // Adjusted width with sidebar
+    dashboardContainer.style.width = 'calc(90% - 300px)'; // Adjusted width with sidebar
   } else {
-    dashboardContainer.style.width = '80%'; // Normal width without sidebar
+    dashboardContainer.style.width = '90%'; // Normal width without sidebar
   }
 }
 
@@ -1007,6 +1021,13 @@ async function populateTable() {
 
     // Push the column header object to the scheduleData array
     scheduleData.push(scheduleItem);
+    let currentDate = new Date();
+
+// Format the date as desired
+let year = currentDate.getFullYear();
+let month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+let day = currentDate.getDate().toString().padStart(2, '0');
+let formattedDate1 = `${year}-${month}-${day}`;
 
     // Populate scheduleData with mentor data
     batchNames.forEach(batch => {
@@ -1033,13 +1054,16 @@ async function populateTable() {
 
         // Set background color based on conditions
         if (value != 'Not Scheduled' && columnIndex > 0 && !/^Week \d+$/.test(value)) {
-          cell.style.backgroundColor = 'green';
+          cell.style.backgroundColor = 'lightgreen';
         }
         if (columnIndex == 0) {
           cell.style.backgroundColor = 'lightblue';
         }
-        if (/^Week \d+$/.test(value)){
+        if (/^Week \d+$/.test(value)) {
           cell.style.backgroundColor = 'orange';
+        }
+        if (value.split(' <br> ')[1] < formattedDate1){
+          cell.style.backgroundColor = 'lightgray';
         }
 
         // Add drag-and-drop functionality to each cell
@@ -1058,6 +1082,20 @@ async function populateTable() {
         seenMentorNames[columnIndex] = seenMentorNames[columnIndex] || {};
         const mentorName = value.split(' <br> ')[0];
         seenMentorNames[columnIndex][mentorName] = true;
+
+        // Apply gray color to cells before the current date
+        /*if (value !== 'Not Scheduled') {
+          const datePart = value.split(' <br> ')[1];
+          const currentDate = new Date().toLocaleDateString();
+          const parts = currentDate.split('/');
+          const formattedDate = new Date(`${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
+          const cellDate = new Date(datePart);
+
+          if (cellDate < formattedDate && value == 'Not Scheduled' ) {
+            cell.style.backgroundColor = 'lightgray';
+            cell.setAttribute('completed', 'true');
+          }
+        }*/
 
         // Attach event listener to non-'Not Scheduled' cells
         if (value !== 'Not Scheduled') {
@@ -1107,8 +1145,6 @@ function depopulateTable() {
     console.error('Error depopulating table:', error);
   }
 }
-
-
 const scheduleData1 = [];
 async function populateTable1() {
   var rcount = 0;
@@ -1117,16 +1153,16 @@ async function populateTable1() {
     // Fetch mentor data
     const mentorsResponse1 = await fetch('/get_mentorss');
     const mentorsData1 = await mentorsResponse1.json();
-    console.log('Mentors Data received:', mentorsData1);
+    //console.log('Mentors Data received:', mentorsData1);
 
     // Fetch batch names from the server
     const batchNamesResponse1 = await fetch('/get_batch_names');
     const batchNames1 = await batchNamesResponse1.json();
-    console.log('Batch Names received:', batchNames1);
+    //console.log('Batch Names received:', batchNames1);
 
     // Fetch Saturdays for the current month
     const saturdayDates1 = await getSaturdaysInMonth();
-    console.log('Saturdays received:', saturdayDates1);
+    //console.log('Saturdays received:', saturdayDates1);
 
     // Clear existing scheduleData
     scheduleData1.length = 0;
@@ -1175,7 +1211,7 @@ async function populateTable1() {
         seenMentorNames1[columnIndex][mentorName] = true;
       });
     });
-    console.log("populate rcount:", rcount);
+    //console.log("populate rcount:", rcount);
     return rcount;
   } catch (error) {
     console.error('Error populating table:', error);
@@ -1211,10 +1247,10 @@ async function makeDropTarget(cell) {
     const draggedData = event.dataTransfer.getData('text/plain');
     const draggedRowIndex = parseInt(event.dataTransfer.getData('rowIndex'));
     const draggedColumnIndex = parseInt(event.dataTransfer.getData('columnIndex'));
-    console.log("draggedColumnIndex: ", draggedColumnIndex);
+    //console.log("draggedColumnIndex: ", draggedColumnIndex);
     const droppedRowIndex = cell.parentNode.rowIndex;
     const currentCellData = cell.textContent || cell.innerText;
-    console.log('current cell data: ', currentCellData);
+    //console.log('current cell data: ', currentCellData);
     const topColumnValue = getTopColumnValue(cell);
 
     console.log('topcolumnvalue: ', topColumnValue);
@@ -1260,7 +1296,7 @@ async function makeDropTarget(cell) {
         console.log('cdate:', cdate);
 
         if (sat1[topColumnValue - 1] < cdate) {
-          cell.innerHTML= 'Not Scheduled';
+          cell.innerHTML = 'Not Scheduled';
           alert('Cannot Schedule as the Date is before today')
         }
         else {
@@ -1410,6 +1446,10 @@ function showPopup(td, ld) {
   const scheduleItemElement = document.getElementById('scheduleItem');
   const overlayElement = document.getElementById('overlay');
 
+  // Show loading indicator
+  const popupLoading = document.getElementById('popupLoading');
+  popupLoading.style.display = 'block';
+
   scheduleItemElement.style.display = 'block';
   overlayElement.style.display = 'block';
 
@@ -1481,6 +1521,9 @@ function showPopup(td, ld) {
       popupContainer.innerHTML = '';
       popupContainer.appendChild(scheduleItemsContainer);
       popupContainer.style.display = 'block';
+
+       // Hide loading indicator
+      popupLoading.style.display = 'none';
     })
     .catch(error => {
       console.error('Error:', error);
@@ -1676,7 +1719,7 @@ function redirectToIndex() {
 function redirectToIndex1() {
   window.location.href = '/index';
 }
-
+//counts
 function fetchAndUpdateCounts() {
   var rcount1 = 0;
   // Call the populateTable1 function asynchronously
@@ -1693,14 +1736,17 @@ function fetchAndUpdateCounts() {
         return response.json();
       })
       .then(data => {
+        console.log("Server response:", data);
         // Update counts on the dashboard
         document.getElementById("module_count").textContent = data.module_count;
+        console.log("module count: ", data.module_count);
         document.getElementById("mentor_count").textContent = data.mentor_count;
         document.getElementById("batch_count").textContent = data.batch_count;
         document.getElementById("program_count").textContent = data.program_count;
         document.getElementById("scheduled_count").textContent = data.scheduled_count;
-        console.log("rcount1: ", rcount1);
         document.getElementById("conflict_count").textContent = rcount1;
+        document.getElementById("complete_count").textContent = data.completed_count;
+        document.getElementById("Active_count").textContent = data.active_count;
 
         // Show the dashboard container after updating counts
         document.getElementById("dashboard-container").style.display = "block";
@@ -1828,13 +1874,13 @@ function initializeLogging() {
     if (event.target.tagName === 'BUTTON') {
       var buttonText = event.target.textContent.trim();
       if (buttonText === "Add") {
-        sendActivity("Mentor Added", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Mentor Added", "Mentor ID: " + document.getElementById('mentorId').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Mentor Edited", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Mentor Edited", "Mentor ID: " + document.getElementById('mentorId').value);
       } else if (buttonText === "Delete") {
-        sendActivity("Mentor Deleted", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Mentor Deleted", "Mentor ID: " + document.getElementById('mentorId').value);
       } else {
-        sendActivity("Button Click",  'Mentor ' + buttonText);
+        sendActivity("Button Click", 'Mentor ' + buttonText);
       }
     }
   });
@@ -1844,11 +1890,11 @@ function initializeLogging() {
     if (event.target.tagName === 'BUTTON') {
       var buttonText = event.target.textContent.trim();
       if (buttonText === "Add") {
-        sendActivity("Batch Added", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Batch Added", "Batch ID: " + document.getElementById('BatchID').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Batch Edited", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Batch Edited", "Batch ID: " + document.getElementById('BatchID').value);
       } else if (buttonText === "Delete") {
-        sendActivity("Batch Deleted", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Batch Deleted", "Batch ID: " + document.getElementById('BatchID').value);
       } else {
         sendActivity("Button Click", 'Batch ' + buttonText);
       }
@@ -1860,11 +1906,11 @@ function initializeLogging() {
     if (event.target.tagName === 'BUTTON') {
       var buttonText = event.target.textContent.trim();
       if (buttonText === "Add") {
-        sendActivity("Program Added", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Program Added", "Program ID: " + document.getElementById('ProgramID').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Program Edited", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Program Edited", "Program ID: " + document.getElementById('ProgramID').value);
       } else if (buttonText === "Delete") {
-        sendActivity("Program Deleted", "Course ID: " + document.getElementById('CourseID').value);
+        sendActivity("Program Deleted", "Program ID: " + document.getElementById('ProgramID').value);
       } else {
         sendActivity("Button Click", 'Program ' + buttonText);
       }
@@ -1907,7 +1953,6 @@ function closePopup() {
   popupContainer.style.display = "none";
   video.pause(); // Pause the video when closing the popup
 }
-
 
 // Function to open profile popup
 function openProfilePopup() {

@@ -26,7 +26,9 @@
     </div>
 
     <div id="content" class="container">
-        <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Race Portal Logo" class="logo">
+        <a href="/index" id="logoLink">
+            <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Race Portal Logo" class="logo">
+        </a>
         <img src="{{ url_for('static', filename='images/Race_Logo.png') }}" alt="Race Portal Logo" class="logo_bottom">
         <div id="courseDetailsContainer" class="container bg-light rounded-lg shadow p-4">
             <h2 class="text-center">Module Details</h2>

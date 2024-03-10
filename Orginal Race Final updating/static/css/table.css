@@ -1,6 +1,6 @@
 @font-face {
-    font-family: 'Martain';
-    src: url('./Martian_Mono/MartianMono-VariableFont_wdth\,wght.ttf') format('truetype');
+    font-family: 'Poppins';
+    src: url('./Poppins/Poppins-ExtraBold.ttf') format('truetype');
 }
 
 body {
@@ -87,7 +87,7 @@ body.loading #preloader {
     position: fixed;
     top: 50%;
     left: 50%;
-    font-family: 'Martain';
+    font-family: 'Poppins';
     transform: translate(-50%, -50%);
     background: linear-gradient(45deg, #ffffff, #f0f0f0);
     border-radius: 15px;
@@ -131,7 +131,7 @@ h2 {
     position: fixed;
     top: 50%;
     left: 50%;
-    font-family: 'Martain';
+    font-family:'Poppins';
     transform: translate(-50%, -50%);
     background: linear-gradient(45deg, #ffffff, #f0f0f0);
     border-radius: 15px;
