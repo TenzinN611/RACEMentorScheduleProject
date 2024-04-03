@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session ,jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session ,jsonify, Response
 from datetime import timedelta,datetime, timezone
 import psycopg2
 from flask_mail import Mail, Message
@@ -8,6 +8,10 @@ import secrets
 import string
 import os
 import hashlib
+import csv
+from io import StringIO
+import xlrd
+import logging
 
 
 app = Flask(__name__, static_url_path='/static')
@@ -42,12 +46,12 @@ cursor1 = conn1.cursor()
 load_dotenv()
 
 # Outlook configuration
-app.config['MAIL_SERVER'] = 'smtp.office365.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = os.environ.get('OUTLOOK_EMAIL')  # Use environment variable
-app.config['MAIL_PASSWORD'] = os.environ.get('OUTLOOK_PASSWORD')  # Use environment variable
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS').lower() in ['true', '1', 'yes']
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Set the default sender
 
 mail = Mail(app)  # Create an instance of the Mail class
 
@@ -139,11 +143,12 @@ def login():
 
         if user:
             # Username exists, now check the password
-            if user[-1] == password:
-                session['username'] = caesar_decipher(user[-2], shift) # Store the username in the session
+            if user[-2] == password:
+                session['username'] = caesar_decipher(user[-3], shift) # Store the username in the session
                 session['FirstName'] = caesar_decipher(user[1], shift)
                 session['LastName'] = caesar_decipher(user[2], shift)
-                session['EmailAddress'] = caesar_decipher(user[3], shift)  
+                session['EmailAddress'] = caesar_decipher(user[3], shift)
+                session['role'] = user[-1]  
                 flash('Login successful', 'success')
                 return redirect(url_for('index1'))  # Redirect to index1.html on successful login
             else:
@@ -169,7 +174,11 @@ def index2():
         FirstName = session['FirstName']
         LastName = session['LastName']
         EmailAddress = session['EmailAddress']
-        return render_template('index.html', username=username, FirstName=FirstName, LastName=LastName, EmailAddress=EmailAddress)
+        Role=session['role']
+        if Role == 'Admin':
+            return render_template('index.html', username=username, FirstName=FirstName, LastName=LastName, EmailAddress=EmailAddress, Role=Role)
+        elif Role == 'User':
+            return render_template('userdashboard.html', username=username, FirstName=FirstName, LastName=LastName, EmailAddress=EmailAddress, Role=Role)
     else:
         flash('You need to login first', 'error')
         return redirect(url_for('login'))
@@ -217,8 +226,8 @@ def signup():
             conn.commit()
 
             # Send email notification
-            msg = Message('Registration Successful', sender=app.config['MAIL_USERNAME'], recipients=[email])
-            msg.body = f'Hello {first_name},\n\nThank you for registering on our Student Course Mentor Scheduling Portal!'
+            msg = Message('Registration Successful', sender=app.config['MAIL_USERNAME'], recipients=[email1])
+            msg.body = f'Hello {first_name1},\n\nThank you for registering on our Student Course Mentor Scheduling Portal!\nYour Username: {username2}\nYour Password: {passwordbf}\n\nDonot Share Your Credentials with anyone.'
             mail.send(msg)
 
             flash('Registration successful!', 'success')
@@ -342,8 +351,6 @@ def delete_course():
         return jsonify({'success': False, 'message': str(e)})
     finally:
         conn1.commit()
-
-
 
 @app.route('/show_courses', methods=['GET'])
 def show_courses():
@@ -740,10 +747,10 @@ def update_schedule():
 
             try:
                 conn1 = psycopg2.connect(host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD)
+                port=DB_PORT,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASSWORD)
                 cur = conn1.cursor()
 
                 # Get CourseID
@@ -838,16 +845,35 @@ def get_counts():
 
         # Execute SQL query to get completed count
         cursor2.execute("""
-            SELECT COUNT(modulename) AS modulename_count
-            FROM scheduledetails
-            WHERE date < %s
-            GROUP BY modulename
-            HAVING COUNT(modulename) = 4;
+        SELECT COUNT(DISTINCT modulename)
+        FROM scheduledetails
+        WHERE date < %s
+        GROUP BY mentorname, modulename, batchname
+        HAVING COUNT(*) >= 4;
         """, (current_date,))
         completed_count = cursor2.fetchone()
+        print("Completed Countb:", completed_count)
         if completed_count == None:
             completed_count = 0
         print("Completed Count:", completed_count)
+
+        cursor2.execute("""
+            SELECT modulename
+            FROM scheduledetails
+            WHERE date < %s
+            GROUP BY modulename, mentorname, batchname
+            HAVING COUNT(*)  >=4;
+        """, (current_date,))
+        completed_count12 = cursor2.fetchall()
+        completed_count123 = []
+        if completed_count12 == []:
+            completed_count12 = 'NIL'
+        else:
+            for i in range(len(completed_count12)):
+                module_name11 = completed_count12[i][0]  # Accessing the string within the tuple
+                deciphered_name = caesar_decipher(module_name11, shift)
+                completed_count123.append(deciphered_name)
+            print("Completed Count:", completed_count123)
 
         cursor2.execute("""
                         SELECT COUNT(DISTINCT mentorid) AS active_module_count
@@ -855,6 +881,23 @@ def get_counts():
                         WHERE scheduledate >= DATE_TRUNC('week', %s) AND scheduledate <= DATE_TRUNC('week', %s + INTERVAL '1 week');
                         """, (current_date,current_date))
         active_count = cursor2.fetchone()[0]
+
+        cursor2.execute("""
+                        SELECT modulename
+                        FROM scheduledetails
+                        WHERE date >= DATE_TRUNC('week', %s) AND date <= DATE_TRUNC('week', %s + INTERVAL '1 week')
+                        Group by mentorname, modulename;;
+                        """, (current_date,current_date))
+        active_count1 = cursor2.fetchall()
+        print(active_count1)
+
+        active_count2 = []
+
+        for i in range(len(active_count1)):
+            module_name = active_count1[i][0]  # Accessing the string within the tuple
+            deciphered_name = caesar_decipher(module_name, shift)
+            active_count2.append(deciphered_name)
+
 
         # Return counts as JSON response
         return jsonify({
@@ -864,13 +907,14 @@ def get_counts():
             'program_count': program_count,
             'scheduled_count': scheduled_count,
             'completed_count': completed_count,
-            'active_count' : active_count
+            'active_count' : active_count,
+            'Active_count1' : active_count2,
+            'completed_count1': completed_count123
         })
     except Exception as e:
         return jsonify({'error': str(e)})
     finally:
         conn2.commit()
-
 
 
 @app.route('/get_batch_names')
@@ -1124,7 +1168,6 @@ def drop_schedule():
     finally:
         conn2.commit()
         
-    
 
 @app.route('/get_mentorss', methods=['GET'])
 def get_mentorss():
@@ -1162,6 +1205,7 @@ def get_mentorss():
             {
                 'MentorName': caesar_decipher(schedule[1], shift),
                 'BatchName': caesar_decipher(schedule[2], shift),
+                'ModuleName': caesar_decipher(schedule[0], shift),
                 'Date': format_date(schedule[4].strftime("%a, %d %b %Y"))
             }
             for schedule in data
@@ -1225,8 +1269,168 @@ def fetch_dropdown_values1():
         # Close the cursor and connection in the 'finally' block
         conn33.commit()
         cursor1.close()
+
+@app.route("/generate_csv")
+def generate_csv():
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    conn333 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+    cursor13 = conn333.cursor()
+
+    # Query the scheduledetails table based on the provided dates
+    cursor13.execute("""
+        SELECT *
+        FROM scheduledetails
+        WHERE date BETWEEN %s AND %s;
+    """, (start_date, end_date))
+    events = cursor13.fetchall()
+
+    decrypted_events = []
+    for event in events:
+        decrypted_values = [caesar_decipher(value, shift) if index < 4 else value for index, value in enumerate(event)]
+        decrypted_events.append(tuple(decrypted_values))
+
+
+
+    # Generate CSV content
+    csv_content = StringIO()
+    csv_writer = csv.writer(csv_content)
+    csv_writer.writerow(["modulename", "mentorname", "batchname", "programname", "date"])
+    csv_writer.writerows(decrypted_events)
+
+    # Return CSV content as a response
+    return Response(
+        csv_content.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=schedule.csv"}
+    )
         
 
+def upload_scheduleinformation(data):
+    try:
+        conn3333 = psycopg2.connect(
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASSWORD
+            )
+        cursor = conn3333.cursor()
+        
+        for row in data:
+            # Decrypt names using the Caesar cipher
+            mo_name = caesar_cipher(row[0], shift)
+            me_name = caesar_cipher(row[1], shift)
+            p_name = caesar_cipher(row[2], shift)
+            b_name = caesar_cipher(row[3], shift)
+            
+            # Query for module ID
+            cursor.execute("SELECT moduleid FROM modules WHERE modulename = %s", (mo_name,))
+            mo_id = cursor.fetchone()[0]
+            
+            # Query for mentor ID
+            cursor.execute("SELECT mentorid FROM mentors WHERE mentorname = %s", (me_name,))
+            me_id = cursor.fetchone()[0]
+            
+            # Query for program ID
+            cursor.execute("SELECT programid FROM programs WHERE programname = %s", (p_name,))
+            p_id = cursor.fetchone()[0]
+            
+            # Query for batch ID
+            cursor.execute("SELECT batchid FROM batches WHERE batchname = %s", (b_name,))
+            b_id = cursor.fetchone()[0]
+            
+            # Convert serial number representing the date to datetime object
+            date_serial = int(row[4])  # Assuming the date is in the fifth column as serial number
+            date_object = xlrd.xldate.xldate_as_datetime(date_serial, 0).date()  # Convert serial to datetime
+            
+            # Insert schedule information into ScheduleInformation table
+            cursor.execute("INSERT INTO ScheduleInformation (ModuleID, MentorID, BatchID, ProgramID, ScheduleDate) VALUES (%s, %s, %s, %s, %s)",
+                           (mo_id, me_id, b_id, p_id, date_object))
+        
+        # Commit the transaction
+        conn3333.commit()
+        
+        # Close cursor and conn3333ection
+        cursor.close()
+        conn3333.close()
+        
+        print("Schedule information uploaded successfully.")
+        
+    except psycopg2.Error as e:
+        if conn3333:
+            conn3333.rollback()  # Roll back changes if an error occurs
+        print(f"Error uploading schedule information: {e}")
+    except Exception as e:
+        if conn3333:
+            conn3333.rollback()  # Roll back changes if an error occurs
+        print(f"An unexpected error occurred: {e}")
+
+
+@app.route('/upload_schedule11', methods=['POST'])
+def upload_schedule11():
+    try:
+        # Extract the schedule data from the request
+        schedule_data = request.json
+
+        # Initialize flag to check if all data exists
+        all_data_exists = True
+
+        def value_exists_in_table(table_name, column_name, value):
+            conn3333 = psycopg2.connect(
+                host=DB_HOST,
+                port=DB_PORT,
+                database=DB_NAME,
+                user=DB_USER,
+                password=DB_PASSWORD
+            )
+            cursor = conn3333.cursor()
+            query = f"SELECT COUNT(*) FROM {table_name} WHERE {column_name} = %s"
+            cursor.execute(query, (value,))
+            count = cursor.fetchone()[0]
+            cursor.close()
+            conn3333.close()
+            return count > 0
+
+        # Iterate through the schedule data
+        for row in schedule_data:
+            module_exists = value_exists_in_table('modules', 'modulename', caesar_cipher(row[0], shift))
+            mentor_exists = value_exists_in_table('mentors', 'mentorname', caesar_cipher(row[1], shift))
+            program_exists = value_exists_in_table('programs', 'programname', caesar_cipher(row[2], shift))
+            batch_exists = value_exists_in_table('batches', 'batchname', caesar_cipher(row[3], shift))
+            
+            # Convert serial number representing the date to datetime object
+            date_serial = int(row[4])  # Assuming the date is in the fifth column as serial number
+            date_object = xlrd.xldate.xldate_as_datetime(date_serial, 0).date()  # Convert serial to datetime
+            if date_object < datetime.now().date():
+                all_data_exists = False
+                break
+            
+            # If any value does not exist or date is before today, set flag to False
+            if not (module_exists and mentor_exists and program_exists and batch_exists and all_data_exists):
+                all_data_exists = False
+                break
+
+        # If all data exists and date is valid, proceed with further processing
+        if all_data_exists:
+            # Perform further processing based on existence check results
+            # Respond with a success message
+            upload_scheduleinformation(schedule_data)
+            return jsonify({'message': 'Schedule uploaded successfully!'}), 200
+        else:
+            # If data does not exist in tables or date is invalid, trigger a 400 Bad Request error
+            return jsonify({'error': 'Please enter correct data or ensure date is after today.'}), 400
+    except psycopg2.Error as e:
+        # If a database error occurs, respond with a 500 Internal Server Error
+        return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        # If an unexpected error occurs, respond with a 500 Internal Server Error
+        return jsonify({'error': 'An unexpected error occurred.'}), 500
 
 @app.route('/changepassword', methods=['POST'])
 def changepassword():
@@ -1271,16 +1475,23 @@ def generate_random_password(length=12):
     return ''.join(secrets.choice(characters) for _ in range(length))
 
 def send_password_reset_email(recipient, new_password):
-    subject = 'Password Reset'
-    body = f'Your new password is: {new_password}'
-
-    message = Message(subject=subject, recipients=[recipient], body=body)
-    mail.send(message)
+    try:
+        subject = 'Password Reset'
+        body = f'Your new password is: {new_password}'
+        message = Message(subject=subject, recipients=[recipient], body=body)
+        mail.send(message)
+    except Exception as e:
+        error_message = f"Error sending password reset email to {recipient}: {e}"
+        logging.error(error_message)
+        # Log the error or handle it appropriately
+        # Additionally, print the error message for debugging purposes
+        print(error_message)
 
 @app.route('/reset_password', methods=['POST'])
 def reset_password():
     if request.method == 'POST':
-        reset_email = request.form['reset-email']
+        reset_email1 = request.form['reset-email']
+        reset_email = caesar_cipher(reset_email1, shift)  # Assuming caesar_cipher function is defined elsewhere
 
         # Validate the email address (add your own validation logic here)
         # For simplicity, you can check if the email exists in your database
@@ -1292,7 +1503,8 @@ def reset_password():
         if user:
             # Generate a random password
             new_passwordbf = generate_random_password()
-            new_password = hash_string(new_passwordbf)
+            print('new password:', new_passwordbf)
+            new_password = hash_string(new_passwordbf)  # Assuming hash_string function is defined elsewhere
 
             # Update the user's password in the database
             cursor = conn.cursor()
@@ -1301,14 +1513,15 @@ def reset_password():
             cursor.close()
 
             # Send the new password to the user's email
-            send_password_reset_email(reset_email, new_passwordbf)
+            send_password_reset_email(reset_email1, new_passwordbf)
 
             flash('Password reset instructions sent to your email', 'success')
             return redirect(url_for('login'))
         else:
-            flash('Invalid email address', 'error')
+            flash('Invalid email address or not registered with us', 'error')
             return render_template('login.html')
-    
+            
+            
 @app.route('/logout')
 def logout():
     session.pop('username', None)  # Remove the username from the session
@@ -1318,4 +1531,5 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 

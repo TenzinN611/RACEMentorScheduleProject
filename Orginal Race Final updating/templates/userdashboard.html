@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="x-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <title>User Dashboard</title>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader-overlay">
+        <div id="preloader">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Preloader">
+        </div>
+    </div>
+    <div id="content">
+        <div id="navbar">
+            <div id="menu-btn">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Logo" class="logo-img">
+                    <img src="{{ url_for('static', filename='images/Race_Logo2.png') }}" alt="Logo" class="logo-img">
+                </div>
+            </div>
+            <div>
+                <div class="dropdown">
+                    <span id="username"><i class="fas fa-user"></i> {{username}}</span>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
+                        <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a>
+                    </div>
+                </div>
+                <a href="{{ url_for('logout') }}">
+                    <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </a>
+            </div>
+        </div>
+
+        <div id="menu" onmouseover="expandMenu()" onmouseout="collapseMenu()">
+            <div id="menu-icons">
+                <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get
+                        Report</span></a>
+            </div>
+        </div>
+
+        <img src="{{ url_for('static', filename='images/race_logo1.png') }}" alt="Race Portal Logo" class="logo_bottom">
+
+        <!--Dashboard Container-->
+        <div class="dashboard-containers" style="display: flex; justify-content: space-evenly;">
+            <div class="dashboard-items">
+                <h2>Batch</h2>
+                <!-- Dropdown for first item -->
+                <select>
+                    <option value="">Select Batch</option>
+                    <option value="course">CS11</option>
+                    <option value="mentor">CS12</option>
+                </select>
+            </div>
+
+            <div class="dashboard-items">
+                <h2>From Date</h2>
+                <input type="text" id="from_date" placeholder="Select From Date">
+            </div>
+
+            <div class="dashboard-items">
+                <h2>To Date</h2>
+                <input type="text" id="to_date" placeholder="Select To Date">
+            </div>
+        </div>
+
+        <!--My activity-->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <h2>My Activity Log</h2>
+                <ul id="activityLog"></ul>
+            </div>
+        </div>
+
+        <!--Profile-->
+        <div id="profileBox" class="profile-box">
+            <div class="popup-contents">
+                <span class="closeProfilePopup" onclick="closeProfilePopup()">&times;</span>
+                <h2>Profile details</h2>
+
+                <form id="edit-profile-form" method="post" action="/signup1">
+                    <input type="hidden" id="EditUsername" name="currentUsername" required value="{{username}}">
+
+                    <label for="EditUsername"><i class="fas fa-user"></i> Username </label>
+                    <input type="text" id="EditUsername" name="Username" required value="{{username}}">
+
+                    <label for="EditFirstName"><i class="fas fa-user"></i> First Name </label>
+                    <input type="text" id="EditFirstName" name="FirstName" required value="{{ FirstName }}">
+
+                    <label for="EditLastName"><i class="fas fa-user"></i> Last Name </label>
+                    <input type="text" id="EditLastName" name="LastName" required value="{{ LastName }}">
+
+                    <label for="EditEmailAddress"><i class="fas fa-envelope"></i> Email Address </label>
+                    <input type="email" id="EditEmailAddress" name="EmailAddress" required value="{{ EmailAddress }}">
+
+                    <button type="submit"><i class="fas fa-user-edit"></i> Update Profile</button>
+                </form>
+            </div>
+        </div>
+        <!--Change Password-->
+        <div id="changePasswordBox" class="change-password-box">
+            <div class="popup-contents">
+                <span class="closeChangePasswordPopup" onclick="closeChangePasswordPopup()">&times;</span>
+                <h2>Change Password</h2>
+                <form id="edit-profile-forms" method="post" action="/changepassword">
+                    <input type="hidden" name="currentUsername" value="{{username}}">
+                    <label for="Password"><i class="fas fa-lock"></i> Current Password </label>
+                    <div class="password-input-container">
+                        <input type="password" id="Password" name="Password" required value="{{ current_password }}">
+                        <span class="toggle-password" onclick="togglePassword('Password')"><i
+                                class="fas fa-eye"></i></span>
+                    </div>
+                    <br>
+
+                    <label for="NewPassword"><i class="fas fa-lock"></i> New Password </label>
+                    <div class="password-input-container">
+                        <input type="password" id="NewPassword" name="NewPassword" required>
+                        <span class="toggle-password" onclick="togglePassword('NewPassword')"><i
+                                class="fas fa-eye"></i></span>
+                    </div>
+                    <button type="submit"><i class="fas fa-user-edit"></i> Change Password</button>
+                </form>
+            </div>
+        </div>
+        <!--report box-->
+        <div id="report-box">
+            <div class="report-content">
+                <span class="close" onclick="closeGetReportBox()">&times;</span>
+                <div>
+                    <label for="from-date">From Date:</label>
+                    <input type="text" id="from-date" placeholder="Select From Date">
+                </div>
+                <div>
+                    <label for="to-date">To Date:</label>
+                    <input type="text" id="to-date" placeholder="Select To Date">
+                </div>
+                <button onclick="downloadReport()">Download Schedule</button>
+            </div>
+        </div>
+        <script src="static/userview.js"></script>
+        <div id="tableContainer"></div>
+        <div id="overlay"></div>
+</body>
+
+</html>

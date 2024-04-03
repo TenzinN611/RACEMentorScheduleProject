@@ -27,13 +27,21 @@ function expandMenu() {
   const menuWidth = '15%';
   const sidebar = document.getElementById('menu');
   const dashboardContainer = document.querySelector('.dashboard-container');
-  
-  sidebar.style.transition = 'width 0.3s ease'; // Increase transition duration and use ease timing function
+
+  // Close any open sidebar first
+  const openSidebar = document.querySelector('.sidebar.show, .active-sidebar.show, .Completed-Module-sidebar.show');
+  if (openSidebar) {
+    openSidebar.classList.remove('show');
+    dashboardContainer.style.width = '90%'; // Reset dashboard container width
+  }
+
+  // Expand the menu
+  sidebar.style.transition = 'width 0.3s ease';
   sidebar.style.width = menuWidth;
-  sidebar.style.left = '0'; // Position menu from the left
-  
+  sidebar.style.left = '0';
+
   // Adjust dashboard container width and left position based on expanded menu
-  dashboardContainer.style.transition = 'width 0.3s ease, margin-left 0.3s ease'; // Increase transition duration and use ease timing function
+  dashboardContainer.style.transition = 'width 0.3s ease, margin-left 0.3s ease';
   dashboardContainer.style.width = 'calc(90% - ' + menuWidth + ')';
   dashboardContainer.style.marginLeft = menuWidth;
 }
@@ -45,31 +53,59 @@ function collapseMenu() {
   sidebar.style.transition = 'width 0.3s ease'; // Increase transition duration and use ease timing function
   sidebar.style.width = 'auto';
   sidebar.style.left = ''; // Reset left position
-  
+
   // Set dashboard container width and left position to normal
   dashboardContainer.style.transition = 'width 0.3s ease, margin-left 0.3s ease'; // Increase transition duration and use ease timing function
   dashboardContainer.style.width = '90%';
   dashboardContainer.style.marginLeft = '';
 }
 
-// my activity sildebar
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
+// Function to close all sidebars except the target sidebar
+function toggleSidebar(targetId) {
+  const targetSidebar = document.getElementById(targetId);
   const dashboardContainer = document.querySelector('.dashboard-container');
 
-  sidebar.classList.toggle('show');
+  // Close all sidebars except the target
+  const sidebars = document.querySelectorAll('.sidebar, .active-sidebar, .Completed-Module-sidebar');
+  sidebars.forEach(sidebar => {
+    if (sidebar !== targetSidebar && sidebar.classList.contains('show')) {
+      sidebar.classList.remove('show');
+    }
+  });
+
+  // Toggle target sidebar
+  targetSidebar.classList.toggle('show');
 
   // Adjust dashboard container width based on sidebar visibility
-  if (sidebar.classList.contains('show')) {
+  if (targetSidebar.classList.contains('show')) {
     dashboardContainer.style.width = 'calc(90% - 300px)'; // Adjusted width with sidebar
   } else {
     dashboardContainer.style.width = '90%'; // Normal width without sidebar
   }
 }
 
+//title
+function addTooltipToButtons() {
+  const buttons = document.querySelectorAll('.btn');
+
+  buttons.forEach(button => {
+    const title = button.getAttribute('data-title');
+    const tooltip = document.createElement('span');
+    tooltip.classList.add('tooltip');
+    tooltip.innerText = title;
+    button.appendChild(tooltip);
+  });
+}
+
+// Call the function to add tooltips to buttons
+addTooltipToButtons();
+
 //course
 function openCourseBox() {
   closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   if (!courseBoxOpen) {
     courseBox.style.display = 'block';
     courseBoxOpen = true;
@@ -284,6 +320,9 @@ function closeCourseBox() {
 //Mentor:
 function openMentorBox() {
   closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   if (!mentorBoxOpen) {
     mentorBox.style.display = 'block';
     mentorBoxOpen = true;
@@ -563,6 +602,9 @@ function closeMentorBox() {
 //Batch
 function openBatchBox() {
   closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   if (!BatchBoxOpen) {
     BatchBox.style.display = 'block';
     BatchBoxOpen = true;
@@ -760,6 +802,9 @@ function closeBatchBox() {
 //Program
 function openProgramBox() {
   closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   if (!ProgramBoxOpen) {
     ProgramBox.style.display = 'block';
     ProgramBoxOpen = true;
@@ -951,7 +996,10 @@ function closeProgramBox() {
 
 //schedule
 function openScheduleBox() {
-  closeAllBoxes()
+  closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   if (!ScheduleBoxOpen) {
     document.getElementById('scheduleBox').style.display = 'block';
     ScheduleBoxOpen = true;
@@ -985,9 +1033,15 @@ function closeAllBoxes() {
 function openCalendar() {
   closeScheduleBox(); // Close schedule box when opening calendar
   populateTable();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   document.getElementById('calendarContainer').style.display = 'block';
   document.getElementById('overlay').style.display = 'block';
   document.querySelector('.dashboard-container').style.display = 'none';
+
+  // Pass the ID of the sidebar you want to toggle to toggleSidebar
+  toggleSidebar('targetId'); // Replace 'yourSidebarId' with the actual ID of your sidebar
 }
 
 const scheduleData = [];
@@ -1023,18 +1077,18 @@ async function populateTable() {
     scheduleData.push(scheduleItem);
     let currentDate = new Date();
 
-// Format the date as desired
-let year = currentDate.getFullYear();
-let month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
-let day = currentDate.getDate().toString().padStart(2, '0');
-let formattedDate1 = `${year}-${month}-${day}`;
+    // Format the date as desired
+    let year = currentDate.getFullYear();
+    let month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-indexed
+    let day = currentDate.getDate().toString().padStart(2, '0');
+    let formattedDate1 = `${year}-${month}-${day}`;
 
     // Populate scheduleData with mentor data
     batchNames.forEach(batch => {
       const scheduleItem = { batch };
       saturdayDates.forEach((date, index) => {
         const mentorForWeek = mentorsData.find(mentor => mentor.BatchName === batch && mentor.Date === date);
-        const combinedData = mentorForWeek ? `${mentorForWeek.MentorName} <br> ${date}` : 'Not Scheduled';
+        const combinedData = mentorForWeek ? `${mentorForWeek.MentorName} :<br> ${mentorForWeek.ModuleName} <br> ${date}` : 'Not Scheduled';
         scheduleItem[`cell${index + 1}`] = combinedData;
       });
       scheduleData.push(scheduleItem);
@@ -1042,13 +1096,14 @@ let formattedDate1 = `${year}-${month}-${day}`;
 
     // Track seen mentor names
     const seenMentorNames = {};
+    const seenmoduleNames = {};
 
     // Create table rows and cells
     const table = document.getElementById('scheduleTable');
     const fragment = document.createDocumentFragment();
     scheduleData.forEach((item, rowIndex) => {
       const row = document.createElement('tr');
-      Object.values(item).forEach((value, columnIndex) => {
+      Object.entries(item).forEach(([key, value], columnIndex) => {
         const cell = document.createElement('td');
         cell.innerHTML = value;
 
@@ -1062,40 +1117,46 @@ let formattedDate1 = `${year}-${month}-${day}`;
         if (/^Week \d+$/.test(value)) {
           cell.style.backgroundColor = 'orange';
         }
-        if (value.split(' <br> ')[1] < formattedDate1){
-          cell.style.backgroundColor = 'lightgray';
-        }
+
 
         // Add drag-and-drop functionality to each cell
         makeCellDraggable(cell);
         makeDropTarget(cell);
 
-        // Set background color based on seen mentor names
+        // Set background color based on seen mentor and module names
         if (columnIndex > 0) {
-          const mentorName = value.split(' <br> ')[0];
-          if (seenMentorNames[columnIndex] && seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
-            cell.style.backgroundColor = 'red';
+          const mentorModuleName = value.split(' :<br> ');
+          if (mentorModuleName.length >= 2) { // Check if the split operation yielded at least two parts
+            const mentorName = mentorModuleName[0];
+            const moduleName1 = mentorModuleName[1];
+            const moduleName = moduleName1.split(' <br> ')[0];
+            if (seenMentorNames[columnIndex] && seenMentorNames[columnIndex].hasOwnProperty(mentorName) && seenmoduleNames[columnIndex] && seenmoduleNames[columnIndex].hasOwnProperty(moduleName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
+              cell.style.backgroundColor = 'orange';
+            }
+            else if (seenMentorNames[columnIndex] && seenMentorNames[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
+              cell.style.backgroundColor = 'red';
+            }
           }
+        }
+
+        if (value.split(' <br> ')[1] < formattedDate1) {
+          cell.style.backgroundColor = 'lightgray';
         }
 
         // Track seen mentor names
         seenMentorNames[columnIndex] = seenMentorNames[columnIndex] || {};
-        const mentorName = value.split(' <br> ')[0];
+        const mentorName = value.split(' :<br> ')[0];
         seenMentorNames[columnIndex][mentorName] = true;
 
-        // Apply gray color to cells before the current date
-        /*if (value !== 'Not Scheduled') {
-          const datePart = value.split(' <br> ')[1];
-          const currentDate = new Date().toLocaleDateString();
-          const parts = currentDate.split('/');
-          const formattedDate = new Date(`${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
-          const cellDate = new Date(datePart);
+        // Track seen module names
+        seenmoduleNames[columnIndex] = seenmoduleNames[columnIndex] || {};
+        const moduleName1 = value.split(' :<br> ')[1];
+        if (moduleName1) { // Ensure moduleName1 exists before splitting it
+          const moduleName = moduleName1.split(' <br> ')[0]; // Corrected splitting for moduleName
+          seenmoduleNames[columnIndex][moduleName] = true;
+        }
 
-          if (cellDate < formattedDate && value == 'Not Scheduled' ) {
-            cell.style.backgroundColor = 'lightgray';
-            cell.setAttribute('completed', 'true');
-          }
-        }*/
+
 
         // Attach event listener to non-'Not Scheduled' cells
         if (value !== 'Not Scheduled') {
@@ -1103,7 +1164,9 @@ let formattedDate1 = `${year}-${month}-${day}`;
             const clickedRowIndex = rowIndex;
             const topCellData = value;
             const leftCellData = scheduleData[clickedRowIndex][Object.keys(scheduleData[0])[0]];
-            const datePart = topCellData.split(' <br> ')[1];
+            const datePart = topCellData.split(' :<br> ')[1].split(' <br> ')[1];
+            console.log('leftcelldata: ', leftCellData);
+            console.log('datePart:', datePart);
 
             showPopup(datePart, leftCellData);
 
@@ -1180,7 +1243,7 @@ async function populateTable1() {
       const scheduleItem1 = { batch };
       saturdayDates1.forEach((date, index) => {
         const mentorForWeek1 = mentorsData1.find(mentor => mentor.BatchName === batch && mentor.Date === date);
-        const combinedData1 = mentorForWeek1 ? `${mentorForWeek1.MentorName} <br> ${date}` : 'Not Scheduled';
+        const combinedData1 = mentorForWeek1 ? `${mentorForWeek1.MentorName} :<br> ${mentorForWeek1.ModuleName} <br> ${date}` : 'Not Scheduled';
         scheduleItem1[`cell${index + 1}`] = combinedData1;
       });
       scheduleData1.push(scheduleItem1);
@@ -1189,32 +1252,48 @@ async function populateTable1() {
     // Now populate the table with the updated dynamic scheduleData
     const table1 = document.getElementById('scheduleTable1');
     const seenMentorNames1 = {};
+    const seenmoduleNames1 = {};
 
     scheduleData1.forEach((item) => {
       const row = table1.insertRow();
-      Object.values(item).forEach((value1, columnIndex) => {
+      Object.values(item).forEach((value1, columnIndex) => { // Changed variable name to value1
         const cell = row.insertCell();
         cell.innerHTML = value1;
 
         if (columnIndex > 0) {
-          const mentorName = value1.split(' <br> ')[0];
-          if (seenMentorNames1[columnIndex]) {
-            if (seenMentorNames1[columnIndex].hasOwnProperty(mentorName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
+          const mentorModuleName1 = value1.split(' :<br> '); // Changed variable name to value1
+          if (mentorModuleName1.length >= 2) { // Check if the split operation yielded at least two parts
+            const mentorName1 = mentorModuleName1[0];
+            const moduleName11 = mentorModuleName1[1];
+            const moduleName1 = moduleName11.split(' <br> ')[0];
+            if (seenMentorNames1[columnIndex] && seenMentorNames1[columnIndex].hasOwnProperty(mentorName1) && seenmoduleNames1[columnIndex] && seenmoduleNames1[columnIndex].hasOwnProperty(moduleName1) && mentorName1 != 'Not Scheduled' && mentorName1 != 'Exam') {
+              cell.style.backgroundColor = 'blue';
+            } else if (seenMentorNames1[columnIndex] && seenMentorNames1[columnIndex].hasOwnProperty(mentorName1) && mentorName1 != 'Not Scheduled' && mentorName1 != 'Exam') {
               cell.style.backgroundColor = 'red';
-              rcount = rcount + 1
+              rcount = rcount + 1;
             }
           }
         }
 
+        // Track seen mentor names
         seenMentorNames1[columnIndex] = seenMentorNames1[columnIndex] || {};
-        const mentorName = value1.split(' <br> ')[0];
-        seenMentorNames1[columnIndex][mentorName] = true;
+        const mentorName1 = value1.split(' :<br> ')[0]; // Changed variable name to value1
+        seenMentorNames1[columnIndex][mentorName1] = true;
+
+        // Track seen module names
+        seenmoduleNames1[columnIndex] = seenmoduleNames1[columnIndex] || {};
+        const moduleName11 = value1.split(' :<br> ')[1]; // Changed variable name to value1
+        if (moduleName11) { // Ensure moduleName1 exists before splitting it
+          const moduleName1 = moduleName11.split(' <br> ')[0]; // Corrected splitting for moduleName
+          seenmoduleNames1[columnIndex][moduleName1] = true;
+        }
       });
     });
+
     //console.log("populate rcount:", rcount);
     return rcount;
   } catch (error) {
-    console.error('Error populating table:', error);
+    //console.error('Error populating table:', error);
   }
 }
 
@@ -1284,7 +1363,7 @@ async function makeDropTarget(cell) {
         const currentDate1 = new Date().toLocaleDateString();
 
 
-        const mentor = topCellData.split(' <br> ')[0];
+        const mentor = topCellData.split(' :<br> ')[0];
         console.log('mentor: ', mentor);
         console.log('datePart:', datePart);
         console.log('currentDate1:', currentDate1);
@@ -1391,11 +1470,14 @@ async function getSaturdaysInMonth() {
 function closeCalendar() {
   document.getElementById('calendarContainer').style.display = 'none';
   document.getElementById('overlay').style.display = 'none';
+
   // Show the dashboard-container and reset its styles
   var dashboardContainer = document.querySelector('.dashboard-container');
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+  dashboardContainer.style.width = ''; // Reset width to its original value
   fetchAndUpdateCounts();
 }
+
 
 //search calender
 function searchCalendar() {
@@ -1407,7 +1489,7 @@ function searchCalendar() {
 
   var batchFound = false;
 
-  for (i = 1; i < tr.length; i++) {
+  for (i = 0; i < tr.length; i++) { // Start from index 0
     td = tr[i].getElementsByTagName("td")[0]; // Assuming Batch is in the first column
 
     if (td) {
@@ -1502,8 +1584,8 @@ function showPopup(td, ld) {
           <p><strong><i class="far fa-calendar-alt"></i> Date:</strong><span>${schedule.SDate}</span></p>
           <input type="date" id="scheduleDate12" name="scheduleDate12" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
           <div style="justify-content: space-between; align-items: center;">
-            <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="saveChanges('${schedule.ScheduleID}', '${schedule.Name}', '${schedule.MentorName}', '${schedule.BatchName}', '${schedule.ProgramName}', '${schedule.SDate}' )"><i class="fas fa-save" style="margin-right: 5px;"></i> Save Changes</button>
-            <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="deleteSchedule('${schedule.ScheduleID}')"><i class="fas fa-trash-alt" style="margin-right: 5px;"></i> Delete</button>
+            <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Poppins'; transition: background-color 0.3s ease, box-shadow 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="saveChanges('${schedule.ScheduleID}', '${schedule.Name}', '${schedule.MentorName}', '${schedule.BatchName}', '${schedule.ProgramName}', '${schedule.SDate}' )"><i class="fas fa-save" style="margin-right: 5px;"></i> Save Changes</button>
+            <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Poppins'; transition: background-color 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="deleteSchedule('${schedule.ScheduleID}')"><i class="fas fa-trash-alt" style="margin-right: 5px;"></i> Delete</button>
           </div>
         `;
         createAndPopulateDropdown(scheduleItem, 'CourseName12', schedule.Name, data1.courses);
@@ -1522,7 +1604,7 @@ function showPopup(td, ld) {
       popupContainer.appendChild(scheduleItemsContainer);
       popupContainer.style.display = 'block';
 
-       // Hide loading indicator
+      // Hide loading indicator
       popupLoading.style.display = 'none';
     })
     .catch(error => {
@@ -1649,12 +1731,14 @@ function deleteSchedule(scheduleID) {
 }
 
 function closePopups() {
-  openCalendar();
   const popupContainer = document.getElementById('schedulePopup');
   popupContainer.style.display = 'none';
   // Remove event listener to prevent unwanted closing
   overlay.removeEventListener('click', closePopups);
+  // Open the calendar after closing popups
+  openCalendar();
 }
+
 
 function initializeFlatpickr() {
   flatpickr("#date", {
@@ -1719,6 +1803,298 @@ function redirectToIndex() {
 function redirectToIndex1() {
   window.location.href = '/index';
 }
+
+// Function to open user management
+function openUserManagement() {
+  closeAllBoxes();
+  closeUploadBox();
+  closeGetReportBox();
+  closeUserSignupBox();
+  // Show the user management div
+  document.getElementById('userManagement').style.display = 'block';
+  // Call function to populate user list
+  populateUserList();
+  document.querySelector('.dashboard-container').style.display = 'none';
+}
+
+// Function to populate user list
+function populateUserList() {
+  // User data
+  var userListData = [
+    { userId: 1, userName: "John Doe" },
+    { userId: 2, userName: "Jane Smith" },
+    { userId: 3, userName: "Alice Johnson" },
+    { userId: 4, userName: "Bob Brown" },
+    { userId: 5, userName: "Eva Martinez" },
+    { userId: 6, userName: "Michael Lee" },
+    { userId: 7, userName: "Sara Taylor" },
+    { userId: 8, userName: "David Wilson" },
+    { userId: 9, userName: "Emily Jones" },
+    { userId: 10, userName: "Peter Davis" }
+  ];
+
+  // Function to populate user list dynamically
+  var userListHTML = '';
+  for (var i = 0; i < userListData.length; i++) {
+    userListHTML += '<tr>';
+    userListHTML += '<td>' + userListData[i].userName + '</td>';
+    userListHTML += '<td class="roles-column">';
+    userListHTML += '<select class="role-dropdown">';
+    userListHTML += '<option value="" disabled selected>Select the role</option>'; // Placeholder
+    userListHTML += '<option value="user">User</option>'; // User role
+    userListHTML += '<option value="admin">Admin</option>'; // Admin role
+    userListHTML += '</select>';
+    userListHTML += '</td>';
+    userListHTML += '<td>';
+    userListHTML += '<button class="edit-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-edit"></i> Edit</button>';
+    userListHTML += '<button class="delete-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-trash-alt"></i> Delete</button>';
+    userListHTML += '</td>';
+    userListHTML += '</tr>';
+  }
+  $('#userList').html(userListHTML); // Populate the table body with user list HTML
+
+  // Event listener for edit button click
+  $(document).on('click', '.edit-btn', function() {
+    alert('User Role Edited Successfully');
+  });
+
+  // Event listener for delete button click
+  $(document).on('click', '.delete-btn', function() {
+    var userId = $(this).data('userid');
+    // Alert popup for delete
+    alert('Deleting user with ID: ' + userId);
+  });
+
+  // Search functionality
+  $('#searchInputs').on('input', function() {
+    var searchText = $(this).val().toLowerCase();
+    $('#userList tr').each(function() {
+      var userName = $(this).find('td:first').text().toLowerCase();
+      if (userName.includes(searchText)) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+}
+
+// Function to close user management
+function closeUserManagement() {
+  document.getElementById('userManagement').style.display = 'none';
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
+
+//get report
+function openGetReportBox() {
+  closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
+  var reportBox = document.getElementById('report-box');
+  reportBox.style.display = 'block';
+  // Initialize Flatpickr on date inputst
+  flatpickr("#from-date", {
+    dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
+    // Add any additional options here
+  });
+
+  flatpickr("#to-date", {
+    dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
+    // Add any additional options here
+  });
+  document.querySelector('.dashboard-container').style.display = 'none';
+}
+
+function closeGetReportBox() {
+  var reportBox = document.getElementById('report-box');
+  reportBox.style.display = 'none';
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
+
+function downloadReport() {
+  // Get start and end dates from the form
+  var startDate = document.getElementById("from-date").value;
+  var endDate = document.getElementById("to-date").value;
+
+  // Make an AJAX request to Flask route
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/generate_csv?start_date=" + startDate + "&end_date=" + endDate);
+  xhr.responseType = "blob"; // Expecting a blob response
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      // Create a temporary anchor element
+      var anchor = document.createElement("a");
+      anchor.href = URL.createObjectURL(xhr.response);
+      anchor.download = "schedule.csv"; // Filename for the downloaded file
+
+      // Trigger the download
+      anchor.click();
+    }
+  };
+  xhr.send();
+}
+
+//upload box
+function openUploadBox() {
+  closeAllBoxes();
+  closeUserManagement();
+  closeGetReportBox();
+  closeUserSignupBox();
+  document.getElementById('uploadBox').style.display = 'block';
+  document.querySelector('.dashboard-container').style.display = 'none';
+}
+
+function closeUploadBox() {
+  var uploadBox = document.getElementById('uploadBox');
+  uploadBox.style.display = 'none';
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
+
+//file upload
+var storedData = [];
+var currentPage = 0;
+var rowsPerPage = 10; // Set the number of rows per page
+
+function uploadFile() {
+  var modal = document.getElementById("uploadBox");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  var fileInput = document.getElementById('fileInput');
+  var uploadedFile = fileInput.files[0];
+
+  if (!uploadedFile) {
+    alert('Please select a file to upload.');
+    return;
+  }
+
+  // Check if the file is an Excel file
+  if (!uploadedFile.name.endsWith('.xlsx') && !uploadedFile.name.endsWith('.xls')) {
+    alert('Please upload an Excel file.');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type: 'array' });
+      var sheetName = workbook.SheetNames[0];
+      var sheet = workbook.Sheets[sheetName];
+
+      // Check if the first row contains required headers
+      var requiredHeaders = ['module', 'mentor', 'program', 'batch', 'Date'];
+      var headerRow = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0];
+      var headerRowLowercase = headerRow.map(header => header.toLowerCase());
+      var requiredHeadersLowercase = requiredHeaders.map(header => header.toLowerCase());
+      var missingHeaders = requiredHeadersLowercase.filter(header => !headerRowLowercase.includes(header));
+      if (missingHeaders.length > 0) {
+        alert('The uploaded file is missing the following headers or misspelled: ' + missingHeaders.join(', '));
+        return;
+      }
+
+      // Convert all data to strings
+      var range = XLSX.utils.decode_range(sheet['!ref']);
+      for (var rowNum = range.s.r + 1; rowNum <= range.e.r; rowNum++) {
+        for (var colNum = range.s.c; colNum <= range.e.c; colNum++) {
+          var cellAddress = XLSX.utils.encode_cell({ r: rowNum, c: colNum });
+          if (sheet[cellAddress]) {
+            sheet[cellAddress].v = sheet[cellAddress].v.toString();
+            sheet[cellAddress].t = 's'; // Set the cell type to string
+          }
+        }
+      }
+
+      // Read and validate data row-wise
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, range: 1 });
+      var nonEmptyRows = [];
+      rows.forEach(row => {
+        if (row.every(cell => cell.trim() !== '')) {
+          nonEmptyRows.push(row);
+        }
+      });
+
+      // Check if there are empty rows
+      if (nonEmptyRows.length !== rows.length) {
+        alert('Please upload the file with all rows filled.');
+        return;
+      }
+
+      // Send non-empty rows to Flask Python function
+      if (nonEmptyRows.length > 0) {
+        // Assuming you have a function sendDataToFlask() to send data to Flask
+        sendDataToFlask(nonEmptyRows);
+      } else {
+        alert('No data to upload.');
+      }
+
+      // Display the modal at the top
+      modal.style.display = "block";
+      modal.style.top = "55%"; // Adjusting modal to appear at the top
+    } catch (error) {
+      console.error('Error converting Excel to HTML:', error);
+      // Provide specific error messages based on the type of error
+      if (error instanceof SyntaxError) {
+        alert('Invalid Excel file format. Please ensure the file is in a valid Excel format.');
+      } else if (error instanceof ReferenceError) {
+        alert('Error processing Excel file. Please try again later or contact support.');
+      } else {
+        alert('Error converting Excel to HTML. Please try again.');
+      }
+    }
+  };
+  reader.readAsArrayBuffer(uploadedFile);
+}
+
+function sendDataToFlask(data) {
+  // Convert JavaScript array to JSON string
+  var jsonData = JSON.stringify(data);
+
+  const url = `/upload_schedule11`;
+
+  // Fetch request to send data to Flask route
+  fetch(url, {
+    method: 'POST', // Specify the HTTP method as POST
+    headers: {
+      'Content-Type': 'application/json' // Set the content type header
+    },
+    body: jsonData // Pass the JSON data as the request body
+  })
+  .then(response => {
+    if (response.ok) {
+      alert('Data uploaded successfully!');
+    } else if (response.status === 400) {
+      alert('Failed to upload data. Please enter correct data or ensure date is after today.');
+    } else {
+      alert('Failed to upload data. Please try again later.');
+    }
+  })
+  .catch(error => {
+    console.error('Error uploading data:', error);
+    alert('Failed to upload data. Please try again later.');
+  });
+}
+
 //counts
 function fetchAndUpdateCounts() {
   var rcount1 = 0;
@@ -1748,6 +2124,24 @@ function fetchAndUpdateCounts() {
         document.getElementById("complete_count").textContent = data.completed_count;
         document.getElementById("Active_count").textContent = data.active_count;
 
+        // Update active module list
+        const activityModuleList = document.getElementById("activeModule");
+        activityModuleList.innerHTML = ''; // Clear previous content
+        data.Active_count1.forEach(moduleName => {
+          const listItem = document.createElement('li');
+          listItem.textContent = moduleName;
+          activityModuleList.appendChild(listItem);
+        });
+
+        // Update complete module list
+        const completeModuleList = document.getElementById("Completed-Module");
+        completeModuleList.innerHTML = ''; // Clear previous content
+        data.completed_count1.forEach(moduleName11 => {
+          const listItem = document.createElement('li');
+          listItem.textContent = moduleName11;
+          completeModuleList.appendChild(listItem);
+        });
+
         // Show the dashboard container after updating counts
         document.getElementById("dashboard-container").style.display = "block";
       })
@@ -1764,7 +2158,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   await populateDropdownValues(); // Wait for populateDropdownValues to complete
   fetchAndUpdateCounts();
 });
-
 
 // Check if the page is loaded from a refresh
 /**$(document).ready(function() {
@@ -1810,9 +2203,10 @@ function validateSignupForm() {
   const signupPassword = document.getElementById("signup-password").value;
 
   const emailRegex = /^[a-zA-Z0-9._-]+@reva\.edu\.in$/;
+  const emailRegex2 = /^[a-zA-Z0-9._-]+@race\.reva\.edu\.in$/;
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  if (!emailRegex.test(signupEmail)) {
+  if (!emailRegex.test(signupEmail) && !emailRegex2.test(signupEmail)) {
     alert("Invalid email address. Please use the example@reva.edu.in format.");
     return false;
   }
@@ -1823,6 +2217,17 @@ function validateSignupForm() {
   }
 
   return true;
+}
+
+/*user registraion*/
+function togglePasswordS(passwordFieldId) {
+  const passwordInput = document.getElementById(passwordFieldId);
+  const container = passwordInput.parentElement;
+  const eyeIcon = container.querySelector(".user-toggle-password i");
+
+  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+  eyeIcon.classList.toggle("fa-eye");
+  eyeIcon.classList.toggle("fa-eye-slash");
 }
 
 window.addEventListener('load', function () {
@@ -1840,6 +2245,11 @@ function initializeLogging() {
     var listItem = document.createElement('li');
     listItem.textContent = action + ": " + details;
     activityLog.appendChild(listItem);
+
+    // Save log to local storage
+    var logData = JSON.parse(localStorage.getItem('activityLog')) || [];
+    logData.push({ action: action, details: details });
+    localStorage.setItem('activityLog', JSON.stringify(logData));
   }
 
   function sendActivity(action, details) {
@@ -1864,7 +2274,7 @@ function initializeLogging() {
         var courseId = event.target.dataset.courseId;
         sendActivity("Course Deleted", "Course ID: " + courseId);
       } else {
-        sendActivity("Button Click", 'Module ' + buttonText);
+        sendActivity("Button Click", 'Course ' + buttonText);
       }
     }
   });
@@ -1876,41 +2286,47 @@ function initializeLogging() {
       if (buttonText === "Add") {
         sendActivity("Mentor Added", "Mentor ID: " + document.getElementById('mentorId').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Mentor Edited", "Mentor ID: " + document.getElementById('mentorId').value);
+        var mentorId = event.target.dataset.mentorId;
+        sendActivity("Mentor Edited", "Mentor ID: " + mentorId);
       } else if (buttonText === "Delete") {
-        sendActivity("Mentor Deleted", "Mentor ID: " + document.getElementById('mentorId').value);
+        var mentorId = event.target.dataset.mentorId;
+        sendActivity("Mentor Deleted", "Mentor ID: " + mentorId);
       } else {
         sendActivity("Button Click", 'Mentor ' + buttonText);
       }
     }
   });
 
-  // Logging button clicks for batch form
+  // Logging button clicks for Batch form
   document.getElementById('BatchForm').addEventListener('click', function (event) {
     if (event.target.tagName === 'BUTTON') {
       var buttonText = event.target.textContent.trim();
       if (buttonText === "Add") {
         sendActivity("Batch Added", "Batch ID: " + document.getElementById('BatchID').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Batch Edited", "Batch ID: " + document.getElementById('BatchID').value);
+        var batchId = event.target.dataset.batchId;
+        sendActivity("Batch Edited", "Batch ID: " + batchId);
       } else if (buttonText === "Delete") {
-        sendActivity("Batch Deleted", "Batch ID: " + document.getElementById('BatchID').value);
+        var batchId = event.target.dataset.batchId;
+        sendActivity("Batch Deleted", "Batch ID: " + batchId);
       } else {
         sendActivity("Button Click", 'Batch ' + buttonText);
       }
     }
   });
 
-  // Logging button clicks for program form
+  // Logging button clicks for Program form
   document.getElementById('ProgramForm').addEventListener('click', function (event) {
     if (event.target.tagName === 'BUTTON') {
       var buttonText = event.target.textContent.trim();
       if (buttonText === "Add") {
         sendActivity("Program Added", "Program ID: " + document.getElementById('ProgramID').value);
       } else if (buttonText === "Edit") {
-        sendActivity("Program Edited", "Program ID: " + document.getElementById('ProgramID').value);
+        var programId = event.target.dataset.programId;
+        sendActivity("Program Edited", "Program ID: " + programId);
       } else if (buttonText === "Delete") {
-        sendActivity("Program Deleted", "Program ID: " + document.getElementById('ProgramID').value);
+        var programId = event.target.dataset.programId;
+        sendActivity("Program Deleted", "Program ID: " + programId);
       } else {
         sendActivity("Button Click", 'Program ' + buttonText);
       }
@@ -1933,6 +2349,7 @@ function initializeLogging() {
 }
 
 document.addEventListener("DOMContentLoaded", initializeLogging);
+
 
 //Quick Guide
 function toggleQuickGuide() {
@@ -1958,6 +2375,9 @@ function closePopup() {
 function openProfilePopup() {
   closeAllBoxes();
   closeChangePasswordPopup();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   var overlay = document.getElementById('overlay');
   var popup = document.getElementById('profileBox');
 
@@ -1990,6 +2410,9 @@ function closeProfilePopup() {
 function openChangePasswordPopup() {
   closeAllBoxes();
   closeProfilePopup();
+  closeUploadBox();
+  closeUserManagement();
+  closeUserSignupBox();
   var overlay = document.getElementById('overlay');
   var popup = document.getElementById('changePasswordBox');
 
@@ -2031,6 +2454,28 @@ function closeChangePasswordPopup() {
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
+//user Registration
+function openUserSignupBox() {
+  closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
+  closeProfilePopup();
+  closeChangePasswordPopup();
+  document.getElementById("User-signup-box").style.display = "block";
+  document.getElementById("user-signup-overlay").style.display = "block";
+  // Hide the dashboard-container
+  document.querySelector('.dashboard-container').style.display = 'none';
+}
+
+function closeUserSignupBox() {
+  document.getElementById("User-signup-box").style.display = "none";
+  document.getElementById("user-signup-overlay").style.display = "none";
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+}
+
+
 document.getElementById('login-form').addEventListener('submit', function (e) {
   e.preventDefault();
   console.log('Sign In logic here');
@@ -2060,6 +2505,7 @@ function fadeInUsername() {
   usernameElement.style.display = "inline";
   usernameElement.style.animation = "fadeIn 1s ease-in-out forwards";
 }
+
 
 
 
