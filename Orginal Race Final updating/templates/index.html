@@ -8,10 +8,14 @@
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
-  <title>User Dashboard</title>
+
+  <title>Admin Dashboard</title>
 </head>
 
 <body>
@@ -26,7 +30,7 @@
       <div id="menu-btn">
         <div class="logo-container">
           <img src="{{ url_for('static', filename='images/logo1.svg') }}" alt="Logo" class="logo-img">
-          <img src="{{ url_for('static', filename='images/Race_logo2.png') }}" alt="Logo" class="logo-img">
+          <img src="{{ url_for('static', filename='images/Race_Logo2.png') }}" alt="Logo" class="logo-img">
         </div>
       </div>
       <div>
@@ -35,7 +39,8 @@
           <div class="dropdown-content">
             <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
             <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
-            <a href="#" onclick="toggleSidebar()"><i class="fas fa-user"></i> My Activity</a>
+            <a href="#" onclick="openUserSignupBox()"><i class="fas fa-user"></i> User Registration</a>
+            <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a> 
           </div>
         </div>
         <a href="{{ url_for('logout') }}">
@@ -51,15 +56,35 @@
         <a href="#" onclick="openBatchBox()"><i class="fas fa-layer-group"></i><span class="menu-text">Batch</span></a>
         <a href="#" onclick="openProgramBox()"><i class="fas fa-cogs"></i><span class="menu-text">Program</span></a>
         <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i><span class="menu-text">Schedule</span></a>
+        <a href="#" onclick="openUploadBox()"><i class="fas fa-upload"></i><span class="menu-text">Upload</span></a>
+        <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get Report</span></a>
+        <a href="#" onclick="openUserManagement()"><i class="fas fa-user-lock"></i><span class="menu-text">User Management</span></a>
       </div>
     </div>
 
     <img src="{{ url_for('static', filename='images/race_logo1.png') }}" alt="Race Portal Logo" class="logo_bottom">
 
+    <!--My activity-->
     <div class="sidebar" id="sidebar">
       <div class="sidebar-content">
         <h2>My Activity Log</h2>
         <ul id="activityLog"></ul>
+      </div>
+    </div>
+
+    <!--Active Module-->
+    <div class="active-sidebar" id="active-sidebar">
+      <div class="active-sidebar-content">
+        <h2>Active Module</h2>
+        <ol id="activeModule"></ol>
+      </div>
+    </div>
+
+    <!--Completed Module-->
+    <div class="Completed-Module-sidebar" id="Completed-Module-sidebar">
+      <div class="Completed-Module-sidebar-content">
+        <h2>Completed Module</h2>
+        <ol id="Completed-Module"></ol>
       </div>
     </div>
 
@@ -145,7 +170,7 @@
         <a href="#" class="more-info" onclick="openCalendar()">More info →</a>
       </div>
 
-      <div class="dashboard-item">
+      <div class="dashboard-item special">
         <div class="progress-ring">
           <svg class="progress-ring-circle">
             <circle class="progress-ring-circle-bg" r="54" cx="60" cy="60"></circle>
@@ -174,7 +199,7 @@
             <p>Active Module</p>
           </div>
         </div>
-        <a href="#" class="more-info">More info →</a>
+        <a href="#" class="more-info" onclick="toggleSidebar('active-sidebar')">More info →</a>
       </div>
 
       <div class="dashboard-item">
@@ -190,9 +215,65 @@
             <p>Completed Module</p>
           </div>
         </div>
-        <a href="#" class="more-info">More info →</a>
+        <a href="#" class="more-info" onclick="toggleSidebar('Completed-Module-sidebar')">More info →</a>
       </div>
     </div>
+
+    <!--Upload file-->
+    <div id="uploadBox" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeUploadBox()">&times;</span>
+        <h2>Upload File</h2>
+        <input type="file" id="fileInput">
+        <button class="upload-button" onclick="uploadFile()">Upload</button>
+      </div>
+    </div>
+
+    <!--report box-->
+    <div id="report-box">
+      <div class="report-content">
+        <span class="close" onclick="closeGetReportBox()">&times;</span>
+        <div>
+          <label for="from-date">From Date:</label>
+          <input type="text" id="from-date" placeholder="Select From Date">
+        </div>
+        <div>
+          <label for="to-date">To Date:</label>
+          <input type="text" id="to-date" placeholder="Select To Date">
+        </div>
+        <button onclick="downloadReport()">Download Schedule</button>
+      </div>
+    </div>
+
+    <!-- User Management Table -->
+    <div id="userManagement">
+      <div class="SearchContainers">
+        <input type="text" id="searchInputs" placeholder="Search by username...">
+      </div>
+      <div class="userManagementHeader">
+        <div class="headerContainer">
+          <h3>User Management</h3>
+          <span class="closeBtns" onclick="closeUserManagement()">&times;</span>
+        </div>
+      </div>
+      <div id="userListContainer">
+        <div class="userManagementContent">
+          <table>
+            <thead>
+              <tr>
+                <th>User Name</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userList">
+              <!-- User list will be populated here dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!--Course-->
     <div id="courseBox" class="course-box">
       <span class="close-box" onclick="closeCourseBox()">&times;</span>
@@ -201,10 +282,14 @@
         <div style="display:flex;justify-content: space-between; align-items: center; margin-bottom: 10px;gap:10px;">
           <h2>Module</h2>
           <div style="display: flex;gap: 10px;">
-            <button type="button" onclick="AddCourseDetails()" title="Add"><i class="fas fa-plus small-icon"></i></button>
-            <button type="button" onclick="EditCourseDetails()" title="Edit"><i class="fas fa-edit small-icon"></i></button>
-            <button type="button" onclick="DeleteCourseDetails()" title="Delete"><i class="fas fa-trash-alt small-icon"></i></button>
-            <button type="button" onclick="showCourseDetails()" title="Show"><i class="fas fa-eye"></i></button>
+            <button type="button" onclick="AddCourseDetails()" class="btn" data-title="Add"><i
+                class="fas fa-plus small-icon"></i></button>
+            <button type="button" onclick="EditCourseDetails()" class="btn" data-title="Edit"><i
+                class="fas fa-edit small-icon"></i></button>
+            <button type="button" onclick="DeleteCourseDetails()" class="btn" data-title="Delete"><i
+                class="fas fa-trash-alt small-icon"></i></button>
+            <button type="button" onclick="showCourseDetails()" class="btn" data-title="Show"><i
+                class="fas fa-eye"></i></button>
           </div>
         </div>
 
@@ -229,13 +314,17 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;gap:10px;">
           <h2>Mentor</h2>
           <div style="display: flex; gap: 10px;">
-            <button type="button" onclick="AddMentorDetails()" title="Add"><i class="fas fa-plus small-icon"></i></button>
-            <button type="button" onclick="EditMentorDetails()" title="Edit"><i class="fas fa-edit small-icon"></i></button>
-            <button type="button" onclick="DeleteMentorDetails()" title="Delete"><i class="fas fa-trash-alt small-icon"></i></button>
-            <button type="button" onclick="showMentorDetails()" title="Show"><i class="fas fa-eye"></i></button>
+            <button type="button" onclick="AddMentorDetails()" class="btn" data-title="Add"><i
+                class="fas fa-plus small-icon"></i></button>
+            <button type="button" onclick="EditMentorDetails()" class="btn" data-title="Edit"><i
+                class="fas fa-edit small-icon"></i></button>
+            <button type="button" onclick="DeleteMentorDetails()" class="btn" data-title="Delete"><i
+                class="fas fa-trash-alt small-icon"></i></button>
+            <button type="button" onclick="showMentorDetails()" class="btn" data-title="Show"><i
+                class="fas fa-eye"></i></button>
           </div>
         </div>
-        
+
         <!-- Mentor form elements -->
         <label for="mentorId"><i class="fas fa-id-card"></i> Mentor ID:</label>
         <input type="text" id="mentorId" name="mentorId" placeholder="Enter Mentor ID">
@@ -244,7 +333,8 @@
         <input type="text" id="mentorName" name="mentorName" placeholder="Enter Mentor Name">
 
         <label for="mentorRaceEmailAddress"><i class="fas fa-envelope"></i> Race Email Address:</label>
-        <input type="email" id="mentorRaceEmailAddress" name="mentorRaceEmailAddress" placeholder="Enter Race Email Address">
+        <input type="email" id="mentorRaceEmailAddress" name="mentorRaceEmailAddress"
+          placeholder="Enter Race Email Address">
 
         <label for="mentorEmailAddress"><i class="fas fa-envelope"></i> Email Address:</label>
         <input type="email" id="mentorEmailAddress" name="mentorEmailAddress" placeholder="Enter Email Address">
@@ -267,10 +357,14 @@
           style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
           <h2>Batch</h2>
           <div style="display: flex; gap: 10px;">
-            <button type="button" onclick="AddBatchDetails()" title="Add"><i class="fas fa-plus small-icon"></i></button>
-            <button type="button" onclick="EditBatchDetails()" title="Edit"><i class="fas fa-edit small-icon"></i></button>
-            <button type="button" onclick="DeleteBatchDetails()" title="Delete"><i class="fas fa-trash-alt small-icon"></i></button>
-            <button type="button" onclick="showBatchDetails()" title="Show"><i class="fas fa-eye"></i></button>
+            <button type="button" onclick="AddBatchDetails()" class="btn" data-title="Add"><i
+                class="fas fa-plus small-icon"></i></button>
+            <button type="button" onclick="EditBatchDetails()" class="btn" data-title="Edit"><i
+                class="fas fa-edit small-icon"></i></button>
+            <button type="button" onclick="DeleteBatchDetails()" class="btn" data-title="Delete"><i
+                class="fas fa-trash-alt small-icon"></i></button>
+            <button type="button" onclick="showBatchDetails()" class="btn" data-title="Show"><i
+                class="fas fa-eye"></i></button>
           </div>
         </div>
 
@@ -292,10 +386,14 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;gap: 10px;">
           <h2>Program</h2>
           <div style="display: flex; gap: 10px;">
-            <button type="button" onclick="AddProgramDetails()" title="Add"><i class="fas fa-plus small-icon"></i></button>
-            <button type="button" onclick="EditProgramDetails()" title="Edit"><i class="fas fa-edit small-icon"></i></button>
-            <button type="button" onclick="DeleteProgramDetails()" title="Delete"><i class="fas fa-trash-alt small-icon"></i> </button>
-            <button type="button" onclick="showProgramDetails()" title="Show"><i class="fas fa-eye"></i></button>
+            <button type="button" onclick="AddProgramDetails()" class="btn" data-title="Add"><i
+                class="fas fa-plus small-icon"></i></button>
+            <button type="button" onclick="EditProgramDetails()" class="btn" data-title="Edit"><i
+                class="fas fa-edit small-icon"></i></button>
+            <button type="button" onclick="DeleteProgramDetails()" class="btn" data-title="Delete"><i
+                class="fas fa-trash-alt small-icon"></i></button>
+            <button type="button" onclick="showProgramDetails()" class="btn" data-title="Show"><i
+                class="fas fa-eye"></i></button>
           </div>
           <!-- Add your navigation bar elements here if needed -->
         </div>
@@ -337,8 +435,10 @@
         <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
 
         <div id="buttonContainer">
-          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i class="fas fa-calendar-plus"></i> Schedule</button>
-          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>View Schedule</button>
+          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i
+              class="fas fa-calendar-plus"></i> Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i
+              class="fas fa-calendar-alt"></i>View Schedule</button>
         </div>
       </form>
     </div>
@@ -392,6 +492,33 @@
     </div>
   </div>
 
+  <!-- User Registration -->
+  <div id="user-signup-overlay" class="user-signup-overlay" onclick="closeUserSignupBox()"></div>
+  <div class="user-signup-box" id="User-signup-box">
+    <span class="close" onclick="closeUserSignupBox()">&times;</span>
+    <h1>Registration Form</h1>
+    <form id="user-signup-form" action="{{ url_for('signup') }}" method="post" onsubmit="return validateSignupForm()">
+      <label for="FirstName"><i class="fas fa-user"></i> First Name </label>
+      <input type="text" id="FirstName" name="FirstName" placeholder="Enter your First Name" required>
+
+      <label for="LastName"><i class="fas fa-user"></i> Last Name </label>
+      <input type="text" id="LastName" name="LastName" placeholder="Enter your Last Name" required>
+
+      <label for="username1"><i class="fas fa-user"></i> Username </label>
+      <input type="text" id="username1" name="username" placeholder="Create your Username" required>
+
+      <label for="EmailAddress"><i class="fas fa-envelope"></i> Email Address </label>
+      <input type="email" id="EmailAddress" name="EmailAddress" placeholder="Enter your Email Address" required>
+
+      <label for="signup-password"><i class="fas fa-lock"></i> Password </label>
+      <div class="password-container">
+        <input type="password" id="signup-password" name="password" placeholder="Create Your Password" required>
+        <span class="user-toggle-password" onclick="togglePasswordS('signup-password')"><i class="fas fa-eye"></i></span>
+      </div>
+      <button type="submit">Register User</button>
+    </form>
+  </div>
+
   <!--Calender-->
   <div id="calendarContainer">
     <span id="closeButton" onclick="closeCalendar()">✖</span>
@@ -410,6 +537,17 @@
         </tr>
       </table>
       <div id="noResultsMessage" style="display: none;">No results found</div>
+    </div>
+
+    <!-- Adding checkboxes inside the calendar container -->
+    <div id="colorFilters">
+      <label for="redCheckbox"><span class="color-box red"></span> Conflict</label>
+
+      <label for="orangeCheckbox"><span class="color-box orange"></span> Combine Batch</label>
+
+      <label for="grayCheckbox"><span class="color-box gray"></span> Completed Module</label>
+
+      <label for="greenCheckbox"><span class="color-box green"></span> Active Module</label>
     </div>
   </div>
 

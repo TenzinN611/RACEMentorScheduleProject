@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Poppins';
-    src: url('./Poppins/Poppins-ExtraBold.ttf') format('truetype');
+    src: url('./Poppins/Poppins-Medium.ttf') format('truetype');
 }
 
 body {
@@ -12,6 +12,14 @@ body {
     justify-content: center;
     background: url("/static/images/home2.jpeg") center/cover no-repeat fixed;
     backdrop-filter: blur(8px);
+}
+
+.btn.btn-outline-primary {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    color: #ffffff;
+    border-color: #ffffff;
 }
 
 
