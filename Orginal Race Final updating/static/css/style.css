@@ -671,7 +671,7 @@ body.loading #preloader {
   width: 300px;
   height: 100%;
   background-color: #e0e5ec;
-  font-size: 15px ;
+  font-size: 14px ;
   padding-top: 50px;
   transition: all 0.3s ease;
   z-index: 2; /* Ensure sidebar appears above dashboard */
@@ -710,22 +710,17 @@ body.loading #preloader {
 .Completed-Module-sidebar {
     position: fixed;
     top: 0;
-    right: -300px;
-    /* Initially hidden */
-    width: 300px;
-    text-align: center;
+    right: -290px; /* Initially hidden */
+    width: 290px;
     height: 100%;
     background-color: #e0e5ec;
+    font-size: 14px;
     padding-top: 50px;
     transition: all 0.3s ease;
-    z-index: 2;
-    /* Ensure sidebar appears above dashboard */
-    overflow-y: auto;
-    /* Add scrollbar */
-    scrollbar-width: thin;
-    /* Thin scrollbar */
-    scrollbar-color: #ccc transparent;
-    /* Scrollbar color */
+    z-index: 2; /* Ensure sidebar appears above dashboard */
+    overflow-y: auto; /* Add scrollbar */
+    scrollbar-width: thin; /* Thin scrollbar */
+    scrollbar-color: #ccc transparent; /* Scrollbar color */
 }
 
 /* Styles for the sidebar content */
@@ -734,11 +729,26 @@ body.loading #preloader {
     color: #333;
 }
 
-/* Show class for all sidebars */
-.Completed-Module-sidebar.show {
-    right: 0;
-    /* Visible when toggled */
+.Completed-Module-sidebar-content h2 {
+    text-align: center;
 }
+
+/* Show class for complete module sidebar */
+.Completed-Module-sidebar.show {
+    right: 0; /* Visible when toggled */
+}
+
+/* Styles for the complete module list */
+#Completed-Module-sidebar {
+    list-style-type: decimal; /* Display numbers */
+    padding-left: 10px; /* Add left padding for better alignment */
+}
+
+/* Add space between complete module list items */
+.Completed-Module-sidebar-content li {
+    margin-bottom: 5px; /* Adjust as needed */
+}
+
 
 /* course , batch , program*/
 .course-box,
@@ -1156,7 +1166,8 @@ h2 {
 
 
 /*schedule box*/
-#scheduleBox {
+#scheduleBox,
+#rescheduleBox {
     display: none;
     position: fixed;
     top: 55%;
@@ -1190,19 +1201,22 @@ h2 {
     color: black;
 }
 
-#scheduleForm {
+#scheduleForm,
+#rescheduleForm {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#scheduleForm label {
+#scheduleForm label,
+#rescheduleForm label {
     font-weight: bold;
     color: black;
     text-align: left;
 }
 
-#scheduleForm select {
+#scheduleForm select,
+#rescheduleForm select {
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -1210,7 +1224,8 @@ h2 {
     width: 100%;
 }
 
-#scheduleForm input {
+#scheduleForm input,
+#rescheduleForm input {
     padding: 10px;
     box-sizing: border-box;
     flex-grow: 1;
@@ -1218,12 +1233,55 @@ h2 {
     border-radius: 5px;
 }
 
+/*.row-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Adjust as needed */
+  /*}
+
+  .checkbox-label-container {
+    flex-basis: calc(33.33% - 10px); /* Adjust margin between labels */
+    /*display: flex;
+    align-items: center;
+  }*/
+
+.row-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+.checkbox-label-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  
+
 #buttonContainer {
     display: flex;
     gap: 10px;
     margin-top: 20px;
     justify-content: flex-end;
 }
+
+.batch-selection-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .checkbox-label-container {
+    flex-basis: 33%; /* Set a fixed width for each checkbox-label container */
+    padding: 5px; /* Adjust padding as needed */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  }
+  
+  /* Optional: Adjust the alignment of checkbox and label within the container */
+  input[type="checkbox"] {
+    vertical-align: middle; /* Align checkboxes vertically */
+  }
+  label {
+    margin-left: 5px; /* Add some spacing between checkbox and label */
+  }
 
 .scheduleButton,
 .viewScheduleButton {
@@ -1251,11 +1309,13 @@ h2 {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-#scheduleForm select:hover {
+#scheduleForm select:hover,
+#rescheduleForm select:hover {
     border-color: #ff8c00;
 }
 
-#scheduleForm select:focus {
+#scheduleForm select:focus,
+#rescheduleForm select:focus {
     outline: none;
     border-color: #ff8c00;
     box-shadow: 0 0 5px rgba(241, 157, 0, 0.808);
@@ -2139,114 +2199,6 @@ body.loading #loadingLogo-overlay {
   border-color: orange;
 }
 
-/* Overlay */
-.user-signup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-    z-index: 1; /* Ensure it appears below the signup box */
-    display: none; /* Initially hidden */
-}
-
-/*user registration*/
-.user-signup-box {
-    display: none;
-    position: fixed;
-    top: 55%; /* Adjusted to center vertically */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px; /* Reduced padding */
-    border-radius: 14px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    background-color: rgba(255, 255, 255, 0.95);
-    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
-    width: 350px;
-    max-height: 620px; /* Adjusted maximum height */
-    animation: fadeInUp 0.5s ease-in-out;
-}
-
-.user-signup-box .close {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease-in-out;
-}
-
-.user-signup-box .close:hover { /* Added hover effect */
-    color:#333;
-}
-
-.user-signup-box form {
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px; /* Adjusted margin */
-}
-
-.user-signup-box label {
-    margin-bottom: 8px; /* Reduced margin */
-    font-weight: bold;
-    color: black;
-}
-
-.user-signup-box input {
-    padding: 10px; /* Reduced padding */
-    margin-bottom: 12px; /* Reduced margin */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    transition: box-shadow 0.3s ease-in-out;
-    outline: none;
-}
-
-.user-signup-box input:focus {
-    border-color: #ff8c00;
-    box-shadow: 0 0 10px rgba(247, 154, 16, 0.5);
-}
-
-.user-signup-box button {
-    padding: 12px; /* Reduced padding */
-    margin-bottom: 8px; /* Reduced margin */
-    font-size: 15px;
-    font-family: 'Poppins';
-    background-color: #ff8c00;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.user-signup-box button:hover {
-    background-color: #ff8c00;
-    transform: scale(1.1);
-    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.3);
-}
-
-.password-container {
-    position: relative;
-}
-
-#password {
-    padding-right: 30px;
-    /* Adjust the padding to make room for the eye icon */
-}
-.user-toggle-password {
-    position: absolute;
-    right: 170px;
-    /* Adjust the right distance as needed */
-    top: 35%;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
-
-
 /* Responsive Styles */
 @media screen and (max-width: 1024px) {
     /* Styles for 15-inch screens */
@@ -2288,7 +2240,8 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer {
+    #calendarContainer,
+    #rescheduleBox {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -2323,7 +2276,8 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer {
+    #calendarContainer,
+    #rescheduleBox {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -2371,7 +2325,8 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer {
+    #calendarContainer,
+    #rescheduleBox {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
