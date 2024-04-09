@@ -39,8 +39,7 @@
           <div class="dropdown-content">
             <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
             <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
-            <a href="#" onclick="openUserSignupBox()"><i class="fas fa-user"></i> User Registration</a>
-            <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a> 
+            <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a>
           </div>
         </div>
         <a href="{{ url_for('logout') }}">
@@ -55,10 +54,13 @@
         <a href="#" onclick="openMentorBox()"><i class="fas fa-user"></i><span class="menu-text">Mentor</span></a>
         <a href="#" onclick="openBatchBox()"><i class="fas fa-layer-group"></i><span class="menu-text">Batch</span></a>
         <a href="#" onclick="openProgramBox()"><i class="fas fa-cogs"></i><span class="menu-text">Program</span></a>
-        <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i><span class="menu-text">Schedule</span></a>
+        <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i><span
+            class="menu-text">Schedule</span></a>
         <a href="#" onclick="openUploadBox()"><i class="fas fa-upload"></i><span class="menu-text">Upload</span></a>
-        <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get Report</span></a>
-        <a href="#" onclick="openUserManagement()"><i class="fas fa-user-lock"></i><span class="menu-text">User Management</span></a>
+        <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get
+            Report</span></a>
+        <a href="#" onclick="openUserManagement()"><i class="fas fa-user-lock"></i><span class="menu-text">User
+            Management</span></a>
       </div>
     </div>
 
@@ -439,10 +441,42 @@
               class="fas fa-calendar-plus"></i> Schedule</button>
           <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i
               class="fas fa-calendar-alt"></i>View Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openRescheduleBox()"><i
+              class="fas fa-calendar-alt"></i> ReSchedule Calender</button>
         </div>
       </form>
     </div>
   </div>
+  <!--reschedulebox-->
+  <div id="rescheduleBox">
+    <span id="closeBtn" onclick="closeRescheduleBox()">&times;</span>
+    <h2>Reschedule Information</h2>
+    <form id="rescheduleForm">
+  
+      <label for="batchReschedule"><i class="fas fa-check"></i> Batch Selection:</label>
+      <div id="batchSelection">
+       
+      </div>
+
+      <label for="count"><i class="fas fa-sort-numeric-up"></i> Reschedule by Weeks:</label>
+      <input type="number" id="count" name="count" min="-10" max="10" required>
+  
+      <label for="dateReschedule"><i class="far fa-calendar-alt"></i> From Date:</label>
+      <input type="date" id="dateReschedule" name="dateReschedule" placeholder="YYYY-MM-DD" required>
+
+      <input type="hidden" id="selectedBatches" name="selectedBatches">
+      <input type="hidden" id="countByWeeks" name="countByWeeks">
+      <input type="hidden" id="rescheduleDate" name="rescheduleDate">
+  
+      <div id="buttonContainer">
+        <button class="viewScheduleButton" name="action" type="button" onclick="validateReScheduleForm()"><i class="fas fa-calendar-check"></i> Reschedule</button>
+
+        <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>
+          View Reschedule</button>
+      </div>
+    </form>
+  </div>
+
   <!--Profile-->
   <div id="profileBox" class="profile-box">
     <div class="popup-contents">
@@ -468,6 +502,7 @@
       </form>
     </div>
   </div>
+
   <!--Change Password-->
   <div id="changePasswordBox" class="change-password-box">
     <div class="popup-contents">
@@ -481,7 +516,6 @@
           <span class="toggle-password" onclick="togglePassword('Password')"><i class="fas fa-eye"></i></span>
         </div>
         <br>
-
         <label for="NewPassword"><i class="fas fa-lock"></i> New Password </label>
         <div class="password-input-container">
           <input type="password" id="NewPassword" name="NewPassword" required>
@@ -490,33 +524,6 @@
         <button type="submit"><i class="fas fa-user-edit"></i> Change Password</button>
       </form>
     </div>
-  </div>
-
-  <!-- User Registration -->
-  <div id="user-signup-overlay" class="user-signup-overlay" onclick="closeUserSignupBox()"></div>
-  <div class="user-signup-box" id="User-signup-box">
-    <span class="close" onclick="closeUserSignupBox()">&times;</span>
-    <h1>Registration Form</h1>
-    <form id="user-signup-form" action="{{ url_for('signup') }}" method="post" onsubmit="return validateSignupForm()">
-      <label for="FirstName"><i class="fas fa-user"></i> First Name </label>
-      <input type="text" id="FirstName" name="FirstName" placeholder="Enter your First Name" required>
-
-      <label for="LastName"><i class="fas fa-user"></i> Last Name </label>
-      <input type="text" id="LastName" name="LastName" placeholder="Enter your Last Name" required>
-
-      <label for="username1"><i class="fas fa-user"></i> Username </label>
-      <input type="text" id="username1" name="username" placeholder="Create your Username" required>
-
-      <label for="EmailAddress"><i class="fas fa-envelope"></i> Email Address </label>
-      <input type="email" id="EmailAddress" name="EmailAddress" placeholder="Enter your Email Address" required>
-
-      <label for="signup-password"><i class="fas fa-lock"></i> Password </label>
-      <div class="password-container">
-        <input type="password" id="signup-password" name="password" placeholder="Create Your Password" required>
-        <span class="user-toggle-password" onclick="togglePasswordS('signup-password')"><i class="fas fa-eye"></i></span>
-      </div>
-      <button type="submit">Register User</button>
-    </form>
   </div>
 
   <!--Calender-->

@@ -15,12 +15,14 @@ const mentorBox = document.getElementById('mentorBox');
 const BatchBox = document.getElementById('BatchBox');
 const ProgramBox = document.getElementById('ProgramBox');
 const ScheduleBox = document.getElementById('scheduleBox');
+const rescheduleBox = document.getElementById('rescheduleBox');
 let courseBoxOpen = false;
 let mentorBoxOpen = false;
 let BatchBoxOpen = false;
 let ProgramBoxOpen = false;
 let ScheduleBoxOpen = false;
 let mentorDetailsVisible = false;
+let rescheduleBoxOpen = false;
 
 //menu
 function expandMenu() {
@@ -105,7 +107,6 @@ function openCourseBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   if (!courseBoxOpen) {
     courseBox.style.display = 'block';
     courseBoxOpen = true;
@@ -322,7 +323,6 @@ function openMentorBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   if (!mentorBoxOpen) {
     mentorBox.style.display = 'block';
     mentorBoxOpen = true;
@@ -604,7 +604,6 @@ function openBatchBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   if (!BatchBoxOpen) {
     BatchBox.style.display = 'block';
     BatchBoxOpen = true;
@@ -804,7 +803,6 @@ function openProgramBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   if (!ProgramBoxOpen) {
     ProgramBox.style.display = 'block';
     ProgramBoxOpen = true;
@@ -999,7 +997,6 @@ function openScheduleBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   if (!ScheduleBoxOpen) {
     document.getElementById('scheduleBox').style.display = 'block';
     ScheduleBoxOpen = true;
@@ -1015,6 +1012,22 @@ function closeScheduleBox() {
   var dashboardContainer = document.querySelector('.dashboard-container');
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
   fetchAndUpdateCounts();
+}
+
+function openRescheduleBox() {
+  closeScheduleBox()
+  if (!rescheduleBoxOpen) {
+    document.getElementById('rescheduleBox').style.display = 'block';
+    rescheduleBoxOpen = true;
+    // Hide the dashboard-container
+    document.querySelector('.dashboard-container').style.display = 'none';
+  }
+}
+
+function closeRescheduleBox() {
+  openScheduleBox()
+  document.getElementById('rescheduleBox').style.display = 'none';
+  rescheduleBoxOpen = false; // Reset the flag when closing the schedule box
 }
 
 //close all boxes
@@ -1035,7 +1048,6 @@ function openCalendar() {
   populateTable();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   document.getElementById('calendarContainer').style.display = 'block';
   document.getElementById('overlay').style.display = 'block';
   document.querySelector('.dashboard-container').style.display = 'none';
@@ -1809,7 +1821,6 @@ function openUserManagement() {
   closeAllBoxes();
   closeUploadBox();
   closeGetReportBox();
-  closeUserSignupBox();
   // Show the user management div
   document.getElementById('userManagement').style.display = 'block';
   // Call function to populate user list
@@ -1820,50 +1831,100 @@ function openUserManagement() {
 // Function to populate user list
 function populateUserList() {
   // User data
-  var userListData = [
-    { userId: 1, userName: "John Doe" },
-    { userId: 2, userName: "Jane Smith" },
-    { userId: 3, userName: "Alice Johnson" },
-    { userId: 4, userName: "Bob Brown" },
-    { userId: 5, userName: "Eva Martinez" },
-    { userId: 6, userName: "Michael Lee" },
-    { userId: 7, userName: "Sara Taylor" },
-    { userId: 8, userName: "David Wilson" },
-    { userId: 9, userName: "Emily Jones" },
-    { userId: 10, userName: "Peter Davis" }
-  ];
+  $(document).off('click', '.delete-btn');
+  $(document).off('click', '.edit-btn');
 
-  // Function to populate user list dynamically
-  var userListHTML = '';
-  for (var i = 0; i < userListData.length; i++) {
-    userListHTML += '<tr>';
-    userListHTML += '<td>' + userListData[i].userName + '</td>';
-    userListHTML += '<td class="roles-column">';
-    userListHTML += '<select class="role-dropdown">';
-    userListHTML += '<option value="" disabled selected>Select the role</option>'; // Placeholder
-    userListHTML += '<option value="user">User</option>'; // User role
-    userListHTML += '<option value="admin">Admin</option>'; // Admin role
-    userListHTML += '</select>';
-    userListHTML += '</td>';
-    userListHTML += '<td>';
-    userListHTML += '<button class="edit-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-edit"></i> Edit</button>';
-    userListHTML += '<button class="delete-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-trash-alt"></i> Delete</button>';
-    userListHTML += '</td>';
-    userListHTML += '</tr>';
+  fetch('/users') // URL of the Flask route to fetch user data
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // On success, populate user list with the fetched data
+      var userListData = data;
+      var userListHTML = '';
+      for (var i = 0; i < userListData.length; i++) {
+        userListHTML += '<tr>';
+        userListHTML += '<td>' + userListData[i].userName + '</td>';
+        userListHTML += '<td class="roles-column">';
+        userListHTML += '<select class="role-dropdown">';
+        userListHTML += '<option value="" disabled selected>' +userListData[i].userRole+ '</option>'; // Placeholder
+        userListHTML += '<option value="user">User</option>'; // User role
+        userListHTML += '<option value="admin">Admin</option>'; // Admin role
+        userListHTML += '</select>';
+        userListHTML += '</td>';
+        userListHTML += '<td>';
+        userListHTML += '<button class="edit-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-edit"></i> Edit</button>';
+        userListHTML += '<button class="delete-btn" data-userid="' + userListData[i].userId + '"><i class="fas fa-trash-alt"></i> Delete</button>';
+        userListHTML += '</td>';
+        userListHTML += '</tr>';
+      }
+      $('#userList').html(userListHTML); // Populate the table body with user list HTML
+    })
+    .catch(error => {
+      // On error, log the error message
+      console.error('Error fetching user data:', error);
+    });
+
+// Event listener for edit button click
+$(document).on('click', '.edit-btn', function() {
+  var userId = $(this).data('userid');
+  var selectedRole = $(this).closest('tr').find('.role-dropdown').val(); // Get selected role value from the closest row
+  
+  // Display confirmation dialog
+  if (window.confirm("Are you sure you want to edit this user's role?")) {
+      fetch('/edit_userr', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: userId, userRole: selectedRole }) // Send userId in JSON format
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Handle success response from the server
+          alert('User Role Edited Successfully'); // Display a success message received from the server
+          closeUserManagement();
+          openUserManagement();
+      })
+      .catch(error => {
+          // Handle error response from the server
+          console.error('Error:', error); // Log the error
+          alert('Error occurred while editing user.'); // Display an error message to the user
+      });
   }
-  $('#userList').html(userListHTML); // Populate the table body with user list HTML
+});
 
-  // Event listener for edit button click
-  $(document).on('click', '.edit-btn', function() {
-    alert('User Role Edited Successfully');
-  });
+// Event listener for delete button click
+$(document).on('click', '.delete-btn', function() {
+  var userId = $(this).data('userid');
+  
+  // Display confirmation dialog
+  if (window.confirm("Are you sure you want to delete this user?")) {
+      fetch('/delete_userr', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: userId }) // Send userId in JSON format
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Handle success response from the server
+          alert('Deleting user with ID: ' + userId); // Display a success message received from the server
+          closeUserManagement();
+          openUserManagement();
+      })
+      .catch(error => {
+          // Handle error response from the server
+          console.error('Error:', error); // Log the error
+          alert('Error occurred while deleting user.'); // Display an error message to the user
+      });
+  }
+});
 
-  // Event listener for delete button click
-  $(document).on('click', '.delete-btn', function() {
-    var userId = $(this).data('userid');
-    // Alert popup for delete
-    alert('Deleting user with ID: ' + userId);
-  });
 
   // Search functionality
   $('#searchInputs').on('input', function() {
@@ -1892,7 +1953,6 @@ function openGetReportBox() {
   closeAllBoxes();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   var reportBox = document.getElementById('report-box');
   reportBox.style.display = 'block';
   // Initialize Flatpickr on date inputst
@@ -1944,7 +2004,6 @@ function openUploadBox() {
   closeAllBoxes();
   closeUserManagement();
   closeGetReportBox();
-  closeUserSignupBox();
   document.getElementById('uploadBox').style.display = 'block';
   document.querySelector('.dashboard-container').style.display = 'none';
 }
@@ -2203,10 +2262,9 @@ function validateSignupForm() {
   const signupPassword = document.getElementById("signup-password").value;
 
   const emailRegex = /^[a-zA-Z0-9._-]+@reva\.edu\.in$/;
-  const emailRegex2 = /^[a-zA-Z0-9._-]+@race\.reva\.edu\.in$/;
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  if (!emailRegex.test(signupEmail) && !emailRegex2.test(signupEmail)) {
+  if (!emailRegex.test(signupEmail)) {
     alert("Invalid email address. Please use the example@reva.edu.in format.");
     return false;
   }
@@ -2219,16 +2277,6 @@ function validateSignupForm() {
   return true;
 }
 
-/*user registraion*/
-function togglePasswordS(passwordFieldId) {
-  const passwordInput = document.getElementById(passwordFieldId);
-  const container = passwordInput.parentElement;
-  const eyeIcon = container.querySelector(".user-toggle-password i");
-
-  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
-  eyeIcon.classList.toggle("fa-eye");
-  eyeIcon.classList.toggle("fa-eye-slash");
-}
 
 window.addEventListener('load', function () {
   const welcomeText = "Welcome to Race Portal, ";
@@ -2377,7 +2425,6 @@ function openProfilePopup() {
   closeChangePasswordPopup();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   var overlay = document.getElementById('overlay');
   var popup = document.getElementById('profileBox');
 
@@ -2406,13 +2453,165 @@ function closeProfilePopup() {
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
+// Function to fetch batch options from the backend and populate checkboxes
+function populateBatchOptions() {
+  fetch('/batch-options')
+    .then(response => response.json())
+    .then(data => {
+      // Sort the batches alphabetically
+      data.sort();
+
+      const batchSelection = document.getElementById('batchSelection');
+      batchSelection.innerHTML = ''; // Clear previous options
+
+      // Calculate the number of columns
+      const numColumns = 3;
+      const numRows = Math.ceil(data.length / numColumns);
+
+      // Create a container for each row of checkboxes and labels
+      for (let i = 0; i < numRows; i++) {
+        const rowContainer = document.createElement('div');
+        rowContainer.classList.add('row-container');
+        batchSelection.appendChild(rowContainer);
+
+        // Create checkboxes and labels for each batch
+        for (let j = 0; j < numColumns; j++) {
+          const index = i * numColumns + j;
+          if (index < data.length) {
+            const option = data[index];
+
+            // Create checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `batch${option}`;
+            checkbox.name = `batch${option}`;
+            checkbox.value = option;
+
+            // Create label
+            const label = document.createElement('label');
+            label.htmlFor = `batch${option}`;
+            label.appendChild(document.createTextNode(option));
+
+            // Append checkbox and label to row container
+            const checkboxLabelContainer = document.createElement('div');
+            checkboxLabelContainer.classList.add('checkbox-label-container');
+            checkboxLabelContainer.appendChild(checkbox);
+            checkboxLabelContainer.appendChild(label);
+            rowContainer.appendChild(checkboxLabelContainer);
+          }
+        }
+      }
+
+      // Add "Select All" option
+      const selectAllCheckbox = document.createElement('input');
+      selectAllCheckbox.type = 'checkbox';
+      selectAllCheckbox.id = 'selectAllBatches';
+      selectAllCheckbox.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#batchSelection input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+        });
+      });
+      const selectAllLabel = document.createElement('label');
+      selectAllLabel.htmlFor = 'selectAllBatches';
+      selectAllLabel.appendChild(document.createTextNode('Select All'));
+
+      // Append "Select All" checkbox and label
+      batchSelection.prepend(selectAllLabel);
+      batchSelection.prepend(selectAllCheckbox);
+    })
+    .catch(error => console.error('Error fetching batch options:', error));
+}
+
+function clearRescheduleForm() {
+  // Get the form element
+  const form = document.getElementById('rescheduleForm');
+  
+  // Reset the form fields
+  form.reset();
+}
+
+
+// Call the function to populate batch options when the page loads
+document.addEventListener('DOMContentLoaded', populateBatchOptions);
+function validateReScheduleForm() {
+  // Check if any batch is selected
+  var batchSelection = document.querySelectorAll('#batchSelection input[type="checkbox"]:checked');
+  if (batchSelection.length === 0) {
+    alert('Please select at least one batch.');
+    return false; // Prevent form submission
+  }
+
+  // Populate selected batch values
+  var selectedBatches = [];
+  batchSelection.forEach(function(checkbox) {
+    selectedBatches.push(checkbox.value);
+  });
+  document.getElementById('selectedBatches').value = JSON.stringify(selectedBatches);
+
+  // Populate count by weeks value
+  var countByWeeks = document.getElementById('count').value;
+  document.getElementById('countByWeeks').value = countByWeeks;
+
+  // Populate date value
+  var rescheduleDate = document.getElementById('dateReschedule').value;
+  document.getElementById('rescheduleDate').value = rescheduleDate;
+
+  // Check if count is valid (optional)
+
+  // Check if date is today and a Saturday
+  var selectedDate = new Date(rescheduleDate);
+  console.log('selectdate:', selectedDate);
+  var today = new Date();
+  console.log('today:', today);
+  var isSaturday = selectedDate.getDay() === 6;
+  console.log('issaturday:', isSaturday);
+  
+  if (selectedDate < today || !isSaturday) {
+    alert('Please select a Saturday from today.');
+    return false;
+  }
+
+  // Show confirmation alert before rescheduling
+  if (confirm('Are you sure you want to reschedule?')) {
+    reschedule();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function reschedule() {
+  // Fetch request to submit form data
+  fetch('/ReSchedule', {
+    method: 'POST',
+    body: new FormData(document.getElementById('rescheduleForm'))
+  })
+  .then(response => {
+    if (response.ok) {
+      // Show success alert
+      alert('Reschedule successful!');
+       // Clear the form
+      clearRescheduleForm();
+    } else {
+      // Show failure alert
+      alert('Failed to reschedule. Please try again later.');
+    }
+  })
+  .catch(error => {
+    console.error('Error rescheduling:', error);
+    // Show failure alert
+    alert('Failed to reschedule. Please try again later.');
+  });
+}
+
+
 // Function to open change password popup
 function openChangePasswordPopup() {
   closeAllBoxes();
   closeProfilePopup();
   closeUploadBox();
   closeUserManagement();
-  closeUserSignupBox();
   var overlay = document.getElementById('overlay');
   var popup = document.getElementById('changePasswordBox');
 
@@ -2449,27 +2648,6 @@ function closeChangePasswordPopup() {
   // Remove event listener to prevent unwanted closing
   overlay.removeEventListener('click', closeChangePasswordPopup);
 
-  // Show the dashboard-container and reset its styles
-  var dashboardContainer = document.querySelector('.dashboard-container');
-  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
-}
-
-//user Registration
-function openUserSignupBox() {
-  closeAllBoxes();
-  closeUploadBox();
-  closeUserManagement();
-  closeProfilePopup();
-  closeChangePasswordPopup();
-  document.getElementById("User-signup-box").style.display = "block";
-  document.getElementById("user-signup-overlay").style.display = "block";
-  // Hide the dashboard-container
-  document.querySelector('.dashboard-container').style.display = 'none';
-}
-
-function closeUserSignupBox() {
-  document.getElementById("User-signup-box").style.display = "none";
-  document.getElementById("user-signup-overlay").style.display = "none";
   // Show the dashboard-container and reset its styles
   var dashboardContainer = document.querySelector('.dashboard-container');
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox

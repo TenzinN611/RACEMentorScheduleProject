@@ -125,36 +125,50 @@ def hash_string(input_string):
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    username1 = ""  # Initialize username9 with an empty string
-    
-    if request.method == 'POST':
-        username1 = request.form['username']
-        username = caesar_cipher(username1, shift)
-        print(username)
-        passwordbf1 = request.form['password']
-        password = hash_string(passwordbf1)
+    try:
+        conn19 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cur9 = conn19.cursor()
+        username1 = ""  # Initialize username9 with an empty string
+        
+        if request.method == 'POST':
+            username1 = request.form['username']
+            username = caesar_cipher(username1, shift)
+            print(username)
+            passwordbf1 = request.form['password']
+            password = hash_string(passwordbf1)
 
-        # Perform MySQL query to check if the username exists
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM login WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        print(user)
-        cursor.close()
+            # Perform MySQL query to check if the username exists
+            cur9.execute("SELECT * FROM login WHERE username = %s", (username,))
+            user = cur9.fetchone()
+            print(user)
+            cur9.close()
 
-        if user:
-            # Username exists, now check the password
-            if user[-2] == password:
-                session['username'] = caesar_decipher(user[-3], shift) # Store the username in the session
-                session['FirstName'] = caesar_decipher(user[1], shift)
-                session['LastName'] = caesar_decipher(user[2], shift)
-                session['EmailAddress'] = caesar_decipher(user[3], shift)
-                session['role'] = user[-1]  
-                flash('Login successful', 'success')
-                return redirect(url_for('index1'))  # Redirect to index1.html on successful login
+            if user:
+                # Username exists, now check the password
+                if user[-2] == password:
+                    session['username'] = caesar_decipher(user[-3], shift) # Store the username in the session
+                    session['FirstName'] = caesar_decipher(user[1], shift)
+                    session['LastName'] = caesar_decipher(user[2], shift)
+                    session['EmailAddress'] = caesar_decipher(user[3], shift)
+                    session['role'] = user[-1]  
+                    flash('Login successful', 'success')
+                    return redirect(url_for('index1'))  # Redirect to index1.html on successful login
+                else:
+                    flash('Invalid password. Please try again.', 'error')
             else:
-                flash('Invalid password. Please try again.', 'error')
-        else:
-            flash('The entered username does not exist. Please try again or register for an account.', 'error')
+                flash('The entered username does not exist. Please try again or register for an account.', 'error')
+    except psycopg2.Error as e:
+        # Log the database error
+        app.logger.error('Database error: %s', e)
+        # Flash a generic error message to the user
+        flash('An error occurred while processing your request. Please try again later.', 'error')
+    finally:
+        if 'conn19' in locals():
+            conn19.close()
 
     return render_template('login.html', username=username1)
 
@@ -175,9 +189,9 @@ def index2():
         LastName = session['LastName']
         EmailAddress = session['EmailAddress']
         Role=session['role']
-        if Role == 'Admin':
+        if Role == 'admin':
             return render_template('index.html', username=username, FirstName=FirstName, LastName=LastName, EmailAddress=EmailAddress, Role=Role)
-        elif Role == 'User':
+        elif Role == 'user':
             return render_template('userdashboard.html', username=username, FirstName=FirstName, LastName=LastName, EmailAddress=EmailAddress, Role=Role)
     else:
         flash('You need to login first', 'error')
@@ -723,6 +737,189 @@ def get_saturdays_in_month():
     saturday_dates = [str(saturday.date()) for saturday in saturdays]
 
     return jsonify({'saturdays': saturday_dates})
+
+def get_saturdays_in_month2():
+    now = datetime.now()
+    month = now.month
+    year = now.year
+
+    saturdays = []
+    for month in range(1, 13):
+        first_day_of_month = datetime(year, month, 1)
+        next_month = first_day_of_month.replace(day=28) + timedelta(days=4)  # Move to the 1st day of next month
+        last_day_of_month = next_month - timedelta(days=next_month.day)
+
+        current_date = first_day_of_month
+        
+        # Iterate over all days in the month
+        while current_date <= last_day_of_month:
+            if current_date.weekday() == 5:  # Saturday has weekday() value 5
+                saturdays.append(current_date)
+            current_date += timedelta(days=1)
+
+    saturday_dates = [str(saturday.date()) for saturday in saturdays]
+
+    return saturday_dates
+
+@app.route('/batch-options')
+def get_batch_options():
+    try:
+        conn1 = psycopg2.connect(host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD)
+        cur = conn1.cursor()
+
+        cur.execute('SELECT batchname from batches')
+        batch_options = cur.fetchall()
+        batches =[]
+
+        for row in batch_options:
+            batch_name = row[0]  # Assuming batchname is the first column in the result set
+            batch_name_deciphered = caesar_decipher(batch_name, shift)  # Decipher the batch name
+            batches.append(batch_name_deciphered)
+
+        return jsonify(batches)
+    except Exception:
+        print("Something Wrong")
+    finally:
+        cur.close()
+        conn1.close()
+
+@app.route('/ReSchedule', methods=['GET', 'POST'])       
+def ReSchedule():
+    try:
+        # Get data from the request
+        selected_batches = request.form.getlist('selectedBatches')
+        count_by_weeks = int(request.form['count'])
+        reschedule_date = request.form['dateReschedule']
+
+        # Process the data as needed
+        # For example, you can print the values
+        print("Selected Batches:", selected_batches)
+        print("Count by Weeks:", count_by_weeks)
+        print("Reschedule Date:", reschedule_date)
+        print('select_natches type: ', type(selected_batches))
+        selected_batches2 = selected_batches[0]
+        print('selected_batches2: ', selected_batches2)
+        print('selected_batches2 type: ', type(selected_batches2))
+        selected_batches2 = selected_batches2.replace('[', '').replace(']', '').replace('"', '')
+        selected_batches2 = selected_batches2.split(',')
+        if selected_batches2[0] == "on":
+            selected_batches2 = selected_batches2[1:]
+        else:
+            selected_batches2 = selected_batches2
+
+        print('Selectedbathces22: ', selected_batches2)
+        print('Selectedbathces22 type: ', type(selected_batches2))
+
+        eselected_batches = []
+        for batches1 in selected_batches2:
+            eselected_batches.append(caesar_cipher(batches1, shift))
+
+        print("eselected_batches:", eselected_batches)
+        print("eselected_batches type:", type(eselected_batches))
+
+
+        conn18 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+        cur18 = conn18.cursor()
+
+        # Convert the list to a string representation
+        batch_names_t = tuple(eselected_batches)
+
+        # Execute the query with the string representation
+        cur18.execute('SELECT BatchID FROM Batches WHERE BatchName IN %s',  (batch_names_t,))
+
+        bid = cur18.fetchall()
+        print("BID is:", bid)
+        bid_list = [t[0] for t in bid]
+
+        print(bid_list)
+        bid_t = tuple(bid_list)
+        sats = get_saturdays_in_month2()
+        print('sats:', sats)
+
+        cur18.execute('SELECT * FROM scheduleinformation WHERE Batchid IN %s and scheduledate >= %s',  (bid_t,reschedule_date))
+        si = cur18.fetchall()
+        print('si:',si)
+
+        print(si[0][5])
+        c = count_by_weeks
+
+        nd =[]
+        for i in range(len(si)):
+            d = si[i][5].strftime('%Y-%m-%d')
+            id = sats.index(d)
+            nd.append(sats[id+c])
+
+        print("nd:", nd)
+
+        nd_tuples = [(date) for date in nd]
+        print(nd_tuples)
+
+        for i in range(len(si)):
+            cur18.execute('''
+                UPDATE scheduleinformation 
+                SET scheduledate = %s 
+                WHERE scheduleid = %s 
+            ''', ((nd_tuples[i]), si[i][0]))
+            conn18.commit() 
+            print(((nd_tuples[i]), si[i][0]))
+
+
+
+
+        # Return a success response
+        return jsonify({'message': 'Reschedule request received successfully'}), 200
+    except Exception as e:
+        # Handle any exceptions
+        print("An error occurred:", e)
+        return jsonify({'error': 'An error occurred while processing the reschedule request'}), 500
+    '''finally:
+        cur18.close()
+        conn18.close()'''
+    ''''conn1 = psycopg2.connect(host=DB_HOST,
+        port=DB_PORT,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD)
+    cur = conn1.cursor()
+    try:
+    # Your logic for Method 1
+
+        # Get CourseID
+        cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (caesar_cipher(CourseName, shift),))
+        cid = cur.fetchone()
+        print(cid)
+
+        # Get MentorID
+        cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (caesar_cipher(MentorName, shift),))
+        mid = cur.fetchone()
+
+        # Get ProgramID
+        cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (caesar_cipher(ProgramName, shift),))
+        pid = cur.fetchone()
+
+        # Get BatchID
+        cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (caesar_cipher(BatchName, shift),))
+        bid = cur.fetchone()
+
+        # Insert into ScheduleInformation
+        cur.execute('INSERT INTO ScheduleInformation (ModuleID, MentorID, BatchID, ProgramID, ScheduleDate) VALUES (%s, %s, %s, %s, %s)',
+                    (cid[0], mid[0], bid[0], pid[0], SDate))
+
+        conn1.commit()
+    except Exception:
+        print("Something Wrong")
+    finally:
+        cur.close()
+        conn1.close()
+    return render_template('success.html')'''
    
 @app.route('/update_schedule', methods=['POST'])
 def update_schedule():
@@ -845,7 +1042,7 @@ def get_counts():
 
         # Execute SQL query to get completed count
         cursor2.execute("""
-        SELECT COUNT(DISTINCT modulename)
+        SELECT COUNT(modulename)
         FROM scheduledetails
         WHERE date < %s
         GROUP BY mentorname, modulename, batchname
@@ -1432,6 +1629,101 @@ def upload_schedule11():
         # If an unexpected error occurs, respond with a 500 Internal Server Error
         return jsonify({'error': 'An unexpected error occurred.'}), 500
 
+@app.route('/users')
+def users():
+    try:
+        conn31 = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        cursor13 = conn31.cursor()
+
+        cursor13.execute("SELECT id, username, role FROM login")
+        users = cursor13.fetchall()
+
+        user_list = []
+
+        for user in users:
+            user_dict = {"userId": user[0], "userName": caesar_decipher(user[1], shift), "userRole": user[2]}  # Assuming id is at index 0 and username is at index 1
+            user_list.append(user_dict)
+
+        return jsonify(user_list)
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print("An error occurred:", e)
+        return jsonify({"error": "An error occurred while fetching user data"}), 500
+    finally:
+        if cursor13:
+            cursor13.close()
+        if conn31:
+            conn31.commit()
+            conn31.close()
+
+@app.route('/edit_userr', methods=['POST'])
+def edit_userr():
+    try:
+        conn31 = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        cursor13 = conn31.cursor()
+
+        data = request.json  # Get the JSON data from the request
+        user_id = data.get('userId')  # Get userId from the JSON data
+        new_role = data.get('userRole')  # Get new role from the JSON data
+
+        cursor13.execute("UPDATE login SET role = %s WHERE id = %s", (new_role, user_id) )
+        return jsonify({'message': 'User role updated successfully'}), 200
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print("An error occurred:", e)
+        return jsonify({'error': 'An error occurred while updating user role'}), 500
+    finally:
+        if cursor13:
+            cursor13.close()
+        if conn31:
+            conn31.commit()
+            conn31.close()
+
+@app.route('/delete_userr', methods=['POST'])
+def delete_userr():
+    data12 = request.json  # Get the JSON data from the request
+    user_id2 = data12.get('userId')  # Get userId from the JSON data
+    print("userid2: ", user_id2)
+    try:
+        conn32 = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        cursor13 = conn32.cursor()
+
+        data1 = request.json  # Get the JSON data from the request
+        user_id = data1.get('userId')  # Get userId from the JSON data
+        print("userid: ", user_id)
+
+        cursor13.execute("DELETE FROM login WHERE id = %s", ( user_id,) )
+        return jsonify({'message': 'User Deleted successfully'}), 200
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print("An error occurred:", e)
+        return jsonify({'error': 'An error occurred while Deleting User'}), 500
+    finally:
+        if cursor13:
+            cursor13.close()
+        if conn32:
+            conn32.commit()
+            conn32.close()
+
+
 @app.route('/changepassword', methods=['POST'])
 def changepassword():
     if request.method == 'POST':
@@ -1452,7 +1744,7 @@ def changepassword():
         cursor11.execute("SELECT * FROM login WHERE username = %s", (currentuser,))
         user = cursor11.fetchone()
 
-        if user and user[-1] == cpassword:
+        if user and user[-2] == cpassword:
             # Update the password in the database
             cursor11.execute("UPDATE login SET password = %s WHERE username = %s", (newpassword ,currentuser))
             conn34.commit()
