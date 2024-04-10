@@ -102,6 +102,22 @@ function addTooltipToButtons() {
 // Call the function to add tooltips to buttons
 addTooltipToButtons();
 
+// Function to display toast messages
+function showToastMessage(type, message) {
+  // Display toast message using Toastr library
+  toastr.options = {
+    "closeButton": true,
+    "positionClass": "toast-container",
+    "timeOut": 3000,
+    "extendedTimeOut": 0,
+    "onShown": function () {
+    },
+    "onHidden": function () {
+    }
+  };
+  toastr[type](message);
+}
+
 //course
 function openCourseBox() {
   closeAllBoxes();
@@ -114,6 +130,7 @@ function openCourseBox() {
     document.querySelector('.dashboard-container').style.display = 'none';
   }
 }
+
 // Adding
 function AddCourseDetails() {
   const CourseID = document.getElementById('CourseID').value;
@@ -122,30 +139,31 @@ function AddCourseDetails() {
 
   // Validate fields
   if (!CourseID || !courseName || !description) {
-    alert('Please fill in all fields before adding the course.');
+    showToastMessage('error', 'Please fill in all fields before adding the course.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(CourseID)) {
-    alert('Course ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Course ID should be a number. Special characters are not allowed.');
     resetField('CourseID');
     return;
   }
 
   // Validate courseName
   if (!isValidSentenceCase(courseName)) {
-    alert('Course name should be in sentence case.');
+    showToastMessage('error', 'Course name should be in sentence case.');
     resetField('courseName');
     return;
   }
 
   // Validate description
   if (!isValidSentenceCase(description)) {
-    alert('Description should be in sentence case.');
+    showToastMessage('error', 'Description should be in sentence case.');
     resetField('description');
     return;
   }
+
 
   const formData = {
     CourseID: CourseID,
@@ -158,20 +176,33 @@ function AddCourseDetails() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData),
   })
-    .then(response => response.text())
-    .then(data => {
-      console.log(data);
-      // Display an alert popup when the course is added successfully
-      alert('Course added successfully!');
-      resetForm();
+    .then(response => {
+      if (response.ok) {
+        // Use SweetAlert for success message
+        Swal.fire({
+          icon: 'success',
+          title: 'Course added successfully!',
+          showConfirmButton: false,
+          timer: 3000 // Close the alert after 3 seconds
+        });
+
+        // Reset the form
+        resetForm();
+      } else {
+        // Handle non-successful responses here if needed
+        throw new Error('Error adding course. Please try again.');
+      }
     })
     .catch(error => {
       console.error('Error:', error);
-      // Display an alert popup for errors if needed
-      alert('Error adding course. Please try again.');
+      // Use SweetAlert for error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error adding course. Please try again.'
+      });
     });
 }
-
 
 // Editing
 function EditCourseDetails() {
@@ -181,56 +212,82 @@ function EditCourseDetails() {
 
   // Validate fields
   if (!CourseID || !courseName || !description) {
-    alert('Please fill in all fields before editing the course.');
+    showToastMessage('error', 'Please fill in all fields before editing the course.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(CourseID)) {
-    alert('Course ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Course ID should be a number. Special characters are not allowed.');
     resetField('CourseID');
     return;
   }
 
   // Validate courseName
   if (!isValidSentenceCase(courseName)) {
-    alert('Course name should be in sentence case.');
+    showToastMessage('error', 'Course name should be in sentence case.');
     resetField('courseName');
     return;
   }
 
   // Validate description
   if (!isValidSentenceCase(description)) {
-    alert('Description should be in sentence case.');
+    showToastMessage('error', 'Description should be in sentence case.');
     resetField('description');
     return;
   }
 
-  // Assuming you're using Fetch API for simplicity
-  fetch('/edit_course', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      CourseID: CourseID,
-      courseName: courseName,
-      description: description,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Course edited successfully');
-        // Reset the form
-        resetForm();
-      } else {
-        alert('Error editing course: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  // SweetAlert confirmation dialog
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to edit this course. Proceed with caution.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, edit it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with editing
+      fetch('/edit_course', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          CourseID: CourseID,
+          courseName: courseName,
+          description: description,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Course edited successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
+
+            // Reset the form
+            resetForm();
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error editing course: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+  });
+
 }
 
 // Deleting
@@ -239,51 +296,76 @@ function DeleteCourseDetails() {
 
   // Validate fields
   if (!CourseID) {
-    alert('Please enter the Course ID before deleting the course.');
+    showToastMessage('error', 'Please enter the Course ID before deleting the course.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(CourseID)) {
-    alert('Course ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Course ID should be a number. Special characters are not allowed.');
     resetForm();
     return;
   }
 
-  // Ask for confirmation
-  const userConfirmed = confirm('Are you sure you want to delete this course?');
+  // Ask for confirmation using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to delete this course. This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with deletion
+      console.log('Deleting course with ID:', CourseID);
 
-  if (!userConfirmed) {
-    return; // User canceled the operation
-  }
+      fetch('/delete_course', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          CourseID: CourseID,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Course deleted successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
 
-  console.log('Deleting course with ID:', CourseID);
+            // Reset the form
+            resetForm();
+            // Additional logic or UI update as needed
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error deleting course: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while deleting the course. Please try again.'
+          });
+        });
+    }
+  });
 
-  fetch('/delete_course', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      CourseID: CourseID,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Server response:', data);
-      if (data.success) {
-        alert('Course deleted successfully');
-        // Reset the form
-        resetForm();
-        // Additional logic or UI update as needed
-      } else {
-        alert('Error deleting course: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Fetch Error:', error);
-      alert('An error occurred while deleting the course. Please try again.');
-    });
 }
 
 // Function to validate that the input is a number
@@ -342,41 +424,41 @@ function AddMentorDetails() {
 
   // Validate fields
   if (!mentorId || !mentorName || !mentorRaceEmailAddress || !mentorEmailAddress || !mentorProfile || !mentorWhatsapp) {
-    alert('Please fill in all fields before adding the mentor.');
+    showToastMessage('error', 'Please fill in all fields before adding the mentor.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(mentorId)) {
-    alert('Mentor ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Mentor ID should be a number. Special characters are not allowed.');
     resetMentorField('mentorId');
     return;
   }
 
   // Validate mentorName
   if (!isValidSentenceCase(mentorName)) {
-    alert('Mentor name should be in sentence case.');
+    showToastMessage('error', 'Mentor name should be in sentence case.');
     resetMentorField('mentorName');
     return;
   }
 
   // Validate mentorRaceEmailAddress
   if (!isValidRevaEmail(mentorRaceEmailAddress)) {
-    alert('Invalid Race email format. Please use the correct email format for Race. Example: example@reva.edu.in');
+    showToastMessage('error', 'Invalid Race email format. Please use the correct email format for Race. Example: example@reva.edu.in');
     resetMentorField('mentorRaceEmailAddress');
     return;
   }
 
   // Validate mentorEmailAddress
   if (!isValidGmailEmail(mentorEmailAddress)) {
-    alert('Invalid Gmail email format. Please use the correct email format for Gmail.Example: example@gmail.com');
+    showToastMessage('error', 'Invalid Gmail email format. Please use the correct email format for Gmail.Example: example@gmail.com');
     resetMentorField('mentorEmailAddress');
     return;
   }
 
   // Validate mentorWhatsapp
   if (!isValidWhatsApp(mentorWhatsapp)) {
-    alert('Phone number should be a 10-digit number.');
+    showToastMessage('error', 'Phone number should be a 10-digit number.');
     resetMentorField('mentorWhatsapp');
     return;
   }
@@ -398,15 +480,24 @@ function AddMentorDetails() {
     .then(response => response.text())
     .then(data => {
       console.log(data);
-      // Display an alert popup when the mentor is saved successfully
-      alert('Mentor Added successfully!');
+      // Use SweetAlert for success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Mentor Added successfully!',
+        showConfirmButton: false,
+        timer: 2000 // Close the alert after 2 seconds
+      });
       // Reset the form
       resetMentorForm();
     })
     .catch(error => {
       console.error('Error:', error);
-      // Display an alert popup for errors if needed
-      alert('Error adding mentor. Please try again.');
+      // Use SweetAlert for error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error adding mentor. Please try again.'
+      });
     });
 }
 
@@ -422,73 +513,104 @@ function EditMentorDetails() {
 
   // Validate fields
   if (!mentorId || !mentorName || !mentorRaceEmailAddress || !mentorEmailAddress || !mentorProfile || !mentorWhatsapp) {
-    alert('Please fill in all fields before editing the mentor.');
+    showToastMessage('error', 'Please fill in all fields before editing the mentor.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(mentorId)) {
-    alert('Mentor ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Mentor ID should be a number. Special characters are not allowed.');
     resetMentorField('mentorId');
     return;
   }
 
   // Validate mentorName
   if (!isValidSentenceCase(mentorName)) {
-    alert('Mentor name should be in sentence case.');
+    showToastMessage('error', 'Mentor name should be in sentence case.');
     resetMentorField('mentorName');
     return;
   }
 
   // Validate mentorRaceEmailAddress
   if (!isValidRevaEmail(mentorRaceEmailAddress)) {
-    alert('Invalid Race email format. Please use the correct email format for Race. Example: example@reva.edu.in');
+    showToastMessage('error', 'Invalid Race email format. Please use the correct email format for Race. Example: example@reva.edu.in');
     resetMentorField('mentorRaceEmailAddress');
     return;
   }
 
   // Validate mentorEmailAddress
   if (!isValidGmailEmail(mentorEmailAddress)) {
-    alert('Invalid Gmail email format. Please use the correct email format for Gmail.Example: example@gmail.com');
+    showToastMessage('error', 'Invalid Gmail email format. Please use the correct email format for Gmail.Example: example@gmail.com');
     resetMentorField('mentorEmailAddress');
     return;
   }
 
   // Validate mentorWhatsapp
   if (!isValidWhatsApp(mentorWhatsapp)) {
-    alert('Phone number should be a 10-digit number.');
+    showToastMessage('error', 'Phone number should be a 10-digit number.');
     resetMentorField('mentorWhatsapp');
     return;
   }
 
-  // Assuming you're using Fetch API for simplicity
-  fetch('/edit_mentor', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      mentorId: mentorId,
-      mentorName: mentorName,
-      mentorRaceEmailAddress: mentorRaceEmailAddress,
-      mentorEmailAddress: mentorEmailAddress,
-      mentorProfile: mentorProfile,
-      mentorWhatsapp: mentorWhatsapp,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Mentor edited successfully');
-        // Reset the form
-        resetMentorForm();
-      } else {
-        alert('Error editing mentor: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to edit this mentor. Proceed with caution.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, edit it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Proceed with editing mentor
+      fetch('/edit_mentor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mentorId: mentorId,
+          mentorName: mentorName,
+          mentorRaceEmailAddress: mentorRaceEmailAddress,
+          mentorEmailAddress: mentorEmailAddress,
+          mentorProfile: mentorProfile,
+          mentorWhatsapp: mentorWhatsapp,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Mentor edited successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
+            // Reset the form
+            resetMentorForm();
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error editing mentor: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while editing the mentor. Please try again.'
+          });
+        });
+    }
+  });
+
 }
 
 //Deleting
@@ -497,51 +619,75 @@ function DeleteMentorDetails() {
 
   // Validate fields
   if (!mentorId) {
-    alert('Please enter the Mentor ID before deleting the mentor.');
+    showToastMessage('error', 'Please enter the Mentor ID before deleting the mentor.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(mentorId)) {
-    alert('Mentor ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Mentor ID should be a number. Special characters are not allowed.');
     resetMentorForm();
     return;
   }
 
-  // Ask for confirmation
-  const userConfirmed = confirm('Are you sure you want to delete this mentor?');
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to delete this mentor. This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with deletion
+      console.log('Deleting mentor with ID:', mentorId);
 
-  if (!userConfirmed) {
-    return; // User canceled the operation
-  }
+      fetch('/delete_mentor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mentorId: mentorId,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Mentor deleted successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
 
-  console.log('Deleting mentor with ID:', mentorId);
-
-  fetch('/delete_mentor', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      mentorId: mentorId,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Server response:', data);
-      if (data.success) {
-        alert('Mentor deleted successfully');
-        // Reset the form
-        resetMentorForm();
-        // Additional logic or UI update as needed
-      } else {
-        alert('Error deleting mentor: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Fetch Error:', error);
-      alert('An error occurred while deleting the mentor. Please try again.');
-    });
+            // Reset the form
+            resetMentorForm();
+            // Additional logic or UI update as needed
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error deleting mentor: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while deleting the mentor. Please try again.'
+          });
+        });
+    }
+  });
 }
 
 // Function to validate that the input is a number
@@ -619,20 +765,20 @@ function AddBatchDetails() {
 
   // Validate fields
   if (!BatchID || !batchName) {
-    alert('Please fill in all fields before adding the batch.');
+    showToastMessage('error', 'Please fill in all fields before adding the batch.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(BatchID)) {
-    alert('Batch ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Batch ID should be a number. Special characters are not allowed.');
     resetBatchField('BatchID');
     return;
   }
 
   // Validate batchName
   if (!isValidSentenceCaseWithNumbers(batchName)) {
-    alert('Batch name with batch number.');
+    showToastMessage('error', 'Batch name with batch number.');
     resetBatchField('Batch_Name');
     return;
   }
@@ -650,15 +796,24 @@ function AddBatchDetails() {
     .then(response => response.text())
     .then(data => {
       console.log(data);
-      // Display an alert popup when the batch is saved successfully
-      alert('Batch Added successfully!');
+      // Use SweetAlert for success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Batch Added successfully!',
+        showConfirmButton: false,
+        timer: 2000 // Close the alert after 2 seconds
+      });
       // Reset the form
       resetBatchForm();
     })
     .catch(error => {
       console.error('Error:', error);
-      // Display an alert popup for errors if needed
-      alert('Error saving batch. Please try again.');
+      // Use SweetAlert for error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error saving batch. Please try again.'
+      });
     });
 }
 
@@ -669,48 +824,78 @@ function EditBatchDetails() {
 
   // Validate fields
   if (!BatchID || !batchName) {
-    alert('Please fill in all fields before editing the batch.');
+    showToastMessage('error', 'Please fill in all fields before editing the batch.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(BatchID)) {
-    alert('Batch ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Batch ID should be a number. Special characters are not allowed.');
     resetBatchField('BatchID');
     return;
   }
 
   // Validate batchName
   if (!isValidSentenceCaseWithNumbers(batchName)) {
-    alert('Batch name should be in sentence case and with batch number.');
+    showToastMessage('error', 'Batch name should be in sentence case and with batch number.');
     resetBatchField('Batch_Name');
     return;
   }
 
-  // Assuming you're using Fetch API for simplicity
-  fetch('/edit_batch', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      BatchID: BatchID,
-      batchName: batchName,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Batch edited successfully');
-        // Reset the form
-        resetBatchForm();
-      } else {
-        alert('Error editing batch: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to edit this batch. Proceed with caution.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, edit it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with editing
+      fetch('/edit_batch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          BatchID: BatchID,
+          batchName: batchName,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Batch edited successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
+            // Reset the form
+            resetBatchForm();
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error editing batch: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while editing the batch. Please try again.'
+          });
+        });
+    }
+  });
 }
 
 //deleting
@@ -718,51 +903,75 @@ function DeleteBatchDetails() {
   const BatchID = document.getElementById('BatchID').value;
   // Validate fields
   if (!BatchID) {
-    alert('Please enter the Batch ID before deleting the batch.');
+    showToastMessage('error', 'Please enter the Batch ID before deleting the batch.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(BatchID)) {
-    alert('Batch ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Batch ID should be a number. Special characters are not allowed.');
     resetBatchForm();
     return;
   }
 
-  // Ask for confirmation
-  const userConfirmed = confirm('Are you sure you want to delete this batch?');
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to delete this batch. This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with deletion
+      console.log('Deleting batch with ID:', BatchID);
 
-  if (!userConfirmed) {
-    return; // User canceled the operation
-  }
+      fetch('/delete_batch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          BatchID: BatchID,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Batch deleted successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
 
-  console.log('Deleting batch with ID:', BatchID);
-
-  fetch('/delete_batch', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      BatchID: BatchID,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Server response:', data);
-      if (data.success) {
-        alert('Batch deleted successfully');
-        // Reset the form
-        resetBatchForm();
-        // Additional logic or UI update as needed
-      } else {
-        alert('Error deleting Batch: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Fetch Error:', error);
-      alert('An error occurred while deleting the batch. Please try again.');
-    });
+            // Reset the form
+            resetBatchForm();
+            // Additional logic or UI update as needed
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error deleting batch: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while deleting the batch. Please try again.'
+          });
+        });
+    }
+  });
 }
 
 // Function to validate that the input is a number
@@ -818,20 +1027,20 @@ function AddProgramDetails() {
 
   // Validate fields
   if (!ProgramID || !programName) {
-    alert('Please fill in all fields before adding the program.');
+    showToastMessage('error', 'Please fill in all fields before adding the program.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(ProgramID)) {
-    alert('Program ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Program ID should be a number. Special characters are not allowed.');
     resetProgramField('ProgramID')
     return;
   }
 
   // Validate programName
   if (!isValidSentenceCase(programName)) {
-    alert('Program name should be in sentence case.');
+    showToastMessage('error', 'Program name should be in sentence case.');
     resetProgramField('Program_Name')
     return;
   }
@@ -849,15 +1058,24 @@ function AddProgramDetails() {
     .then(response => response.text())
     .then(data => {
       console.log(data);
-      // Display an alert popup when the program is saved successfully
-      alert('Program added successfully!');
+      // Use SweetAlert for success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Program added successfully!',
+        showConfirmButton: false,
+        timer: 2000 // Close the alert after 2 seconds
+      });
       // Reset the form
       resetProgramForm();
     })
     .catch(error => {
       console.error('Error:', error);
-      // Display an alert popup for errors if needed
-      alert('Error saving program. Please try again.');
+      // Use SweetAlert for error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error saving program. Please try again.'
+      });
     });
 }
 
@@ -869,94 +1087,154 @@ function EditProgramDetails() {
 
   // Validate fields
   if (!ProgramID || !programName) {
-    alert('Please fill in all fields before editing the program.');
+    showToastMessage('error', 'Please fill in all fields before editing the program.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(ProgramID)) {
-    alert('Program ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Program ID should be a number. Special characters are not allowed.');
     resetProgramField('ProgramID')
     return;
   }
 
   // Validate programName
   if (!isValidSentenceCase(programName)) {
-    alert('Program name should be in sentence case.');
+    showToastMessage('error', 'Program name should be in sentence case.');
     resetProgramField('Program_Name')
     return;
   }
 
-  // Assuming you're using Fetch API for simplicity
-  fetch('/edit_program', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ProgramID: ProgramID,
-      programName: programName,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Program edited successfully');
-        // Reset the form
-        resetProgramForm();
-      } else {
-        alert('Error editing program: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to edit this program. Proceed with caution.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, edit it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with editing
+      fetch('/edit_program', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ProgramID: ProgramID,
+          programName: programName,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Program edited successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
+            // Reset the form
+            resetProgramForm();
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error editing program: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while editing the program. Please try again.'
+          });
+        });
+    }
+  });
 }
+
 //delete program
 function DeleteProgramDetails() {
   const ProgramID = document.getElementById('ProgramID').value;
 
   // Validate fields
   if (!ProgramID) {
-    alert('Please enter the Program ID before deleting the program.');
+    showToastMessage('error', 'Please enter the Program ID before deleting the program.');
     return;
   }
 
   // Validate CourseID
   if (!isValidNumber(ProgramID)) {
-    alert('Program ID should be a number. Special characters are not allowed.');
+    showToastMessage('error', 'Program ID should be a number. Special characters are not allowed.');
     resetProgramForm();
     return;
   }
 
 
-  console.log('Deleting program with ID:', ProgramID);
+  // Show confirmation dialog using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You are about to delete this program. This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // User confirmed, proceed with deletion
+      fetch('/delete_program', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ProgramID: ProgramID,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+          if (data.success) {
+            // Use SweetAlert for success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Program deleted successfully!',
+              showConfirmButton: false,
+              timer: 2000 // Close the alert after 2 seconds
+            });
 
-  fetch('/delete_program', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ProgramID: ProgramID,
-    }),
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Server response:', data);
-      if (data.success) {
-        alert('Program deleted successfully');
-        // Reset the form
-        resetProgramForm();
-        // Additional logic or UI update as needed
-      } else {
-        alert('Error deleting Program: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Fetch Error:', error);
-      alert('An error occurred while deleting the program. Please try again.');
-    });
+            // Reset the form
+            resetProgramForm();
+            // Additional logic or UI update as needed
+          } else {
+            // Use SweetAlert for error message
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error deleting program: ' + data.message
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Fetch Error:', error);
+          // Use SweetAlert for error message
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while deleting the program. Please try again.'
+          });
+        });
+    }
+  });
 }
 
 // Function to validate that the input is a number
@@ -1016,9 +1294,17 @@ function closeScheduleBox() {
 
 function openRescheduleBox() {
   closeScheduleBox()
+  closeAllBoxes();
+  closeUploadBox();
+  closeUserManagement();
   if (!rescheduleBoxOpen) {
     document.getElementById('rescheduleBox').style.display = 'block';
     rescheduleBoxOpen = true;
+    // Initialize Flatpickr on date inputst
+    flatpickr("#dateReschedule", {
+      dateFormat: "Y-m-d", // Format the date as YYYY-MM-DD
+      // Add any additional options here
+    });
     // Hide the dashboard-container
     document.querySelector('.dashboard-container').style.display = 'none';
   }
@@ -1082,7 +1368,7 @@ async function populateTable() {
 
     // Create column headers for each Saturday date
     saturdayDates.forEach((date, index) => {
-      scheduleItem[`cell${index + 1}`] = `Week ${index + 1}`;
+      scheduleItem[`cell${index + 1}`] = `Week ${index + 1}:<br> ${date}`;
     });
 
     // Push the column header object to the scheduleData array
@@ -1100,7 +1386,7 @@ async function populateTable() {
       const scheduleItem = { batch };
       saturdayDates.forEach((date, index) => {
         const mentorForWeek = mentorsData.find(mentor => mentor.BatchName === batch && mentor.Date === date);
-        const combinedData = mentorForWeek ? `${mentorForWeek.MentorName} :<br> ${mentorForWeek.ModuleName} <br> ${date}` : 'Not Scheduled';
+        const combinedData = mentorForWeek ? `${mentorForWeek.MentorName} <br> ${mentorForWeek.ModuleName} <br> ${date}` : 'Not Scheduled';
         scheduleItem[`cell${index + 1}`] = combinedData;
       });
       scheduleData.push(scheduleItem);
@@ -1116,8 +1402,37 @@ async function populateTable() {
     scheduleData.forEach((item, rowIndex) => {
       const row = document.createElement('tr');
       Object.entries(item).forEach(([key, value], columnIndex) => {
-        const cell = document.createElement('td');
-        cell.innerHTML = value;
+          let cell = document.createElement('td'); // Initialize cell here
+  
+          if (value == 'Not Scheduled' || rowIndex === 0 || columnIndex === 0) {
+              cell.innerHTML = value;
+          } else {
+              const parts = value.split(' <br> ');
+              const mentorpart = parts[0];
+              //const parts2 = value.split(' :<br> ')[1].split(' <br> ');
+              const modulepart = parts[1];
+              const datepart = parts[2];
+  
+              /*console.log("Mentor Name:", mentorpart);
+              console.log("Module Name:", modulepart);
+              console.log("Date:", datepart);*/
+  
+              cell.innerHTML = `<span class="invisible">${mentorpart}</span><br>${modulepart}<br><span class="invisible">${datepart}</span>`;
+
+              cell.addEventListener('click', function (event) {
+                const clickedRowIndex = rowIndex;
+                const topCellData = value;
+                const leftCellData = scheduleData[clickedRowIndex][Object.keys(scheduleData[0])[0]];
+                const datePart = topCellData.split(' <br> ')[2];
+                console.log('leftcelldata: ', leftCellData);
+                console.log('datePart:', datePart);
+    
+                showPopup(datePart, leftCellData);
+    
+                console.log(`Clicked Cell: (${datePart},${leftCellData})`);
+              });
+          }
+
 
         // Set background color based on conditions
         if (value != 'Not Scheduled' && columnIndex > 0 && !/^Week \d+$/.test(value)) {
@@ -1126,10 +1441,10 @@ async function populateTable() {
         if (columnIndex == 0) {
           cell.style.backgroundColor = 'lightblue';
         }
-        if (/^Week \d+$/.test(value)) {
+        if (/^Week \d+:<br> \d{4}-\d{2}-\d{2}$/.test(value)) {
           cell.style.backgroundColor = 'orange';
-        }
-
+      }
+           
 
         // Add drag-and-drop functionality to each cell
         makeCellDraggable(cell);
@@ -1137,11 +1452,11 @@ async function populateTable() {
 
         // Set background color based on seen mentor and module names
         if (columnIndex > 0) {
-          const mentorModuleName = value.split(' :<br> ');
+          const mentorModuleName = value.split(' <br> ');
           if (mentorModuleName.length >= 2) { // Check if the split operation yielded at least two parts
             const mentorName = mentorModuleName[0];
-            const moduleName1 = mentorModuleName[1];
-            const moduleName = moduleName1.split(' <br> ')[0];
+            const moduleName = mentorModuleName[1];
+            /*const moduleName = moduleName1.split(' <br> ')[0];*/
             if (seenMentorNames[columnIndex] && seenMentorNames[columnIndex].hasOwnProperty(mentorName) && seenmoduleNames[columnIndex] && seenmoduleNames[columnIndex].hasOwnProperty(moduleName) && mentorName != 'Not Scheduled' && mentorName != 'Exam') {
               cell.style.backgroundColor = 'orange';
             }
@@ -1151,40 +1466,22 @@ async function populateTable() {
           }
         }
 
-        if (value.split(' <br> ')[1] < formattedDate1) {
+        if (value.split(' <br> ')[2] < formattedDate1) {
           cell.style.backgroundColor = 'lightgray';
         }
 
         // Track seen mentor names
         seenMentorNames[columnIndex] = seenMentorNames[columnIndex] || {};
-        const mentorName = value.split(' :<br> ')[0];
+        const mentorName = value.split(' <br> ')[0];
         seenMentorNames[columnIndex][mentorName] = true;
 
         // Track seen module names
         seenmoduleNames[columnIndex] = seenmoduleNames[columnIndex] || {};
-        const moduleName1 = value.split(' :<br> ')[1];
-        if (moduleName1) { // Ensure moduleName1 exists before splitting it
-          const moduleName = moduleName1.split(' <br> ')[0]; // Corrected splitting for moduleName
-          seenmoduleNames[columnIndex][moduleName] = true;
-        }
-
-
-
-        // Attach event listener to non-'Not Scheduled' cells
-        if (value !== 'Not Scheduled') {
-          cell.addEventListener('click', function (event) {
-            const clickedRowIndex = rowIndex;
-            const topCellData = value;
-            const leftCellData = scheduleData[clickedRowIndex][Object.keys(scheduleData[0])[0]];
-            const datePart = topCellData.split(' :<br> ')[1].split(' <br> ')[1];
-            console.log('leftcelldata: ', leftCellData);
-            console.log('datePart:', datePart);
-
-            showPopup(datePart, leftCellData);
-
-            console.log(`Clicked Cell: (${datePart},${leftCellData})`);
-          });
-        }
+        /*const moduleName1 = value.split(' <br> ')[1];*/
+        //if (moduleName1) { // Ensure moduleName1 exists before splitting it
+        const moduleName = value.split(' <br> ')[1]; // Corrected splitting for moduleName
+        seenmoduleNames[columnIndex][moduleName] = true;
+        //}
 
         row.appendChild(cell);
       });
@@ -1220,24 +1517,19 @@ function depopulateTable() {
     console.error('Error depopulating table:', error);
   }
 }
+
 const scheduleData1 = [];
 async function populateTable1() {
   var rcount = 0;
   try {
     depopulateTable1();
     // Fetch mentor data
-    const mentorsResponse1 = await fetch('/get_mentorss');
-    const mentorsData1 = await mentorsResponse1.json();
-    //console.log('Mentors Data received:', mentorsData1);
-
-    // Fetch batch names from the server
-    const batchNamesResponse1 = await fetch('/get_batch_names');
-    const batchNames1 = await batchNamesResponse1.json();
-    //console.log('Batch Names received:', batchNames1);
-
-    // Fetch Saturdays for the current month
-    const saturdayDates1 = await getSaturdaysInMonth();
-    //console.log('Saturdays received:', saturdayDates1);
+    // Fetch necessary data asynchronously
+    const [mentorsData1, batchNames1, saturdayDates1] = await Promise.all([
+      fetch('/get_mentorss').then(response => response.json()),
+      fetch('/get_batch_names').then(response => response.json()),
+      getSaturdaysInMonth()
+    ]);
 
     // Clear existing scheduleData
     scheduleData1.length = 0;
@@ -1360,6 +1652,20 @@ async function makeDropTarget(cell) {
         const topCellData = draggedData;
         console.log('topcelldata: ', topCellData);
 
+        // Parse the HTML structure of topcelldata
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(topCellData, 'text/html');
+
+        // Get mentor, module, and date from the parsed HTML
+        const mentorElement = doc.querySelector('span:nth-of-type(1)');
+        const moduleElement = doc.querySelector('br + br');
+        const dateElement = doc.querySelector('span:nth-of-type(2)');
+
+        // Extract the text content from the elements
+        const mentor = mentorElement.textContent.trim();
+        const module = moduleElement.textContent.trim();
+        const datePart = dateElement.textContent.trim();
+
         // Extract the batch from the dropped row
         const batch = scheduleData[droppedRowIndex - 1].batch;
         console.log('batch: ', batch);
@@ -1369,13 +1675,13 @@ async function makeDropTarget(cell) {
         console.log('droppedCellColumnValue: ', droppedCellColumnValue);
 
         // Extract the date part from the dragged cell's content
-        const datePart = topCellData.split(' <br> ')[1];
+        //const datePart = topCellData.split(' <br> ')[2];
         console.log('date: ', datePart);
 
         const currentDate1 = new Date().toLocaleDateString();
 
 
-        const mentor = topCellData.split(' :<br> ')[0];
+        //const mentor = topCellData.split(' <br> ')[0];
         console.log('mentor: ', mentor);
         console.log('datePart:', datePart);
         console.log('currentDate1:', currentDate1);
@@ -1388,7 +1694,7 @@ async function makeDropTarget(cell) {
 
         if (sat1[topColumnValue - 1] < cdate) {
           cell.innerHTML = 'Not Scheduled';
-          alert('Cannot Schedule as the Date is before today')
+          showToastMessage('error', 'Cannot Schedule as the Date is before today')
         }
         else {
           dropcell11(datePart, batch, droppedCellColumnValue, mentor);
@@ -1398,11 +1704,11 @@ async function makeDropTarget(cell) {
 
       } else {
         // Prevent dropping in a different row and display an alert
-        alert('You can only drop in the same batch.');
+        showToastMessage('error', 'You can only drop in the same batch.');
       }
     }
     else {
-      alert(" Sorry, this week is already scheduled with another mentor. Please choose a different week  ")
+      showToastMessage('error', " Sorry, this week is already scheduled with another mentor. Please choose a different week  ")
     }
   });
 }
@@ -1461,7 +1767,66 @@ function makeCellDraggable(cell) {
   cell.addEventListener('dragend', function () {
     cell.classList.remove('dragging');
   });
+  cell.addEventListener('mouseenter', function () {
+    const content = cell.innerHTML;
+    showPopupOnCell(cell, content);
+  });
 }
+
+function showPopupOnCell(cell, content) {
+  // Check if the cell is scheduled
+  if (content !== 'Not Scheduled') {
+    const popup = document.createElement('div');
+    popup.className = 'popupss';
+
+    // Parse the HTML structure of content
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(content, 'text/html');
+
+    // Get mentor, module, and date from the parsed HTML
+    const mentorElement = doc.querySelector('span:nth-of-type(1)');
+    const moduleElement = doc.querySelector('br + br').previousSibling; // Adjust this line
+    const dateElement = doc.querySelector('span:nth-of-type(2)');
+
+    // Extract mentor, module, and date information from the cell's content
+    const mentorName = mentorElement.textContent.trim();
+    const moduleName = moduleElement.textContent.trim();
+    const date = dateElement.textContent.trim();
+
+    // Construct the popup content with mentor, module, and date information
+    const popupContent = `Mentor: ${mentorName}<br>Module: ${moduleName}<br>Date: ${date}`;
+
+    popup.innerHTML = popupContent;
+
+    // Append the popup to the document body
+    document.body.appendChild(popup);
+
+    // Position the popup near the cell
+    const rect = cell.getBoundingClientRect();
+    popup.style.left = rect.left + 'px';
+    popup.style.top = rect.top + cell.offsetHeight + 'px'; // Position below the cell
+
+    // Add the 'show' class to apply opening effect
+    setTimeout(function() {
+      popup.classList.add('show');
+    }, 50);
+
+    let timeout; // Variable to hold timeout reference
+
+    // Remove the popup when mouse leaves the cell
+    cell.addEventListener('mouseleave', function () {
+      // Clear any existing timeout
+      clearTimeout(timeout);
+      // Set a small delay before removing the popup
+      timeout = setTimeout(function() {
+        if (popup.parentNode === document.body) {
+          document.body.removeChild(popup); // Remove the popup if it exists
+        }
+      }, 200); // Adjust the delay as needed
+    });
+  }
+}
+
 
 // Replace this with your actual function to get Saturdays from the server
 async function getSaturdaysInMonth() {
@@ -1489,7 +1854,6 @@ function closeCalendar() {
   dashboardContainer.style.width = ''; // Reset width to its original value
   fetchAndUpdateCounts();
 }
-
 
 //search calender
 function searchCalendar() {
@@ -1594,7 +1958,7 @@ function showPopup(td, ld) {
           <p><strong><i class="fas fa-book"></i> Program Name:</strong></p>
           <select id="program12" name="program12" required></select>
           <p><strong><i class="far fa-calendar-alt"></i> Date:</strong><span>${schedule.SDate}</span></p>
-          <input type="date" id="scheduleDate12" name="scheduleDate12" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease;">
+          <input type="text" id="scheduleDate12" name="scheduleDate12" placeholder="Select a date" required style="color: black; padding: 10px 15px; border: 1px solid #ddd; border-radius: 5px; font-size: 15px; font-family: 'Martain'; transition: background-color 0.3s ease, box-shadow 0.3s ease; cursor: pointer;">
           <div style="justify-content: space-between; align-items: center;">
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Poppins'; transition: background-color 0.3s ease, box-shadow 0.3s ease; margin-top: 10px;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="saveChanges('${schedule.ScheduleID}', '${schedule.Name}', '${schedule.MentorName}', '${schedule.BatchName}', '${schedule.ProgramName}', '${schedule.SDate}' )"><i class="fas fa-save" style="margin-right: 5px;"></i> Save Changes</button>
             <button style="background-color: orange; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-family: 'Poppins'; transition: background-color 0.3s ease, box-shadow 0.3s ease;" onmouseover="this.style.backgroundColor='darkorange'" onmouseout="this.style.backgroundColor='orange'" onclick="deleteSchedule('${schedule.ScheduleID}')"><i class="fas fa-trash-alt" style="margin-right: 5px;"></i> Delete</button>
@@ -1610,6 +1974,13 @@ function showPopup(td, ld) {
         dateInput.min = new Date().toISOString().split('T')[0];
 
         scheduleItemsContainer.appendChild(scheduleItem);
+        // Initialize Flatpickr for the dynamically created date input
+        const dateInput1 = scheduleItem.querySelector('#scheduleDate12');
+        flatpickr(dateInput1, {
+          dateFormat: 'Y-m-d', // Set the date format
+          allowInput: true, // Allow manual input in addition to date selection
+          minDate: 'today' // Set minimum date to today
+        });
       });
 
       popupContainer.innerHTML = '';
@@ -1624,6 +1995,8 @@ function showPopup(td, ld) {
     });
 }
 
+
+
 function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, ScheduleProgram, ScheduleDate) {
   const courseNameElement = document.getElementById('CourseName12');
   const mentorNameElement = document.getElementById('MentorName12');
@@ -1631,115 +2004,120 @@ function saveChanges(ScheduleID, ScheduleModule, ScheduleMentor, ScheduleBatch, 
   const programNameElement = document.getElementById('program12');
   const scheduleDateElement = document.getElementById('scheduleDate12');
 
-  console.log('courseNameElement', courseNameElement);
-
   const courseName = courseNameElement.value || ScheduleModule;
   const mentorName = mentorNameElement.value || ScheduleMentor;
   const batchName = batchNameElement.value || ScheduleBatch;
   const programName = programNameElement.value || ScheduleProgram;
   const scheduleDate = scheduleDateElement.value || ScheduleDate;
 
-  console.log('courseName', courseName);
+  const confirmationMessage = 'Are you sure you want to save changes?';
 
-  // Display a confirmation prompt before saving changes
-  const isConfirmed = window.confirm('Are you sure you want to save changes?');
+  Swal.fire({
+    title: 'Confirmation',
+    text: confirmationMessage,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, save changes',
+    cancelButtonText: 'No, cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (ScheduleID && courseName !== '' && mentorName !== '' && batchName !== '' && programName !== '' && scheduleDate !== '') {
+        const data = {
+          ScheduleID: ScheduleID,
+          courseName: courseName,
+          mentorName: mentorName,
+          batchName: batchName,
+          programName: programName,
+          scheduleDate: scheduleDate,
+        };
 
-  if (isConfirmed && ScheduleID && courseName !== '' && mentorName !== '' && batchName !== '' && programName !== '' && scheduleDate !== '') {
-    // Prepare the data to be sent in the request body
-    const data = {
-      ScheduleID: ScheduleID,
-      courseName: courseName,
-      mentorName: mentorName,
-      batchName: batchName,
-      programName: programName,
-      scheduleDate: scheduleDate,
-    };
+        const url = '/update_schedule';
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        }).then(updatedData => {
+          if (updatedData.error) {
+            Swal.fire('Error', updatedData.error, 'error');
+          } else {
+            console.log('Schedule updated:', updatedData);
+            courseNameElement.innerText = updatedData.courseName;
+            mentorNameElement.innerText = updatedData.mentorName;
+            batchNameElement.innerText = updatedData.batchName;
+            programNameElement.innerText = updatedData.programName;
+            scheduleDateElement.innerText = updatedData.scheduleDate;
 
-    // Perform an AJAX request or fetch to send the updated data to the server
-    const url = '/update_schedule';
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then(response => {
-        if (!response.ok) {
-          /*throw new Error('Network response was not ok');*/
-          alert('Error Changing Schedule, Cannot set this date. Date should be Equal or After today');
-        }
-        return response.json();
-      })
-      .then(updatedData => {
-
-        if (updatedData.error) {
-          // Display an alert for the error message
-          alert('Error: ' + updatedData.error);
-        } else {
-          console.log('Schedule updated:', updatedData);
-
-          // Update the HTML elements with the new values
-          courseNameElement.innerText = updatedData.courseName;
-          mentorNameElement.innerText = updatedData.mentorName;
-          batchNameElement.innerText = updatedData.batchName;
-          programNameElement.innerText = updatedData.programName;
-          scheduleDateElement.innerText = updatedData.scheduleDate;
-
-          // Display an alert message when the schedule is edited successfully
-
-          alert('Schedule edited successfully');
-          closePopup();
-        }
-      })
-      .catch(error => console.error('Error:', error));
-  } else if (!isConfirmed) {
-    // User clicked "Cancel" in the confirmation prompt
-    console.log('Changes not saved.');
-  } else {
-    console.error('Invalid parameters for update_schedule request');
-    console.log('ScheduleID:', ScheduleID);
-    console.log('courseName:', courseName);
-    console.log('mentorName:', mentorName);
-    console.log('batchName:', batchName);
-    console.log('programName:', programName);
-    console.log('scheduleDate:', scheduleDate);
-  }
+            Swal.fire('Success', 'Schedule edited successfully', 'success').then(() => {
+              closePopups();
+            });
+          }
+        }).catch(error => {
+          console.error('Error:', error);
+          Swal.fire('Error', 'An error occurred while processing your request', 'error');
+        });
+      } else {
+        console.error('Invalid parameters for update_schedule request');
+        console.log('ScheduleID:', ScheduleID);
+        console.log('courseName:', courseName);
+        console.log('mentorName:', mentorName);
+        console.log('batchName:', batchName);
+        console.log('programName:', programName);
+        console.log('scheduleDate:', scheduleDate);
+      }
+    } else {
+      console.log('Changes not saved.');
+    }
+  });
 }
 
 function deleteSchedule(scheduleID) {
-  // Display a confirmation prompt before deleting the schedule
-  const isConfirmed = window.confirm('Are you sure you want to delete this schedule?');
-
-  if (isConfirmed) {
-    // Perform an AJAX request or fetch to send the data to the server
-    const url = '/delete_schedule';
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ScheduleID: scheduleID }),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
+  // Display a confirmation prompt using SweetAlert before deleting the schedule
+  Swal.fire({
+    title: 'Confirmation',
+    text: 'Are you sure you want to delete this schedule?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'No, cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Perform an AJAX request or fetch to send the data to the server
+      const url = '/delete_schedule';
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ScheduleID: scheduleID }),
       })
-      .then(responseData => {
-        console.log('Schedule deleted:', responseData);
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(responseData => {
+          console.log('Schedule deleted:', responseData);
 
-        // Display an alert message when the schedule is deleted successfully
-        alert('Schedule deleted successfully');
-        // Close the popup or perform any other necessary actions
-        closePopups();
-      })
-      .catch(error => console.error('Error:', error));
-  } else {
-    // User clicked "Cancel" in the confirmation prompt
-    console.log('Deletion canceled.');
-  }
+          // Display a success message using SweetAlert when the schedule is deleted successfully
+          Swal.fire('Success', 'Schedule deleted successfully', 'success').then(() => {
+            // Close the popup or perform any other necessary actions
+            closePopups();
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+      // User clicked "Cancel" in the confirmation prompt
+      console.log('Deletion canceled.');
+    }
+  });
 }
 
 function closePopups() {
@@ -1850,7 +2228,7 @@ function populateUserList() {
         userListHTML += '<td>' + userListData[i].userName + '</td>';
         userListHTML += '<td class="roles-column">';
         userListHTML += '<select class="role-dropdown">';
-        userListHTML += '<option value="" disabled selected>' +userListData[i].userRole+ '</option>'; // Placeholder
+        userListHTML += '<option value="" disabled selected>' + userListData[i].userRole + '</option>'; // Placeholder
         userListHTML += '<option value="user">User</option>'; // User role
         userListHTML += '<option value="admin">Admin</option>'; // Admin role
         userListHTML += '</select>';
@@ -1868,68 +2246,106 @@ function populateUserList() {
       console.error('Error fetching user data:', error);
     });
 
-// Event listener for edit button click
-$(document).on('click', '.edit-btn', function() {
-  var userId = $(this).data('userid');
-  var selectedRole = $(this).closest('tr').find('.role-dropdown').val(); // Get selected role value from the closest row
-  
-  // Display confirmation dialog
-  if (window.confirm("Are you sure you want to edit this user's role?")) {
-      fetch('/edit_userr', {
+  // Event listener for edit button click
+  $(document).on('click', '.edit-btn', function () {
+    var userId = $(this).data('userid');
+    var selectedRole = $(this).closest('tr').find('.role-dropdown').val(); // Get selected role value from the closest row
+
+    // Display confirmation dialog using SweetAlert
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to edit this user's role?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, edit it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('/edit_userr', {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ userId: userId, userRole: selectedRole }) // Send userId in JSON format
-      })
-      .then(response => response.json())
-      .then(data => {
-          // Handle success response from the server
-          alert('User Role Edited Successfully'); // Display a success message received from the server
-          closeUserManagement();
-          openUserManagement();
-      })
-      .catch(error => {
-          // Handle error response from the server
-          console.error('Error:', error); // Log the error
-          alert('Error occurred while editing user.'); // Display an error message to the user
-      });
-  }
-});
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Display success alert using SweetAlert
+            Swal.fire(
+              'Success!',
+              'User Role Edited Successfully',
+              'success'
+            );
+            // Close and open user management after a delay
+            setTimeout(() => {
+              closeUserManagement();
+              openUserManagement();
+            }, 2000); // Adjust the delay as needed
+          })
+          .catch(error => {
+            // Handle error response from the server
+            console.error('Error:', error); // Log the error
+            Swal.fire(
+              'Error!',
+              'An error occurred while editing user.',
+              'error'
+            );
+          });
+      }
+    });
+  });
 
-// Event listener for delete button click
-$(document).on('click', '.delete-btn', function() {
-  var userId = $(this).data('userid');
-  
-  // Display confirmation dialog
-  if (window.confirm("Are you sure you want to delete this user?")) {
-      fetch('/delete_userr', {
+  // Event listener for delete button click
+  $(document).on('click', '.delete-btn', function () {
+    var userId = $(this).data('userid');
+
+    // Display confirmation dialog using SweetAlert
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this user?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('/delete_userr', {
           method: 'POST',
           headers: {
-              'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ userId: userId }) // Send userId in JSON format
-      })
-      .then(response => response.json())
-      .then(data => {
-          // Handle success response from the server
-          alert('Deleting user with ID: ' + userId); // Display a success message received from the server
-          closeUserManagement();
-          openUserManagement();
-      })
-      .catch(error => {
-          // Handle error response from the server
-          console.error('Error:', error); // Log the error
-          alert('Error occurred while deleting user.'); // Display an error message to the user
-      });
-  }
-});
-
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Handle success response from the server
+            Swal.fire(
+              'Deleted!',
+              'User has been deleted.',
+              'success'
+            );
+            closeUserManagement();
+            openUserManagement();
+          })
+          .catch(error => {
+            // Handle error response from the server
+            console.error('Error:', error); // Log the error
+            Swal.fire(
+              'Error!',
+              'An error occurred while deleting user.',
+              'error'
+            );
+          });
+      }
+    });
+  });
 
   // Search functionality
-  $('#searchInputs').on('input', function() {
+  $('#searchInputs').on('input', function () {
     var searchText = $(this).val().toLowerCase();
-    $('#userList tr').each(function() {
+    $('#userList tr').each(function () {
       var userName = $(this).find('td:first').text().toLowerCase();
       if (userName.includes(searchText)) {
         $(this).show();
@@ -1976,6 +2392,14 @@ function closeGetReportBox() {
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
+function resetFromDateInput() {
+  // Assuming you're using Flatpickr, you can reset the 'from-date' input like this
+  var fromDateInput = document.getElementById('from-date');
+  var toDateInput = document.getElementById('to-date');
+  fromDateInput._flatpickr.clear();
+  toDateInput._flatpickr.clear();  // Clear the selected date
+}
+
 function downloadReport() {
   // Get start and end dates from the form
   var startDate = document.getElementById("from-date").value;
@@ -1994,6 +2418,7 @@ function downloadReport() {
 
       // Trigger the download
       anchor.click();
+      resetFromDateInput();
     }
   };
   xhr.send();
@@ -2008,13 +2433,6 @@ function openUploadBox() {
   document.querySelector('.dashboard-container').style.display = 'none';
 }
 
-function closeUploadBox() {
-  var uploadBox = document.getElementById('uploadBox');
-  uploadBox.style.display = 'none';
-  // Show the dashboard-container and reset its styles
-  var dashboardContainer = document.querySelector('.dashboard-container');
-  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
-}
 
 //file upload
 var storedData = [];
@@ -2043,13 +2461,13 @@ function uploadFile() {
   var uploadedFile = fileInput.files[0];
 
   if (!uploadedFile) {
-    alert('Please select a file to upload.');
+    showToastMessage('error', 'Please select a file to upload.');
     return;
   }
 
   // Check if the file is an Excel file
   if (!uploadedFile.name.endsWith('.xlsx') && !uploadedFile.name.endsWith('.xls')) {
-    alert('Please upload an Excel file.');
+    showToastMessage('error', 'Please upload an Excel file.');
     return;
   }
 
@@ -2068,7 +2486,7 @@ function uploadFile() {
       var requiredHeadersLowercase = requiredHeaders.map(header => header.toLowerCase());
       var missingHeaders = requiredHeadersLowercase.filter(header => !headerRowLowercase.includes(header));
       if (missingHeaders.length > 0) {
-        alert('The uploaded file is missing the following headers or misspelled: ' + missingHeaders.join(', '));
+        showToastMessage('error', 'The uploaded file is missing the following headers or misspelled: ' + missingHeaders.join(', '));
         return;
       }
 
@@ -2095,7 +2513,7 @@ function uploadFile() {
 
       // Check if there are empty rows
       if (nonEmptyRows.length !== rows.length) {
-        alert('Please upload the file with all rows filled.');
+        showToastMessage('error', 'Please upload the file with all rows filled.');
         return;
       }
 
@@ -2104,12 +2522,12 @@ function uploadFile() {
         // Assuming you have a function sendDataToFlask() to send data to Flask
         sendDataToFlask(nonEmptyRows);
       } else {
-        alert('No data to upload.');
+        showToastMessage('error', 'No data to upload.');
       }
 
       // Display the modal at the top
       modal.style.display = "block";
-      modal.style.top = "55%"; // Adjusting modal to appear at the top
+      //modal.style.top = "55%"; // Adjusting modal to appear at the top
     } catch (error) {
       console.error('Error converting Excel to HTML:', error);
       // Provide specific error messages based on the type of error
@@ -2118,7 +2536,7 @@ function uploadFile() {
       } else if (error instanceof ReferenceError) {
         alert('Error processing Excel file. Please try again later or contact support.');
       } else {
-        alert('Error converting Excel to HTML. Please try again.');
+        showToastMessage('error', 'Error converting Excel to HTML. Please try again.');
       }
     }
   };
@@ -2139,19 +2557,42 @@ function sendDataToFlask(data) {
     },
     body: jsonData // Pass the JSON data as the request body
   })
-  .then(response => {
-    if (response.ok) {
-      alert('Data uploaded successfully!');
-    } else if (response.status === 400) {
-      alert('Failed to upload data. Please enter correct data or ensure date is after today.');
-    } else {
-      alert('Failed to upload data. Please try again later.');
-    }
-  })
-  .catch(error => {
-    console.error('Error uploading data:', error);
-    alert('Failed to upload data. Please try again later.');
-  });
+    .then(response => {
+      if (response.ok) {
+        // Reset file input after successful upload
+        document.getElementById('fileInput').value = '';
+        // Display success dialog using SweetAlert
+        Swal.fire(
+          'Success!',
+          'Data Uploaded successfully!',
+          'success'
+        ).then((result) => {
+          if (result.isConfirmed) {
+            // Close the upload box after successful upload
+            closeUploadBox();
+            // Show the dashboard-container
+            var dashboardContainer = document.querySelector('.dashboard-container');
+            dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
+          }
+        });
+      } else if (response.status === 400) {
+        showToastMessage('error', 'Failed to upload data. Please enter correct data or ensure date is after today.');
+      } else {
+        showToastMessage('error', 'Failed to upload data. Please try again later.');
+      }
+    })
+    .catch(error => {
+      console.error('Error uploading data:', error);
+      showToastMessage('error', 'Failed to upload data. Please try again later.');
+    });
+}
+
+function closeUploadBox() {
+  var uploadBox = document.getElementById('uploadBox');
+  uploadBox.style.display = 'none';
+  // Show the dashboard-container and reset its styles
+  var dashboardContainer = document.querySelector('.dashboard-container');
+  dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
 
 //counts
@@ -2506,7 +2947,7 @@ function populateBatchOptions() {
       const selectAllCheckbox = document.createElement('input');
       selectAllCheckbox.type = 'checkbox';
       selectAllCheckbox.id = 'selectAllBatches';
-      selectAllCheckbox.addEventListener('change', function() {
+      selectAllCheckbox.addEventListener('change', function () {
         const checkboxes = document.querySelectorAll('#batchSelection input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
           checkbox.checked = this.checked;
@@ -2526,7 +2967,7 @@ function populateBatchOptions() {
 function clearRescheduleForm() {
   // Get the form element
   const form = document.getElementById('rescheduleForm');
-  
+
   // Reset the form fields
   form.reset();
 }
@@ -2538,13 +2979,13 @@ function validateReScheduleForm() {
   // Check if any batch is selected
   var batchSelection = document.querySelectorAll('#batchSelection input[type="checkbox"]:checked');
   if (batchSelection.length === 0) {
-    alert('Please select at least one batch.');
+    showToastMessage('error', 'Please select at least one batch.');
     return false; // Prevent form submission
   }
 
   // Populate selected batch values
   var selectedBatches = [];
-  batchSelection.forEach(function(checkbox) {
+  batchSelection.forEach(function (checkbox) {
     selectedBatches.push(checkbox.value);
   });
   document.getElementById('selectedBatches').value = JSON.stringify(selectedBatches);
@@ -2566,19 +3007,26 @@ function validateReScheduleForm() {
   console.log('today:', today);
   var isSaturday = selectedDate.getDay() === 6;
   console.log('issaturday:', isSaturday);
-  
-  if (selectedDate < today || !isSaturday) {
-    alert('Please select a Saturday from today.');
-    return false;
-  }
 
-  // Show confirmation alert before rescheduling
-  if (confirm('Are you sure you want to reschedule?')) {
-    reschedule();
-    return true;
-  } else {
+  if (selectedDate < today || !isSaturday) {
+    showToastMessage('error', 'Please select a Saturday from today.');
     return false;
   }
+  // Show confirmation alert before rescheduling using SweetAlert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Are you sure you want to reschedule?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, reschedule it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Call reschedule function if user confirms
+      reschedule();
+    }
+  });
 }
 
 function reschedule() {
@@ -2587,24 +3035,28 @@ function reschedule() {
     method: 'POST',
     body: new FormData(document.getElementById('rescheduleForm'))
   })
-  .then(response => {
-    if (response.ok) {
-      // Show success alert
-      alert('Reschedule successful!');
-       // Clear the form
-      clearRescheduleForm();
-    } else {
-      // Show failure alert
-      alert('Failed to reschedule. Please try again later.');
-    }
-  })
-  .catch(error => {
-    console.error('Error rescheduling:', error);
-    // Show failure alert
-    alert('Failed to reschedule. Please try again later.');
-  });
-}
+    .then(response => {
+      if (response.ok) {
+        // Display success dialog using SweetAlert
+        Swal.fire(
+          'Success!',
+          'Reschedule successful!',
+          'success'
+        );
 
+        // Clear the form
+        clearRescheduleForm();
+      } else {
+        // Show failure alert
+        showToastMessage('error', 'Failed to reschedule. Please try again later.');
+      }
+    })
+    .catch(error => {
+      console.error('Error rescheduling:', error);
+      // Show failure alert
+      showToastMessage('error', 'Failed to reschedule. Please try again later.');
+    });
+}
 
 // Function to open change password popup
 function openChangePasswordPopup() {
@@ -2631,7 +3083,7 @@ function openChangePasswordPopup() {
 
     if (currentPassword === newPassword) {
       e.preventDefault(); // Prevent the form submission
-      alert("Current and new passwords cannot be the same.");
+      showToastMessage('error', "Current and new passwords cannot be the same.");
       document.getElementById('NewPassword').value = ""; // Reset the new password field
     }
   });
@@ -2652,7 +3104,6 @@ function closeChangePasswordPopup() {
   var dashboardContainer = document.querySelector('.dashboard-container');
   dashboardContainer.style.display = 'flex'; // Assuming it originally used flexbox
 }
-
 
 document.getElementById('login-form').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -2683,11 +3134,4 @@ function fadeInUsername() {
   usernameElement.style.display = "inline";
   usernameElement.style.animation = "fadeIn 1s ease-in-out forwards";
 }
-
-
-
-
-
-
-
 

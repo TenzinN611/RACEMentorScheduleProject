@@ -15,10 +15,12 @@ import logging
 
 
 app = Flask(__name__, static_url_path='/static')
-app.secret_key = 'ufxxbtwi'  # Add a secret key
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Set a strong secret key
+app.secret_key = secrets.token_hex(16)
 
 # Database connection details
 DB_HOST = os.getenv('DB_HOST')
@@ -88,6 +90,7 @@ print("Decrypted:", decrypted_text)
 
 # Set the permanent session lifetime (you can adjust this value)
 app.permanent_session_lifetime = timedelta(minutes=30)
+
 @app.before_request
 def before_request():
     session.permanent = True
@@ -156,6 +159,13 @@ def login():
                     session['EmailAddress'] = caesar_decipher(user[3], shift)
                     session['role'] = user[-1]  
                     flash('Login successful', 'success')
+
+                    # Create log file with username as filename
+                    log_filename = f"{session['username']}.txt"
+                    log_path = os.path.join(app.root_path, 'logs', log_filename)  # Assuming 'logs' folder exists in your app directory
+                    with open(log_path, 'a') as log_file:
+                        log_file.write("Login successful at: " + str(datetime.now()) + "\n")
+
                     return redirect(url_for('index1'))  # Redirect to index1.html on successful login
                 else:
                     flash('Invalid password. Please try again.', 'error')
@@ -880,46 +890,7 @@ def ReSchedule():
         # Handle any exceptions
         print("An error occurred:", e)
         return jsonify({'error': 'An error occurred while processing the reschedule request'}), 500
-    '''finally:
-        cur18.close()
-        conn18.close()'''
-    ''''conn1 = psycopg2.connect(host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD)
-    cur = conn1.cursor()
-    try:
-    # Your logic for Method 1
-
-        # Get CourseID
-        cur.execute('SELECT ModuleID FROM Modules WHERE ModuleName = %s', (caesar_cipher(CourseName, shift),))
-        cid = cur.fetchone()
-        print(cid)
-
-        # Get MentorID
-        cur.execute('SELECT MentorID FROM Mentors WHERE MentorName = %s', (caesar_cipher(MentorName, shift),))
-        mid = cur.fetchone()
-
-        # Get ProgramID
-        cur.execute('SELECT ProgramID FROM Programs WHERE ProgramName = %s', (caesar_cipher(ProgramName, shift),))
-        pid = cur.fetchone()
-
-        # Get BatchID
-        cur.execute('SELECT BatchID FROM Batches WHERE BatchName = %s', (caesar_cipher(BatchName, shift),))
-        bid = cur.fetchone()
-
-        # Insert into ScheduleInformation
-        cur.execute('INSERT INTO ScheduleInformation (ModuleID, MentorID, BatchID, ProgramID, ScheduleDate) VALUES (%s, %s, %s, %s, %s)',
-                    (cid[0], mid[0], bid[0], pid[0], SDate))
-
-        conn1.commit()
-    except Exception:
-        print("Something Wrong")
-    finally:
-        cur.close()
-        conn1.close()
-    return render_template('success.html')'''
+    
    
 @app.route('/update_schedule', methods=['POST'])
 def update_schedule():
@@ -1816,8 +1787,17 @@ def reset_password():
             
 @app.route('/logout')
 def logout():
-    session.pop('username', None)  # Remove the username from the session
-    flash('Logout successful', 'success')  # Add a flash message
+    if 'username' in session:
+        username = session['username']
+        session.pop('username', None)
+        flash('Logout successful', 'success')
+
+        # Append logout time to the user's log file
+        log_filename = f"{username}.txt"
+        log_path = os.path.join(app.root_path, 'logs', log_filename)
+        with open(log_path, 'a') as log_file:
+            log_file.write("Logout successful at: " + str(datetime.now()) + "\n")
+
     return redirect(url_for('index'))
 
 
