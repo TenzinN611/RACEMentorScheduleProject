@@ -12,6 +12,27 @@ body {
     /* Apply the same blur effect as in the body */
 }
 
+.toast-container {
+  position: fixed;
+  top: 70px;
+  right: 5px;
+  width: auto;
+  z-index: 10000; /* Ensure the toast is above other content */
+}
+
+.toast {
+  animation: slideInRight 0.5s ease; /* Animation for sliding from right to left */
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
 /*Quick Guide*/
 .quick-guide {
     position: fixed;

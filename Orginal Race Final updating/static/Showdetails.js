@@ -22,6 +22,23 @@ function escapeHTML(text) {
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
+// Function to display toast messages
+function showToastMessage(type, message) {
+  // Display toast message using Toastr library
+  toastr.options = {
+    "closeButton": true,
+    "positionClass": "toast-container",
+    "timeOut": 3000,
+    "extendedTimeOut": 0,
+    "onShown": function () {
+    },
+    "onHidden": function () {
+    }
+  };
+  toastr[type](message);
+}
+
+
 // Show Course details
 function showCourseDetails() {
     fetch('/show_courses')
@@ -107,9 +124,12 @@ function editCourse(courseID) {
         });
     }
 
+    // Show Bootstrap modal
+    $('#editCourseModal').modal('show');
 
-    // Display a confirmation dialog before editing the course
-    if (confirm('Are you sure you want to edit this course?')) {
+    // Handle confirm button click
+    $('#confirmEdit').on('click', function() {
+        // Make API call to edit course
         fetch('/edit_course', {
             method: 'POST',
             headers: {
@@ -121,24 +141,28 @@ function editCourse(courseID) {
                 description: newDescription,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Course edited successfully');
-                    // Update the table cell content after editing
-                    courseNameElement.text(newCourseName);
-                    descriptionElement.text(newDescription);
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateTable();
-                } else {
-                    alert('Error editing course: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToastMessage('success','Course edited successfully');
+                // Update the table cell content after editing
+                courseNameElement.text(newCourseName);
+                descriptionElement.text(newDescription);
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateTable();
+            } else {
+                showToastMessage('error','Error editing course: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        // Hide the modal after the action is performed
+        $('#editCourseModal').modal('hide');
+    });
 }
+
+
 
 // Function to fetch and update the table data
 function fetchAndUpdateTable() {
@@ -167,7 +191,10 @@ function fetchAndUpdateTable() {
 // Function to handle course deletion
 function deleteCourse(courseID) {
     // Display a confirmation dialog before deleting the course
-    if (confirm('Are you sure you want to delete this course?')) {
+    $('#deleteCourseModal').modal('show'); // Open the delete confirmation modal
+    
+    // Handle delete confirmation
+    $('#confirmDelete').off('click').on('click', function() {
         fetch('/delete_course', {
             method: 'POST',
             headers: {
@@ -177,25 +204,28 @@ function deleteCourse(courseID) {
                 CourseID: courseID,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Server response:', data);
-                if (data.success) {
-                    alert('Course deleted successfully');
-                    // Remove the table row in the current tab after deleting
-                    $(`#courseTable tr[data-courseid="${escapeHTML(courseID)}}"]`).remove();
-                    // Reload the page with the updated table
-                    fetchAndUpdateTable();
-                } else {
-                    alert('Error deleting course: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                alert('An error occurred while deleting the course. Please try again.');
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+            if (data.success) {
+                showToastMessage('success', 'Course deleted successfully');
+                // Remove the table row in the current tab after deleting
+                $(`#courseTable tr[data-courseid="${escapeHTML(courseID)}"]`).remove();
+                // Reload the page with the updated table
+                fetchAndUpdateTable();
+            } else {
+                showToastMessage('error', 'Error deleting course: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            showToastMessage('error', 'An error occurred while deleting the course. Please try again.');
+        });
+        
+        $('#deleteCourseModal').modal('hide'); // Hide the delete confirmation modal after deletion
+    });
 }
+
 
 // Function to show mentor details
 function showMentorDetails() {
@@ -304,12 +334,14 @@ function editMentor(mentorId) {
 
     // Validate WhatsApp number to be 10 digits
     if (newWhatsapp && newWhatsapp.length !== 10) {
-        alert('WhatsApp number should be 10 digits');
+        showToastMessage('error','WhatsApp number should be 10 digits');
         return;
     }
 
-    // Display a confirmation dialog before editing the mentor
-    if (confirm('Are you sure you want to edit this mentor?')) {
+    $('#editMentorModal').modal('show'); // Open the edit confirmation modal
+    
+    // Handle edit confirmation
+    $('#confirmEditMentor').off('click').on('click', function() {
         fetch('/edit_mentor', {
             method: 'POST',
             headers: {
@@ -324,26 +356,29 @@ function editMentor(mentorId) {
                 mentorWhatsapp: newWhatsapp,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Mentor edited successfully');
-                    // Update the table cell content after editing
-                    mentorNameElement.text(newMentorName);
-                    raceEmailElement.text(newRaceEmail);
-                    emailElement.text(newEmail);
-                    profileElement.text(newProfile);
-                    whatsappElement.text(newWhatsapp);
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateMentorTable();
-                } else {
-                    alert('Error editing mentor: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToastMessage('success','Mentor edited successfully');
+                // Update the table cell content after editing
+                // Assuming you have elements like mentorNameElement, raceEmailElement, etc.
+                mentorNameElement.text(newMentorName);
+                raceEmailElement.text(newRaceEmail);
+                emailElement.text(newEmail);
+                profileElement.text(newProfile);
+                whatsappElement.text(newWhatsapp);
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateMentorTable();
+            } else {
+                showToastMessage('error','Error editing mentor: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        
+        $('#editMentorModal').modal('hide'); // Hide the edit confirmation modal after editing
+    });
 }
 
 // Function to fetch and update the mentor table data
@@ -370,10 +405,13 @@ function fetchAndUpdateMentorTable() {
         .catch(error => console.error('Error:', error));
 }
 
-// Function to delete a mentor
+// Function to handle mentor deletion
 function deleteMentor(mentorId) {
     // Display a confirmation dialog before deleting the mentor
-    if (confirm('Are you sure you want to delete this mentor?')) {
+    $('#deleteMentorModal').modal('show'); // Open the delete confirmation modal
+    
+    // Handle delete confirmation
+    $('#confirmDeleteMentor').off('click').on('click', function() {
         fetch('/delete_mentor', {
             method: 'POST',
             headers: {
@@ -383,24 +421,26 @@ function deleteMentor(mentorId) {
                 mentorId: mentorId,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Server response:', data);
-                if (data.success) {
-                    alert('Mentor deleted successfully');
-                    // Remove the table row in the current tab after deleting
-                    $(`#mentorTable tr[data-mentorid="${escapeHTML(mentorId)}"]`).remove();
-                    // Reload the page with the updated table
-                    fetchAndUpdateMentorTable();
-                } else {
-                    alert('Error deleting mentor: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                alert('An error occurred while deleting the mentor. Please try again.');
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+            if (data.success) {
+                showToastMessage('success', 'Mentor deleted successfully');
+                // Remove the table row in the current tab after deleting
+                $(`#mentorTable tr[data-mentorid="${escapeHTML(mentorId)}"]`).remove();
+                // Reload the page with the updated table
+                fetchAndUpdateMentorTable();
+            } else {
+                showToastMessage('error', 'Error deleting mentor: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            showToastMessage('error', 'An error occurred while deleting the mentor. Please try again.');
+        });
+        
+        $('#deleteMentorModal').modal('hide'); // Hide the delete confirmation modal after deletion
+    });
 }
 
 
@@ -467,8 +507,10 @@ function editBatch(batchID) {
     const batchNameElement = $(`#batchTable td[data-batchid="${escapeHTML(batchID)}"][data-field="batchName"]`);
     const newBatchName = batchNameElement.text();
 
-    // Display a confirmation dialog before editing the batch
-    if (confirm('Are you sure you want to edit this batch?')) {
+    $('#editBatchModal').modal('show'); // Open the edit confirmation modal
+    
+    // Handle edit confirmation
+    $('#confirmEditBatch').off('click').on('click', function() {
         fetch('/edit_batch', {
             method: 'POST',
             headers: {
@@ -479,22 +521,24 @@ function editBatch(batchID) {
                 batchName: newBatchName,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Batch edited successfully');
-                    // Update the table cell content after editing
-                    batchNameElement.text(newBatchName);
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateBatchTable();
-                } else {
-                    alert('Error editing batch: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToastMessage('success', 'Batch edited successfully');
+                // Update the table cell content after editing
+                batchNameElement.text(newBatchName);
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateBatchTable();
+            } else {
+                showToastMessage('error', 'Error editing batch: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        
+        $('#editBatchModal').modal('hide'); // Hide the edit confirmation modal after editing
+    });
 }
 
 // Function to fetch and update the batch table data
@@ -521,10 +565,13 @@ function fetchAndUpdateBatchTable() {
         .catch(error => console.error('Error:', error));
 }
 
-// Function to delete batch
+// Function to handle batch deletion
 function deleteBatch(batchID) {
     // Display a confirmation dialog before deleting the batch
-    if (confirm('Are you sure you want to delete this batch?')) {
+    $('#deleteBatchModal').modal('show'); // Open the delete confirmation modal
+    
+    // Handle delete confirmation
+    $('#confirmDeleteBatch').off('click').on('click', function() {
         fetch('/delete_batch', {
             method: 'POST',
             headers: {
@@ -534,24 +581,26 @@ function deleteBatch(batchID) {
                 BatchID: batchID,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Server response:', data);
-                if (data.success) {
-                    alert('Batch deleted successfully');
-                    // Remove the table row in the current tab after deleting
-                    $(`#batchTable tr[data-batchid="${escapeHTML(batchID)}"]`).remove();
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateBatchTable();
-                } else {
-                    alert('Error deleting batch: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                alert('An error occurred while deleting the batch. Please try again.');
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+            if (data.success) {
+                showToastMessage('success', 'Batch deleted successfully');
+                // Remove the table row in the current tab after deleting
+                $(`#batchTable tr[data-batchid="${escapeHTML(batchID)}"]`).remove();
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateBatchTable();
+            } else {
+                showToastMessage('error', 'Error deleting batch: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            showToastMessage('error', 'An error occurred while deleting the batch. Please try again.');
+        });
+        
+        $('#deleteBatchModal').modal('hide'); // Hide the delete confirmation modal after deletion
+    });
 }
 
 
@@ -618,8 +667,10 @@ function editProgram(programID) {
     const programNameElement = $(`#programTable td[data-programid="${escapeHTML(programID)}"][data-field="programName"]`);
     const newProgramName = programNameElement.text();
 
-    // Display a confirmation dialog before editing the program
-    if (confirm('Are you sure you want to edit this program?')) {
+    $('#editProgramModal').modal('show'); // Open the edit confirmation modal
+    
+    // Handle edit confirmation
+    $('#confirmEditProgram').off('click').on('click', function() {
         fetch('/edit_program', {
             method: 'POST',
             headers: {
@@ -631,22 +682,24 @@ function editProgram(programID) {
                 // Add any additional fields for editing as needed
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Program edited successfully');
-                    // Update the table cell content after editing
-                    programNameElement.text(newProgramName);
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateProgramTable();
-                } else {
-                    alert('Error editing program: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToastMessage('success', 'Program edited successfully');
+                // Update the table cell content after editing
+                programNameElement.text(newProgramName);
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateProgramTable();
+            } else {
+                showToastMessage('error', 'Error editing program: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        
+        $('#editProgramModal').modal('hide'); // Hide the edit confirmation modal after editing
+    });
 }
 
 // Function to fetch and update the program table data
@@ -673,11 +726,13 @@ function fetchAndUpdateProgramTable() {
         .catch(error => console.error('Error:', error));
 }
 
-
 // Function to delete program
 function deleteProgram(programID) {
     // Display a confirmation dialog before deleting the program
-    if (confirm('Are you sure you want to delete this program?')) {
+    $('#deleteProgramModal').modal('show'); // Open the delete confirmation modal
+    
+    // Handle delete confirmation
+    $('#confirmDeleteProgram').off('click').on('click', function() {
         fetch('/delete_program', {
             method: 'POST',
             headers: {
@@ -687,22 +742,24 @@ function deleteProgram(programID) {
                 ProgramID: programID,
             }),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Server response:', data);
-                if (data.success) {
-                    alert('Program deleted successfully');
-                    // Remove the table row in the current tab after deleting
-                    $(`#programTable tr[data-programid="${escapeHTML(programID)}"]`).remove();
-                    // Fetch and render the updated data without reloading the page
-                    fetchAndUpdateProgramTable();
-                } else {
-                    alert('Error deleting program: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                alert('An error occurred while deleting the program. Please try again.');
-            });
-    }
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+            if (data.success) {
+                showToastMessage('success', 'Program deleted successfully');
+                // Remove the table row in the current tab after deleting
+                $(`#programTable tr[data-programid="${escapeHTML(programID)}"]`).remove();
+                // Fetch and render the updated data without reloading the page
+                fetchAndUpdateProgramTable();
+            } else {
+                showToastMessage('error', 'Error deleting program: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            showToastMessage('error', 'An error occurred while deleting the program. Please try again.');
+        });
+        
+        $('#deleteProgramModal').modal('hide'); // Hide the delete confirmation modal after deletion
+    });
 }

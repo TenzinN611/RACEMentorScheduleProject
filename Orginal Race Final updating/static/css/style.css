@@ -50,9 +50,9 @@ body.loading #preloader {
 }
 
 .logo_bottom {
-    max-width: 400px;
+    max-width: 380px;
     /* Adjust the width as needed */
-    max-height: 400px;
+    max-height: 380px;
     /* Adjust the height as needed */
     margin-right: 10px;
     /* Optional margin for spacing */
@@ -65,46 +65,46 @@ body.loading #preloader {
 
 /*title*/
 .btn {
-  position: relative;
-  cursor: pointer;
-  border: none;
-  background: none;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    background: none;
 }
 
 .tooltip {
-  visibility: hidden;
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #e0e5ec;
-  color:#333;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s;
+    visibility: hidden;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #e0e5ec;
+    color: #333;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 .tooltip:before {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: #e0e5ec transparent transparent transparent;
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #e0e5ec transparent transparent transparent;
 }
 
 .btn:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
+    visibility: visible;
+    opacity: 1;
 }
 
 #navbar {
-    background-color:rgb(24, 186, 240);
+    background-color: rgb(24, 186, 240);
     /* Slightly darker orange */
     padding: 5px;
     /* Increase padding-left to 20px (adjust as needed) */
@@ -137,7 +137,7 @@ body.loading #preloader {
 }
 
 #navbar:hover {
-    background-color:rgb(24, 186, 240);
+    background-color: rgb(24, 186, 240);
     /* Darker orange on hover */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* Increased box-shadow on hover */
@@ -167,7 +167,7 @@ body.loading #preloader {
     top: 100%;
     /* Adjusted to open below the navigation bar */
     margin-top: 5px;
-    background-color:rgb(24, 186, 240);
+    background-color: rgb(24, 186, 240);
     z-index: 1;
     min-width: 160px;
     border-radius: 5px;
@@ -181,7 +181,7 @@ body.loading #preloader {
     right: 10px;
     border-width: 0 8px 8px 8px;
     border-style: solid;
-    border-color:rgb(24, 186, 240);
+    border-color: rgb(24, 186, 240);
 }
 
 .dropdown-content a {
@@ -241,7 +241,7 @@ body.loading #preloader {
 #menu-icons a {
     padding: 20px;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 15px;
     color: #2c3e50;
     display: flex;
     align-items: center;
@@ -322,7 +322,7 @@ body.loading #preloader {
 /* Base styles for dashboard container */
 .dashboard-container {
     position: fixed;
-    top: 60px;
+    top: 50px;
     left: 7%;
     width: 90%;
     height: auto;
@@ -405,7 +405,7 @@ body.loading #preloader {
 }
 
 .more-info {
-    background-color:rgb(24, 186, 240);
+    background-color: rgb(24, 186, 240);
     border: none;
     border-radius: 5px;
     color: #fff;
@@ -420,7 +420,7 @@ body.loading #preloader {
 }
 
 .more-info:hover {
-    background-color:rgb(24, 186, 240);
+    background-color: rgb(24, 186, 240);
     /* Darker color on hover */
 }
 
@@ -448,7 +448,7 @@ body.loading #preloader {
 }
 
 .progress-ring-circle-fill {
-    stroke:rgb(24, 186, 240);
+    stroke: rgb(24, 186, 240);
     stroke-width: 8;
     stroke-dasharray: 339.292;
     stroke-dashoffset: 0;
@@ -482,20 +482,25 @@ body.loading #preloader {
 
 .dashboard-item.special .progress-ring-circle-fill,
 .dashboard-item.special .more-info {
-    background-color: #ff0000; /* Red color */
+    background-color: #ff0000;
+    /* Red color */
 }
 
 .dashboard-item.special .progress-ring-circle-fill {
-    stroke: #ff0000; /* Red color */
-    animation: blink 1s infinite alternate; /* Add blink effect */
+    stroke: #ff0000;
+    /* Red color */
+    animation: blink 1s infinite alternate;
+    /* Add blink effect */
 }
 
 .dashboard-item.special .more-info {
-    animation: blink 1s infinite alternate; /* Add blink effect */
+    animation: blink 1s infinite alternate;
+    /* Add blink effect */
 }
 
 .dashboard-item.special .more-info:hover {
-    animation: none; /* Disable animation on hover */
+    animation: infinite;
+    /* Disable animation on hover */
 }
 
 
@@ -507,6 +512,7 @@ body.loading #preloader {
     0% {
         opacity: 1;
     }
+
     100% {
         opacity: 0.5;
     }
@@ -589,7 +595,8 @@ body.loading #preloader {
     color: #343a40;
     /* Dark text color */
 }
-.dashboard-items select{
+
+.dashboard-items select {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
@@ -620,11 +627,13 @@ body.loading #preloader {
     width: 100%;
     box-sizing: border-box;
 }
+
 .dashboard-containers-button {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-right: 10px; /* Adjust margin to position the button */
+    margin-right: 10px;
+    /* Adjust margin to position the button */
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -665,25 +674,30 @@ body.loading #preloader {
 
 /* Shared styles for active module sidebar */
 .active-sidebar {
-  position: fixed;
-  top: 0;
-  right: -300px; /* Initially hidden */
-  width: 300px;
-  height: 100%;
-  background-color: #e0e5ec;
-  font-size: 14px ;
-  padding-top: 50px;
-  transition: all 0.3s ease;
-  z-index: 2; /* Ensure sidebar appears above dashboard */
-  overflow-y: auto; /* Add scrollbar */
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: #ccc transparent; /* Scrollbar color */
+    position: fixed;
+    top: 0;
+    right: -300px;
+    /* Initially hidden */
+    width: 300px;
+    height: 100%;
+    background-color: #e0e5ec;
+    font-size: 14px;
+    padding-top: 50px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    /* Ensure sidebar appears above dashboard */
+    overflow-y: auto;
+    /* Add scrollbar */
+    scrollbar-width: thin;
+    /* Thin scrollbar */
+    scrollbar-color: #ccc transparent;
+    /* Scrollbar color */
 }
 
 /* Styles for the sidebar content */
 .active-sidebar-content {
-  padding: 20px;
-  color: #333;
+    padding: 20px;
+    color: #333;
 }
 
 .active-sidebar-content h2 {
@@ -692,35 +706,44 @@ body.loading #preloader {
 
 /* Show class for all sidebars */
 .active-sidebar.show {
-  right: 0; /* Visible when toggled */
+    right: 0;
+    /* Visible when toggled */
 }
 
 /* Styles for the active module list */
 #activeModule {
-  list-style-type: decimal; /* Display numbers */
-  padding-left: 20px; /* Add left padding for better alignment */
+    list-style-type: decimal;
+    /* Display numbers */
+    padding-left: 20px;
+    /* Add left padding for better alignment */
 }
 
 /* Add space between active module list items */
 .active-sidebar-content li {
-  margin-bottom: 5px; /* Adjust as needed */
+    margin-bottom: 5px;
+    /* Adjust as needed */
 }
 
 /* Shared styles for complete module sidebar */
 .Completed-Module-sidebar {
     position: fixed;
     top: 0;
-    right: -290px; /* Initially hidden */
-    width: 290px;
+    right: -300px;
+    /* Initially hidden */
+    width: 300px;
     height: 100%;
     background-color: #e0e5ec;
     font-size: 14px;
     padding-top: 50px;
     transition: all 0.3s ease;
-    z-index: 2; /* Ensure sidebar appears above dashboard */
-    overflow-y: auto; /* Add scrollbar */
-    scrollbar-width: thin; /* Thin scrollbar */
-    scrollbar-color: #ccc transparent; /* Scrollbar color */
+    z-index: 2;
+    /* Ensure sidebar appears above dashboard */
+    overflow-y: auto;
+    /* Add scrollbar */
+    scrollbar-width: thin;
+    /* Thin scrollbar */
+    scrollbar-color: #ccc transparent;
+    /* Scrollbar color */
 }
 
 /* Styles for the sidebar content */
@@ -735,18 +758,20 @@ body.loading #preloader {
 
 /* Show class for complete module sidebar */
 .Completed-Module-sidebar.show {
-    right: 0; /* Visible when toggled */
+    right: 0;
+    /* Visible when toggled */
 }
 
 /* Styles for the complete module list */
 #Completed-Module-sidebar {
-    list-style-type: decimal; /* Display numbers */
-    padding-left: 10px; /* Add left padding for better alignment */
+    list-style-type: decimal;
+    /* Display numbers */
 }
 
 /* Add space between complete module list items */
 .Completed-Module-sidebar-content li {
-    margin-bottom: 5px; /* Adjust as needed */
+    margin-bottom: 5px;
+    /* Adjust as needed */
 }
 
 
@@ -980,7 +1005,8 @@ body.loading #preloader {
 }
 
 #mentorBox button:hover {
-    background-color: #ff8c00; /* Change the color to orange */
+    background-color: #ff8c00;
+    /* Change the color to orange */
     transform: scale(1.05);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
@@ -1007,7 +1033,7 @@ body.loading #preloader {
     display: none;
     position: fixed;
     z-index: 2;
-    left: 45%;
+    left: 50%;
     top: 45%;
     transform: translate(-50%, -50%);
     background-color: rgba(255, 255, 255, 0.95);
@@ -1018,7 +1044,8 @@ body.loading #preloader {
     max-width: 90%;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 50px rgba(0, 0, 0, 0.1);
     animation: fadeInUp 0.5s ease-in-out;
-    overflow-y: auto; /* Add scrollbar if content exceeds modal height */
+    overflow-y: auto;
+    /* Add scrollbar if content exceeds modal height */
 }
 
 .modal-content {
@@ -1047,20 +1074,29 @@ body.loading #preloader {
 }
 
 h2 {
-    margin-top: 0; /* Remove default margin */
-    margin-bottom: 20px; /* Add space below heading */
+    margin-top: 0;
+    /* Remove default margin */
+    margin-bottom: 20px;
+    /* Add space below heading */
     font-size: 24px;
     font-weight: bold;
     color: #333;
 }
+
 #fileInput {
-    margin-bottom: 10px; /* Add bottom margin */
-    border: 1px solid #ccc; /* Add border to file input */
-    border-radius: 5px; /* Add border radius */
-    padding: 8px; /* Add padding */
-    width: calc(100% - 15px); /* Reduce width to fit within the container */
+    margin-bottom: 10px;
+    /* Add bottom margin */
+    border: 1px solid #ccc;
+    /* Add border to file input */
+    border-radius: 5px;
+    /* Add border radius */
+    padding: 8px;
+    /* Add padding */
+    width: calc(100% - 15px);
+    /* Reduce width to fit within the container */
 }
-.upload-button{
+
+.upload-button {
     font-family: 'Poppins';
     font-size: 15px;
     min-width: auto;
@@ -1068,7 +1104,8 @@ h2 {
     background-color: #ff8c00;
     color: #fff;
     border: 1px solid #ff8c00;
-    border-radius: 10px; /* Adjusted border-radius for oval shape */
+    border-radius: 10px;
+    /* Adjusted border-radius for oval shape */
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
     margin-right: 326px;
@@ -1076,7 +1113,7 @@ h2 {
     flex: 1;
 }
 
-.upload-button:hover{
+.upload-button:hover {
     background-color: #ff7b00;
     transform: scale(1.05);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -1166,8 +1203,7 @@ h2 {
 
 
 /*schedule box*/
-#scheduleBox,
-#rescheduleBox {
+#scheduleBox {
     display: none;
     position: fixed;
     top: 55%;
@@ -1182,6 +1218,7 @@ h2 {
     border-radius: 15px;
     /* Increased border-radius */
     text-align: center;
+    font-family: 'Poppins';
     animation: fadeInUp 0.5s ease-in-out, fadeIn 0.5s ease-in-out;
     /* Added fadeIn animation */
 }
@@ -1201,22 +1238,19 @@ h2 {
     color: black;
 }
 
-#scheduleForm,
-#rescheduleForm {
+#scheduleForm {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#scheduleForm label,
-#rescheduleForm label {
+#scheduleForm label {
     font-weight: bold;
     color: black;
     text-align: left;
 }
 
-#scheduleForm select,
-#rescheduleForm select {
+#scheduleForm select {
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -1224,8 +1258,7 @@ h2 {
     width: 100%;
 }
 
-#scheduleForm input,
-#rescheduleForm input {
+#scheduleForm input {
     padding: 10px;
     box-sizing: border-box;
     flex-grow: 1;
@@ -1233,55 +1266,12 @@ h2 {
     border-radius: 5px;
 }
 
-/*.row-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px; /* Adjust as needed */
-  /*}
-
-  .checkbox-label-container {
-    flex-basis: calc(33.33% - 10px); /* Adjust margin between labels */
-    /*display: flex;
-    align-items: center;
-  }*/
-
-.row-container {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-.checkbox-label-container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-  }
-  
-
 #buttonContainer {
     display: flex;
     gap: 10px;
     margin-top: 20px;
     justify-content: flex-end;
 }
-
-.batch-selection-container {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  
-  .checkbox-label-container {
-    flex-basis: 33%; /* Set a fixed width for each checkbox-label container */
-    padding: 5px; /* Adjust padding as needed */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  }
-  
-  /* Optional: Adjust the alignment of checkbox and label within the container */
-  input[type="checkbox"] {
-    vertical-align: middle; /* Align checkboxes vertically */
-  }
-  label {
-    margin-left: 5px; /* Add some spacing between checkbox and label */
-  }
 
 .scheduleButton,
 .viewScheduleButton {
@@ -1309,13 +1299,11 @@ h2 {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-#scheduleForm select:hover,
-#rescheduleForm select:hover {
+#scheduleForm select:hover {
     border-color: #ff8c00;
 }
 
-#scheduleForm select:focus,
-#rescheduleForm select:focus {
+#scheduleForm select:focus {
     outline: none;
     border-color: #ff8c00;
     box-shadow: 0 0 5px rgba(241, 157, 0, 0.808);
@@ -1327,6 +1315,7 @@ h2 {
     right: 10px;
     cursor: pointer;
     font-size: 18px;
+    font-family: 'Poppins';
     color: #555;
     transition: color 0.3s ease-in-out;
 }
@@ -1391,6 +1380,129 @@ h2 {
 
 .green {
     background-color: green;
+}
+
+/*reschedule box*/
+#rescheduleBox {
+    display: none;
+    position: fixed;
+    top: 55%;
+    /* Changed from 55% */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 55px;
+    /* Increased padding */
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 35%;
+    z-index: 1000;
+    border-radius: 15px;
+    /* Increased border-radius */
+    animation: fadeInUp 0.5s ease-in-out, fadeIn 0.5s ease-in-out;
+    /* Added fadeIn animation */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#rescheduleBox h2 {
+    margin-bottom: 20px;
+    color: black;
+    text-align: center;
+}
+
+#rescheduleForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#rescheduleForm label {
+    font-weight: bold;
+    color: black;
+    text-align: left;
+}
+
+#rescheduleForm select {
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+#rescheduleForm input {
+    padding: 10px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    border: 1px solid #ddd;
+}
+
+#rescheduleForm select:hover {
+    border-color: #ff8c00;
+}
+
+#rescheduleForm select:focus {
+    outline: none;
+    border-color: #ff8c00;
+    box-shadow: 0 0 5px rgba(241, 157, 0, 0.808);
+}
+
+.row-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Three equal-width columns */
+    grid-gap: 10px;
+    /* Add some space between each column */
+}
+
+.checkbox-label-container {
+    align-items: center;
+    padding: 5px;
+}
+
+.checkbox-label-container input[type="checkbox"] {
+    margin-right: 5px;
+    /* Add some space between checkbox and label */
+}
+
+label {
+    margin: 0;
+    /* Reset margin */
+}
+
+
+#buttonContainers {
+    gap: 10px;
+    margin-top: 20px;
+    right: 30px;
+    bottom: 5px;
+    justify-content: flex-end;
+    position: absolute;
+
+}
+
+#closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    transition: color 0.3s ease-in-out;
+    font-family: 'Poppins', sans-serif;
+    /* Specify font family for close button */
+}
+
+#closeBtn:hover {
+    color: black;
 }
 
 /* Calendar */
@@ -1471,7 +1583,7 @@ h2 {
     border-collapse: collapse;
 }
 
-#scheduleContainer th{
+#scheduleContainer th {
     height: 50px;
     padding: 10px;
     text-align: center;
@@ -1480,14 +1592,19 @@ h2 {
 }
 
 #scheduleContainer td {
-    height: 40px; /* Reduced height */
-    padding: 8px; /* Reduced padding */
+    height: 40px;
+    /* Reduced height */
+    padding: 8px;
+    /* Reduced padding */
     text-align: center;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    font-size: 13px; /* Reduced font size */
-    vertical-align:super; /* Align text vertically in the middle */
-    line-height: 1.5; /* Adjust line height if needed */
+    font-size: 13px;
+    /* Reduced font size */
+    vertical-align: super;
+    /* Align text vertically in the middle */
+    line-height: 1.5;
+    /* Adjust line height if needed */
 }
 
 #scheduleContainer th {
@@ -1539,6 +1656,7 @@ h2 {
     top: 5px;
     right: 10px;
     cursor: pointer;
+    font-family: 'Poppins';
     font-size: 12px;
     color: #888;
     transition: color 0.3s ease-in-out;
@@ -1588,7 +1706,7 @@ h2 {
     /* Increased width */
     position: fixed;
     top: 55%;
-    left: 47%;
+    left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
@@ -1681,7 +1799,8 @@ h2 {
 /*logout*/
 #logout-btn {
     padding: 10px 20px;
-    background-color: #06488a; /* Deep blue */
+    background-color: #06488a;
+    /* Deep blue */
     color: #fff;
     border: none;
     font-family: 'Poppins';
@@ -1694,7 +1813,7 @@ h2 {
 }
 
 #logout-btn:hover {
-    background-color:  #0f5ca8;
+    background-color: #0f5ca8;
     /* Darker shade for hover effect */
     transform: scale(1.1);
     box-shadow: 0 0 20px rgba(24, 27, 182, 0.8), 0 0 40px rgba(31, 44, 231, 0.6);
@@ -2033,174 +2152,238 @@ body.loading #loadingLogo-overlay {
 }
 
 #userListContainer {
-  width: 100%; /* Adjust width as needed */
-  max-height: 450px; /* Set a maximum height */
-  overflow-y: auto; /* Enable vertical scrollbar */
+    width: 100%;
+    /* Adjust width as needed */
+    max-height: 450px;
+    /* Set a maximum height */
+    overflow-y: auto;
+    /* Enable vertical scrollbar */
+    font-family: 'Poppins';
 }
 
 #userListContainer .userManagementContent {
-  padding-right: 10px; /* Add padding to accommodate scrollbar width */
+    padding-right: 10px;
+    /* Add padding to accommodate scrollbar width */
 }
 
 #userListContainer .userManagementContent table {
-  width: calc(100% - 16px); /* Adjust table width to account for scrollbar width */
-  border-collapse: collapse;
+    width: calc(100% - 16px);
+    /* Adjust table width to account for scrollbar width */
+    border-collapse: collapse;
 }
 
 #userListContainer .userManagementContent th,
 #userListContainer .userManagementContent td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
 #userListContainer .userManagementContent th {
-  background-color: #f2f2f2;
-  color: #333;
+    background-color: #f2f2f2;
+    color: #333;
 }
 
 /* Style for scrollbar */
 #userListContainer::-webkit-scrollbar {
-  width: 8px; /* Set the width of the scrollbar */
+    width: 8px;
+    /* Set the width of the scrollbar */
 }
 
 #userListContainer::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of the scrollbar track */
+    background: #f1f1f1;
+    /* Color of the scrollbar track */
 }
 
 #userListContainer::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar thumb */
-  border-radius: 4px; /* Roundness of the scrollbar thumb */
+    background: #888;
+    /* Color of the scrollbar thumb */
+    border-radius: 4px;
+    /* Roundness of the scrollbar thumb */
 }
 
 #userListContainer::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color of the scrollbar thumb on hover */
+    background: #555;
+    /* Color of the scrollbar thumb on hover */
 }
 
 /* CSS for select dropdown options */
 #userManagement .role-dropdown {
-  width: 100%;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 14px;
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
 }
 
 #userManagement .role-dropdown option {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 
 /* Style for edit and delete buttons */
 #userManagement .edit-btn {
-  background-color: #4caf50;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 4px;
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 #userManagement .delete-btn {
-  background-color: #f44336; /* Red color for delete button */
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 4px;
+    background-color: #f44336;
+    /* Red color for delete button */
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
-#userManagement .edit-btn:hover{
-  background-color: #45a049;
+#userManagement .edit-btn:hover {
+    background-color: #45a049;
 }
 
-#userManagement .delete-btn:hover{
-    background-color:#f44336;
+#userManagement .delete-btn:hover {
+    background-color: #f44336;
 }
 
 /* Style for user management box */
 #userManagement {
-  display: none;
-  position: fixed;
-  top: 52%;
-  left: 53%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 2;
-  background-color: rgba(255, 255, 255, 0.95);
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
-  width: 1150px;
-  height: 500px; /* Set a maximum height */
-  animation: fadeInUp 0.5s ease-in-out;
+    display: none;
+    position: fixed;
+    top: 52%;
+    left: 53%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    background-color: rgba(255, 255, 255, 0.95);
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%);
+    width: 1150px;
+    height: 500px;
+    /* Set a maximum height */
+    animation: fadeInUp 0.5s ease-in-out;
 }
 
 
 /* Style for user management header */
 #userManagement .userManagementHeader {
-  display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    /* Center horizontally */
+    align-items: center;
 }
 
 #userManagement .userManagementHeader h3 {
-  color: #333;
-  font-size: 20px;
-  margin: 0; /* Remove default margin */
+    color: #333;
+    font-size: 20px;
+    margin: 0;
+    /* Remove default margin */
 }
 
 
 /* Style for close button */
 #userManagement .userManagementHeader .closeBtns {
-  cursor: pointer;
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  font-size: 20px;
-  color: #333;
-  font-family: 'Poppins';
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    color: #333;
+    font-family: 'Poppins';
 }
 
 #userManagement .userManagementHeader .closeBtns:hover {
-  color: #666;
+    color: #666;
 }
 
 /* Style for user management content */
 #userManagement .userManagementContent {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .SearchContainers {
-  margin-left: 15px;
-  margin-bottom: 5px;
+    margin-left: 15px;
+    margin-bottom: 5px;
 }
 
 #searchInputs {
-  width: 200px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 #searchInputs:hover {
-  border-color: orange;
+    border-color: orange;
 }
+
+.toast-container {
+    position: fixed;
+    top: 70px;
+    right: 5px;
+    width: auto;
+    z-index: 10000;
+    /* Ensure the toast is above other content */
+}
+
+.toast {
+    animation: slideInRight 0.5s ease;
+    /* Animation for sliding from right to left */
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+.popupss {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  font-size: 14px;
+  max-width: 200px; /* Set a maximum width to prevent the popup from becoming too wide */
+}
+
+.popupss.show {
+  opacity: 1;
+}
+
+.invisible {
+    display: none;
+}
+
+
+
 
 /* Responsive Styles */
 @media screen and (max-width: 1024px) {
+
     /* Styles for 15-inch screens */
     body {
         font-size: 14px;
@@ -2240,8 +2423,7 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer,
-    #rescheduleBox {
+    #calendarContainer {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -2251,6 +2433,7 @@ body.loading #loadingLogo-overlay {
 }
 
 @media screen and (max-width: 896px) {
+
     /* Styles for 14-inch screens */
     body {
         font-size: 12px;
@@ -2276,8 +2459,7 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer,
-    #rescheduleBox {
+    #calendarContainer {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -2285,6 +2467,7 @@ body.loading #loadingLogo-overlay {
 
     /* Add more responsive styles as needed */
 }
+
 /* Responsive Styles */
 @media screen and (max-width: 768px) {
     body {
@@ -2325,8 +2508,7 @@ body.loading #loadingLogo-overlay {
     }
 
     #scheduleBox,
-    #calendarContainer,
-    #rescheduleBox {
+    #calendarContainer {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);

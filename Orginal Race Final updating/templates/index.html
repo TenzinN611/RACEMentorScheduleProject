@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.4/xlsx.full.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
   <title>Admin Dashboard</title>
 </head>
@@ -39,7 +42,7 @@
           <div class="dropdown-content">
             <a href="#" onclick="openProfilePopup()"><i class="fas fa-user"></i> Profile</a>
             <a href="#" onclick="openChangePasswordPopup()"><i class="fas fa-key"></i> Change Password</a>
-            <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a>
+            <a href="#" onclick="toggleSidebar('sidebar')"><i class="fas fa-user"></i> My Activity</a> 
           </div>
         </div>
         <a href="{{ url_for('logout') }}">
@@ -54,13 +57,10 @@
         <a href="#" onclick="openMentorBox()"><i class="fas fa-user"></i><span class="menu-text">Mentor</span></a>
         <a href="#" onclick="openBatchBox()"><i class="fas fa-layer-group"></i><span class="menu-text">Batch</span></a>
         <a href="#" onclick="openProgramBox()"><i class="fas fa-cogs"></i><span class="menu-text">Program</span></a>
-        <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i><span
-            class="menu-text">Schedule</span></a>
+        <a href="#" onclick="openScheduleBox()"><i class="far fa-calendar-alt"></i><span class="menu-text">Schedule</span></a>
         <a href="#" onclick="openUploadBox()"><i class="fas fa-upload"></i><span class="menu-text">Upload</span></a>
-        <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get
-            Report</span></a>
-        <a href="#" onclick="openUserManagement()"><i class="fas fa-user-lock"></i><span class="menu-text">User
-            Management</span></a>
+        <a href="#" onclick="openGetReportBox()"><i class="fas fa-file-alt"></i><span class="menu-text">Get Report</span></a>
+        <a href="#" onclick="openUserManagement()"><i class="fas fa-user-lock"></i><span class="menu-text">User Management</span></a>
       </div>
     </div>
 
@@ -236,11 +236,11 @@
       <div class="report-content">
         <span class="close" onclick="closeGetReportBox()">&times;</span>
         <div>
-          <label for="from-date">From Date:</label>
+          <label for="from-date"><i class="far fa-calendar-alt"></i> From Date:</label>
           <input type="text" id="from-date" placeholder="Select From Date">
         </div>
         <div>
-          <label for="to-date">To Date:</label>
+          <label for="to-date"><i class="far fa-calendar-alt"></i> To Date:</label>
           <input type="text" id="to-date" placeholder="Select To Date">
         </div>
         <button onclick="downloadReport()">Download Schedule</button>
@@ -437,16 +437,14 @@
         <input type="date" id="date" name="date" placeholder="YYYY-MM-DD" required>
 
         <div id="buttonContainer">
-          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i
-              class="fas fa-calendar-plus"></i> Schedule</button>
-          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i
-              class="fas fa-calendar-alt"></i>View Schedule</button>
-          <button class="viewScheduleButton" type="button" onclick="openRescheduleBox()"><i
-              class="fas fa-calendar-alt"></i> ReSchedule Calender</button>
+          <button class="scheduleButton" name="action" type="submit" value="Schedule"><i class="fas fa-calendar-plus"></i> Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>View Schedule</button>
+          <button class="viewScheduleButton" type="button" onclick="openRescheduleBox()"><i class="fas fa-calendar-alt"></i> ReSchedule Calender</button>
         </div>
       </form>
     </div>
   </div>
+
   <!--reschedulebox-->
   <div id="rescheduleBox">
     <span id="closeBtn" onclick="closeRescheduleBox()">&times;</span>
@@ -454,25 +452,20 @@
     <form id="rescheduleForm">
   
       <label for="batchReschedule"><i class="fas fa-check"></i> Batch Selection:</label>
-      <div id="batchSelection">
-       
-      </div>
+      <div id="batchSelection"></div>
 
       <label for="count"><i class="fas fa-sort-numeric-up"></i> Reschedule by Weeks:</label>
       <input type="number" id="count" name="count" min="-10" max="10" required>
   
       <label for="dateReschedule"><i class="far fa-calendar-alt"></i> From Date:</label>
-      <input type="date" id="dateReschedule" name="dateReschedule" placeholder="YYYY-MM-DD" required>
+      <input type="text" id="dateReschedule" name="dateReschedule" placeholder="YYYY-MM-DD" required>
 
       <input type="hidden" id="selectedBatches" name="selectedBatches">
       <input type="hidden" id="countByWeeks" name="countByWeeks">
       <input type="hidden" id="rescheduleDate" name="rescheduleDate">
   
-      <div id="buttonContainer">
+      <div id="buttonContainers">
         <button class="viewScheduleButton" name="action" type="button" onclick="validateReScheduleForm()"><i class="fas fa-calendar-check"></i> Reschedule</button>
-
-        <button class="viewScheduleButton" type="button" onclick="openCalendar()"><i class="fas fa-calendar-alt"></i>
-          View Reschedule</button>
       </div>
     </form>
   </div>
@@ -502,7 +495,7 @@
       </form>
     </div>
   </div>
-
+  
   <!--Change Password-->
   <div id="changePasswordBox" class="change-password-box">
     <div class="popup-contents">

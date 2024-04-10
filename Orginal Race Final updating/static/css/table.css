@@ -14,6 +14,29 @@ body {
     backdrop-filter: blur(8px);
 }
 
+.toast-container {
+  position: fixed;
+  top: 55px; /* Adjust the top position as needed */
+  right: 0;
+  width: auto;
+  z-index: 10000; /* Ensure the toast is above other content */
+}
+
+.toast {
+  animation: slideInRightToLeft 0.5s ease; /* Animation for sliding from right to left */
+}
+
+@keyframes slideInRightToLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+
 .btn.btn-outline-primary {
     position: absolute;
     top: 10px;
@@ -89,6 +112,7 @@ body.loading #preloader {
     right: 10px;
     /* Adjust the left position as needed */
 }
+
 #courseDetailsContainer,
 #BatchDetailsContainer,
 #ProgramDetailsContainer {
@@ -190,6 +214,13 @@ h2 {
     to {
         opacity: 1;
     }
+}
+
+/* Adjust the position of the close button */
+.modal-header .close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
 }
 
 /* Responsive styles */
