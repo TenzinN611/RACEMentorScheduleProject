@@ -1,6 +1,8 @@
 # RACEMentorScheduleProject
 RACE MENTOR SCHEDULING PROJECT
 
+Role: Mainly on databse connection and logic.
+
 # DATAbase hosted on
 https://console.neon.tech/app/projects
 
